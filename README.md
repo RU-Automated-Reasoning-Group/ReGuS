@@ -6,8 +6,6 @@
 
 ## Karel Environment
 
----
-
 To evaluate the capability of loop sketch synthesis and on-demand conditional statement synthesis, we use a suite of discrete state and action environments with the "Karel The Robot" simulator taken from [Trivedi et al](https://arxiv.org/abs/2108.13643). In Karel environment, an agent navigates inside a 2D grid world with walls and modifies the world state by interaction with markers. These tasks feature randomly sampled agent positions, walls, markers, and goal configurations.
 
 ### Setup
@@ -43,7 +41,7 @@ Our code will search for program from root sketch ```S;``` until a sucess progra
 ### Examples
 - **Program search for Karel doorkey.**
 
-Synthesized Program:
+    Synthesized Program:
 
     ```
     WHILE(not (markers_present)) { 
@@ -74,12 +72,16 @@ Synthesized Program:
     ; END
     ```
 
-![doorkey gif](https://github.com/RU-Automated-Reasoning-Group/PBR/tree/main/karel/figs/doorkey.gif)
-
+<figure>
+<p align='center'>
+<img src='./karel/figs/doorkey.gif'  height=300 width=300>
+<center>
+<hr><br>
+</figure>
 
 - **Program search for Karel seeder.**
 
-Synthesized Program:
+    Synthesized Program:
 
     ```
     WHILE(not (markers_present)) { 
@@ -114,7 +116,7 @@ Synthesized Program:
 
 - **Program search for Karel topOff.**
 
-Synthesized Program:
+    Synthesized Program:
 
     ```
     WHILE(front_is_clear) { 
@@ -136,7 +138,7 @@ Synthesized Program:
 
 - **Program search for Karel cleanHouse.**
 
-Synthesized Program:
+    Synthesized Program:
 
     ```
     WHILE(not (markers_present)) { 
@@ -156,7 +158,7 @@ Synthesized Program:
 
 <figure>
 <p align='center'>
-<img src='./karel/figs/cleanHouse.gif'  height=300 width=300>
+<img src='./karel/figs/cleanHouse.gif'  height=300 width=500>
 <center>
 <hr><br>
 </figure>
@@ -164,7 +166,7 @@ Synthesized Program:
 
 - **Program search for Karel stairClimber.**
 
-Synthesized Program:
+        Synthesized Program:
 
     ```
     WHILE(not (front_is_clear)) { 
@@ -185,7 +187,7 @@ Synthesized Program:
 
 - **Program search for Karel randomMaze.**
 
-Synthesized Program:
+    Synthesized Program:
 
     ```
     WHILE(not (markers_present)) { 
@@ -210,7 +212,7 @@ Synthesized Program:
 
 - **Program search for Karel fourCorner.**
 
-Synthesized Program:
+    Synthesized Program:
 
     ```
     WHILE(left_is_clear) { 
@@ -232,7 +234,7 @@ Synthesized Program:
 
 - **Program search for Karel Harvester**
 
-Synthesized Program:
+    Synthesized Program:
 
     ```
     WHILE(left_is_clear) { 
