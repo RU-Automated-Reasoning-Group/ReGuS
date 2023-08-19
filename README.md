@@ -74,7 +74,7 @@ Synthesized Program:
     ; END
     ```
 
-![](https://github.com/RU-Automated-Reasoning-Group/PBR/tree/main/karel/figs/doorkey.gif)
+![doorkey gif](https://github.com/RU-Automated-Reasoning-Group/PBR/tree/main/karel/figs/doorkey.gif)
 
 
 - **Program search for Karel seeder.**
@@ -106,7 +106,7 @@ Synthesized Program:
 
 <figure>
 <p align='center'>
-<img src='./figs/seeder.gif'  height=300 width=300>
+<img src='./karel/figs/seeder.gif'  height=300 width=300>
 <center>
 <hr><br>
 </figure>
@@ -128,7 +128,7 @@ Synthesized Program:
 
 <figure>
 <p align='center'>
-<img src='./figs/topoff.gif'  height=300 width=300>
+<img src='./karel/figs/topoff.gif'  height=300 width=300>
 <center>
 <hr><br>
 </figure>
@@ -156,7 +156,7 @@ Synthesized Program:
 
 <figure>
 <p align='center'>
-<img src='./figs/cleanHouse.gif'  height=300 width=300>
+<img src='./karel/figs/cleanHouse.gif'  height=300 width=300>
 <center>
 <hr><br>
 </figure>
@@ -178,7 +178,7 @@ Synthesized Program:
 
 <figure>
 <p align='center'>
-<img src='./figs/stairClimber.gif'  height=300 width=300>
+<img src='./karel/figs/stairClimber.gif'  height=300 width=300>
 <center>
 <hr><br>
 </figure>
@@ -202,7 +202,7 @@ Synthesized Program:
 
 <figure>
 <p align='center'>
-<img src='./figs/randomMaze.gif'  height=300 width=300>
+<img src='./karel/figs/randomMaze.gif'  height=300 width=300>
 <center>
 <hr><br>
 </figure>
@@ -225,7 +225,7 @@ Synthesized Program:
 
 <figure>
 <p align='center'>
-<img src='./figs/fourCorners.gif'  height=300 width=300>
+<img src='./karel/figs/fourCorners.gif'  height=300 width=300>
 <center>
 <hr><br>
 </figure>
@@ -259,7 +259,7 @@ Synthesized Program:
 
 <figure>
 <p align='center'>
-<img src='./figs/harvester.gif'  height=300 width=300>
+<img src='./karel/figs/harvester.gif'  height=300 width=300>
 <center>
 <hr><br>
 </figure>
