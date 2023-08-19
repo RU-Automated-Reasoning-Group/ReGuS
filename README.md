@@ -166,7 +166,7 @@ Our code will search for program from root sketch ```S;``` until a sucess progra
 
 - **Program search for Karel stairClimber.**
 
-        Synthesized Program:
+    Synthesized Program:
 
     ```
     WHILE(not (front_is_clear)) { 
