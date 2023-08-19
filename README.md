@@ -1,25 +1,23 @@
-## Program Synthesis of Intelligent Agent from Rewards
+# Program Synthesis of Intelligent Agent from Rewards
 
----
 
  Program Synthesis from Reward (PBR) is a programming-by-reward paradigm to unlock the potential of program synthesis to overcome the exploration challenges. We develop a novel hierarchical synthesis algorithm with decomposed search space for loops, on-demand synthesis of conditional statements, and curriculum synthesis for procedure calls, to effectively compress the search space for long-horizon, multi-stage, and procedural robot-control tasks that are difficult to explore using deep RL techniques. Experiment results demonstrate that PBR significantly outperforms state-of-the-art deep RL algorithms and standard program synthesis baselines on challenging RL tasks including video games, autonomous driving, locomotion control, object manipulation, and embodied AI.
 
- ---
 
-### Karel Environment
+## Karel Environment
 
 ---
 
 To evaluate the capability of loop sketch synthesis and on-demand conditional statement synthesis, we use a suite of discrete state and action environments with the "Karel The Robot" simulator taken from [Trivedi et al](https://arxiv.org/abs/2108.13643). In Karel environment, an agent navigates inside a 2D grid world with walls and modifies the world state by interaction with markers. These tasks feature randomly sampled agent positions, walls, markers, and goal configurations.
 
-#### Setup
+### Setup
 - Required Installation
     ```
     Python 3.8+
     Numpy 1.23.5
     ```
 
-#### Low-level Loop Sketch Completion
+### Low-level Loop Sketch Completion
 Complete low-level loop program based on specific high level sketch. Entering ```karel``` directory, Sketch completion examples could be run by:
 ```
 cd karel
@@ -34,7 +32,7 @@ Seven Karel environments are provided in ```pbr_sketch.sh```. For more details o
 - **max_stru_cost**: limit of structure depth. The default value is ```20```.
 - **stru_weight**: weight for structure cost to calculate synthesis score. The default value is ```0.2```.
 
-#### MCTS Search
+### MCTS Search
 We apply Monte Carlo Tree Search (MCTS) method to search for candidate high quality loop sketch and complete low-level loop program based on selected loop sketch. Entering ```karel``` directory, MCTS search examples could be run by:
 ```
 cd karel
@@ -42,8 +40,9 @@ sh pbr_mcts.sh
 ```
 Our code will search for program from root sketch ```S;``` until a sucess program is found or limited time (20 hours) is reached.
 
-#### Examples
+### Examples
 - **Program search for Karel doorkey.**
+
 Synthesized Program:
     ```
     WHILE(not (markers_present)) { 
@@ -78,6 +77,7 @@ Synthesized Program:
 
 
 - **Program search for Karel seeder.**
+
 Synthesized Program:
     ```
     WHILE(not (markers_present)) { 
@@ -111,6 +111,7 @@ Synthesized Program:
 
 
 - **Program search for Karel topOff.**
+
 Synthesized Program:
     ```
     WHILE(front_is_clear) { 
@@ -131,6 +132,7 @@ Synthesized Program:
 
 
 - **Program search for Karel cleanHouse.**
+
 Synthesized Program:
     ```
     WHILE(not (markers_present)) { 
@@ -157,6 +159,7 @@ Synthesized Program:
 
 
 - **Program search for Karel stairClimber.**
+
 Synthesized Program:
     ```
     WHILE(not (front_is_clear)) { 
@@ -176,6 +179,7 @@ Synthesized Program:
 </figure>
 
 - **Program search for Karel randomMaze.**
+
 Synthesized Program:
     ```
     WHILE(not (markers_present)) { 
@@ -199,6 +203,7 @@ Synthesized Program:
 
 
 - **Program search for Karel fourCorner.**
+
 Synthesized Program:
     ```
     WHILE(left_is_clear) { 
@@ -219,6 +224,7 @@ Synthesized Program:
 </figure>
 
 - **Program search for Karel Harvester**
+
 Synthesized Program:
     ```
     WHILE(left_is_clear) { 
