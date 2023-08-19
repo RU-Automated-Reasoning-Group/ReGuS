@@ -238,21 +238,19 @@ Our code will search for program from root sketch ```S;``` until a sucess progra
 
     ```
     WHILE(left_is_clear) { 
-        WHILE(markers_present) { 
-            pick_marker 
-            IF(not (front_is_clear)) { 
-                turn_left
+        IF(not (markers_present)) { 
+            IF(right_is_clear) { 
+                move
             }  
-            move
-        } ; 
-        IF(right_is_clear) { 
-            move
-        }  
-        IF(markers_present) {
-            turn_right
+            IF(not (markers_present)) { 
+                turn_left
+            } 
         } 
         ELSE { 
-            turn_left
+            pick_marker
+        } 
+        IF(markers_present) { 
+            turn_right
         } 
         move
     } ;

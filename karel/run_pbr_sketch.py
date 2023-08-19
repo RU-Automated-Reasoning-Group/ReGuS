@@ -46,14 +46,10 @@ def get_structure(args):
 
     elif args.task_name == 'harvester':
         while_1 = WHILE()
-        while_1.cond = [COND_DICT['markers_present']]
+        while_1.cond = [COND_DICT['left_is_clear']]
         while_1.stmts = [C()]
 
-        while_2 = WHILE()
-        while_2.cond = [COND_DICT['left_is_clear']]
-        while_2.stmts = [while_1, C()]
-
-        program.stmts = [while_2, C(), program.stmts[-1]]
+        program.stmts = [while_1, C(), program.stmts[-1]]
 
     elif args.task_name == 'seeder':
         while_1 = WHILE()
