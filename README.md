@@ -74,12 +74,7 @@ Synthesized Program:
     ; END
     ```
 
-<figure>
-<p align='center'>
-<img src='./figs/doorkey.gif'  height=300 width=300>
-<center>
-<hr><br>
-</figure>
+![](https://github.com/RU-Automated-Reasoning-Group/PBR/tree/main/karel/figs/doorkey.gif)
 
 
 - **Program search for Karel seeder.**
