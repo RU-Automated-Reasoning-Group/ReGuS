@@ -130,7 +130,7 @@ Our code will search for program from root sketch ```S;``` until a sucess progra
 
 <figure>
 <p align='center'>
-<img src='./karel/figs/topoff.gif'  height=300 width=300>
+<img src='./karel/figs/topOff.gif'  height=300 width=300>
 <center>
 <hr><br>
 </figure>
