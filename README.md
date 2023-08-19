@@ -22,7 +22,7 @@ cd karel
 sh pbr_sketch.sh
 ```
 Seven Karel environments are provided in ```pbr_sketch.sh```. For more details of input parameters:
-- **task_name**: name of karel environment choicen from topOff, cleanHouse, stairClimber, randomMaze, fourCorner, harvester, seeder and doorkey.
+- **task_name**: name of karel environment chosen from topOff, cleanHouse, stairClimber, randomMaze, fourCorner, harvester, seeder and doorkey.
 - **search_seed**: starting random seed for program search.
 - **more_seed**: all random seeds for program search.
 - **sub_goals**: intermediate reward goal provided in string with ```,``` as split character.  For example, string ```0.5,1``` for goals ```[0.5, 1.0]```. The default value is ```1```.
