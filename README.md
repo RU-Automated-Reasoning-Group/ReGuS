@@ -44,6 +44,7 @@ Our code will search for program from root sketch ```S;``` until a sucess progra
 - **Program search for Karel doorkey.**
 
 Synthesized Program:
+
     ```
     WHILE(not (markers_present)) { 
         IF(not (left_is_clear)) { 
@@ -79,6 +80,7 @@ Synthesized Program:
 - **Program search for Karel seeder.**
 
 Synthesized Program:
+
     ```
     WHILE(not (markers_present)) { 
         WHILE(not (markers_present)) { 
@@ -113,6 +115,7 @@ Synthesized Program:
 - **Program search for Karel topOff.**
 
 Synthesized Program:
+
     ```
     WHILE(front_is_clear) { 
         IF(markers_present) { 
@@ -134,6 +137,7 @@ Synthesized Program:
 - **Program search for Karel cleanHouse.**
 
 Synthesized Program:
+
     ```
     WHILE(not (markers_present)) { 
         WHILE(not (markers_present)) { 
@@ -161,6 +165,7 @@ Synthesized Program:
 - **Program search for Karel stairClimber.**
 
 Synthesized Program:
+
     ```
     WHILE(not (front_is_clear)) { 
         turn_left 
@@ -181,6 +186,7 @@ Synthesized Program:
 - **Program search for Karel randomMaze.**
 
 Synthesized Program:
+
     ```
     WHILE(not (markers_present)) { 
         IF(right_is_clear) { 
@@ -205,6 +211,7 @@ Synthesized Program:
 - **Program search for Karel fourCorner.**
 
 Synthesized Program:
+
     ```
     WHILE(left_is_clear) { 
         IF(not (front_is_clear)) { 
@@ -226,6 +233,7 @@ Synthesized Program:
 - **Program search for Karel Harvester**
 
 Synthesized Program:
+
     ```
     WHILE(left_is_clear) { 
         WHILE(markers_present) { 
