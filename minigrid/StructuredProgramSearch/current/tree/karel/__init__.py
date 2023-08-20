@@ -1,6 +1,5 @@
 from datetime import datetime
 
-from .utils import TimeoutError, beautify, makedirs, pprint, str2bool
 
 __copyright__ = 'Copyright 2015 - {} by Taehoon Kim'.format(datetime.now().year)
 __version__ = '1.3.0'

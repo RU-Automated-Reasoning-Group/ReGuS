@@ -1,9 +1,7 @@
 # NOTE: node in the tree, contains a sketch and a queue for searching
 import time
-from copy import deepcopy
 from queue import PriorityQueue
 
-import numpy as np
 from dsl import *
 
 from karel.robot import KarelRobot

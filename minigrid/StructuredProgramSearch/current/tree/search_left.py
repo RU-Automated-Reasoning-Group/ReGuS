@@ -1,19 +1,9 @@
 # NOTE: each node is associated with a sketch
-import copy
-import enum
-import pdb
-import queue
-import random
 import subprocess
-import time
-from queue import PriorityQueue
 
-import numpy as np
 from dsl import *
 from gym_minigrid.robot import MiniGridRobot
-from matplotlib.pyplot import imsave
 
-from utils.logging import log_and_print
 
 count = 0
 seed_list = []

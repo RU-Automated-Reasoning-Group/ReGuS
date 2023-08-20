@@ -192,7 +192,7 @@ if _robot.execute_single_cond(c_cond) and cond_type == 'w':
                         pass
                     else:
                         cond, cond_type = self._find_c_cond(code.stmts)
-                        if not cond is None:
+                        if cond is not None:
                             return cond, cond_type
             else:
                 raise ValueError('Invalid code')

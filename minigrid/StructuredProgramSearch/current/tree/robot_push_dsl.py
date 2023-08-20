@@ -1,12 +1,9 @@
 import copy
 import pdb
 import time
-from decimal import getcontext
 
-from matplotlib.pyplot import isinteractive
 
 from programskill.push_dsl import k_action, k_cond, k_cond_without_not
-from utils.logging import log_and_print
 
 # actions:
 # 1. move to the push position (used for move down)
@@ -161,7 +158,6 @@ class ACTION:
                     return
                 if satisfy_abs_state(get_abs_state(robot), self.abs_state):
                     program = get_function_simple_empty("goal")
-                    import pdb
 
                     # pdb.set_trace()
                     robot.force_execution = True
@@ -194,7 +190,6 @@ class ACTION:
                     return
                 if satisfy_abs_state(get_abs_state(robot), self.abs_state):
                     program = get_function("key")
-                    import pdb
 
                     # pdb.set_trace()
                     robot.force_execution = True
@@ -237,7 +232,6 @@ class ACTION:
                     return
                 if satisfy_abs_state(get_abs_state(robot), self.abs_state):
                     program = get_function("box")
-                    import pdb
 
                     # pdb.set_trace()
                     robot.force_execution = True
@@ -280,7 +274,6 @@ class ACTION:
                     return
                 if satisfy_abs_state(get_abs_state(robot), self.abs_state):
                     program = get_function("locked_door")
-                    import pdb
 
                     # pdb.set_trace()
                     robot.force_execution = True
@@ -823,11 +816,11 @@ class Program:
                 r_stmts, r_idx = self._find(code.cond)
                 if r_stmts is None:
                     r_stmts, r_idx = self._find(code.stmts)
-                if not r_stmts is None:
+                if r_stmts is not None:
                     return r_stmts, r_idx
                 if isinstance(code, IFELSE):
                     r_stmts, r_idx = self._find(code.else_stmts)
-                    if not r_stmts is None:
+                    if r_stmts is not None:
                         return r_stmts, r_idx
             elif isinstance(code, (ACTION, k_cond, C, END)):
                 pass
@@ -927,11 +920,11 @@ class Program:
                 pass
             elif isinstance(code, (WHILE, IF, IFELSE)):
                 r_stmts, r_idx = self._find_actions(code.stmts)
-                if not r_stmts is None:
+                if r_stmts is not None:
                     return r_stmts, r_idx
                 if isinstance(code, IFELSE):
                     r_stmts, r_idx = self._find_actions(code.else_stmts)
-                    if not r_stmts is None:
+                    if r_stmts is not None:
                         return r_stmts, r_idx
             elif isinstance(code, C):
                 if not self.c_touch or code.touch:
@@ -958,11 +951,11 @@ class Program:
                 pass
             elif isinstance(code, (WHILE, IF, IFELSE)):
                 r_stmts, r_idx = self._find_break_point(code.stmts)
-                if not r_stmts is None:
+                if r_stmts is not None:
                     return r_stmts, r_idx
                 if isinstance(code, IFELSE):
                     r_stmts, r_idx = self._find_break_point(code.else_stmts)
-                    if not r_stmts is None:
+                    if r_stmts is not None:
                         return r_stmts, r_idx
             elif isinstance(code, ACTION):
                 if code.break_point:
@@ -1031,7 +1024,7 @@ class Program:
         assert c_touch
 
         stmts, idx = new_prog.find_actions(c_touch)
-        if not stmts is None:
+        if stmts is not None:
             current_C = stmts[idx]
             if cond_type == "i":
                 # expand in if, add return as one of the actions
@@ -1406,20 +1399,15 @@ def ground_truth4():
 
 def get_function(object):
     if object == "key":
-        obj_on_right = "key_on_right"
-        obj_present = "front_is_key"
+        pass
     elif object == "locked_door":
-        obj_on_right = "locked_door_on_right"
-        obj_present = "front_is_locked_door"
+        pass
     elif object == "door":
-        obj_on_right = "door_on_right"
-        obj_present = "front_is_door"
+        pass
     elif object == "goal":
-        obj_on_right = "goal_on_right"
-        obj_present = "goal_present"
+        pass
     elif object == "box":
-        obj_on_right = "box_on_right"
-        obj_present = "front_is_box"
+        pass
     fn = get_function_simple(object)
 
     # add the first while loop and first action
@@ -1450,20 +1438,15 @@ def get_function(object):
 
 def get_function_locked(object):
     if object == "key":
-        obj_on_right = "key_on_right"
-        obj_present = "front_is_key"
+        pass
     elif object == "locked_door":
-        obj_on_right = "locked_door_on_right"
-        obj_present = "front_is_locked_door"
+        pass
     elif object == "door":
-        obj_on_right = "door_on_right"
-        obj_present = "front_is_door"
+        pass
     elif object == "goal":
-        obj_on_right = "goal_on_right"
-        obj_present = "goal_present"
+        pass
     elif object == "box":
-        obj_on_right = "box_on_right"
-        obj_present = "front_is_box"
+        pass
 
     fn = get_function_simple_locked(object)
 
@@ -1715,17 +1698,13 @@ def get_function_simple(object):
 
 def get_function_empty(object):
     if object == "key":
-        obj_on_right = "key_on_right"
-        obj_present = "front_is_key"
+        pass
     elif object == "locked_door":
-        obj_on_right = "locked_door_on_right"
-        obj_present = "front_is_locked_door"
+        pass
     elif object == "door":
-        obj_on_right = "door_on_right"
-        obj_present = "front_is_door"
+        pass
     elif object == "goal":
-        obj_on_right = "goal_on_right"
-        obj_present = "goal_present"
+        pass
 
     fn = get_function_simple_empty(object)
 

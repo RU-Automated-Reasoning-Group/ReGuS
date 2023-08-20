@@ -1,8 +1,5 @@
-import copy
 
 import gym
-import gymnasium
-import numpy as np
 
 from programskill.push_dsl import k_action, k_cond
 

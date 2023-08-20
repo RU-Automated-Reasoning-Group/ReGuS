@@ -10,7 +10,7 @@ from minigrid_base_dsl import *
 # from minigrid_lockedroom_dsl import *
 # from minigrid_unlockpickup_dsl import *
 from utils.convert_prog import ConvertProg
-from utils.logging import init_logging, log_and_print
+from utils.logging import log_and_print
 
 # def get_dsl_dict():
 #     dsl_dict = {
@@ -299,7 +299,6 @@ def test_highway_test():
     df = pd.read_csv("store/highway_log/keep/no_fuel_new.csv", header=None)
     progs = df[1]
 
-    c_prob = 0
     for test_prog in tqdm(progs):
         if "C" in test_prog:
             continue
@@ -322,7 +321,7 @@ def test_highway_test():
 
 def display_prog():
     dsl_dict = get_dsl_dict()
-    convertor = ConvertProg(dsl_dict)
+    ConvertProg(dsl_dict)
 
     df = pd.read_csv("store/highway_log/keep/no_fuel_new.csv", header=None)
     progs = df[1]

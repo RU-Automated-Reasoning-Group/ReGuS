@@ -1,7 +1,6 @@
 # Tree structure to store search trace
 import copy
 import heapq
-import pdb
 import re
 import time
 

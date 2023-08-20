@@ -1,6 +1,4 @@
-import copy
 
-import cv2
 
 DSL_DEBUG = False
 g_counter = None

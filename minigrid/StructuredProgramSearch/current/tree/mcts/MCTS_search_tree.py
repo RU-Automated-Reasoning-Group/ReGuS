@@ -1,6 +1,5 @@
 # Tree structure to store search trace
 import copy
-import pdb
 import re
 
 # from platform import node
@@ -185,7 +184,7 @@ class SearchTree:
         approx_sketch = node.get_approx()
         if str(approx_sketch) in self.visited_sketch:
             log_and_print('find visited and apply previous result')
-            assert node.visited == True
+            assert node.visited is True
             reward, result_sketches = self.visited_sketch[str(approx_sketch)]
             pass_step = 0
         else:

@@ -71,10 +71,9 @@ class k_action:
         if self.action == "null":
             return robot.check_reward()
 
-        import pdb
 
         g_op = k.gripper_are_open()
-        g_bk = k.block_inside_gripper()
+        k.block_inside_gripper()
 
         if not robot.no_fuel():
             # getattr(k, self.action)()

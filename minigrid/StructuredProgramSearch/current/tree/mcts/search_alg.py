@@ -3,7 +3,6 @@
 
 import numpy as np
 
-from karel.robot import KarelRobot
 from search import Node
 from utils.logging import log_and_print
 

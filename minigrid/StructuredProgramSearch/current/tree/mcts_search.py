@@ -1,9 +1,8 @@
-import pdb
 import random
 import time
 
 import numpy as np
-import torch
+# import torch
 import minigrid_base_dsl
 
 from mcts.MCTS_search_tree import SearchNode, SearchTree

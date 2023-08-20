@@ -1,4 +1,3 @@
-import pdb
 import search
 import minigrid_base_dsl
 import copy
@@ -8,6 +7,7 @@ import numpy as np
 import gc
 import pickle
 import argparse
+import Minigrid
 
 
 def start_sequence(

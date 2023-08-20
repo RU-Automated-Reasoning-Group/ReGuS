@@ -1,4 +1,3 @@
-import cv2
 import numpy as np
 
 DSL_DEBUG = False
@@ -71,7 +70,6 @@ class k_action:
         if self.action == "null":
             return robot.check_reward()
 
-        import pdb
 
         # g_op = k.gripper_are_open()
         # g_bk = k.block_inside_gripper()

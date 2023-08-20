@@ -1,12 +1,9 @@
-import argparse
-import os
-import pdb
 import pickle
 import random
 
-import h5py
+# import h5py
 import numpy as np
-import progressbar
+# import progressbar
 
 
 class KarelStateGenerator(object):
@@ -51,7 +48,7 @@ class KarelStateGenerator(object):
                 valid_loc = True
                 s[y, x, self.rng.randint(0, 4)] = True
         # Marker: num of max marker == 1 for now
-        s[:, :, 6] = (self.rng.rand(h, w) > 0.9) * (s[:, :, 4] == False) > 0
+        s[:, :, 6] = (self.rng.rand(h, w) > 0.9) * (s[:, :, 4] is False) > 0
         s[:, :, 5] = 1 - (np.sum(s[:, :, 6:], axis=-1) > 0) > 0
         assert np.sum(s[:, :, 5:]) == h*w, np.sum(s[:, :, :5])
         marker_weight = np.reshape(np.array(range(11)), (1, 1, 11))
@@ -296,21 +293,6 @@ class KarelStateGenerator(object):
 
         random.seed(self.seed)
 
-        world_map = [
-            ['-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-'],
-            ['-',   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0, '-'],
-            ['-',   0,   0,   0,   0,   0,   0,   0,   0,   0,   0, '-', '-'],
-            ['-',   0,   0,   0,   0,   0,   0,   0,   0,   0, '-', '-', '-'],
-            ['-',   0,   0,   0,   0,   0,   0,   0,   0, '-', '-',   0, '-'],
-            ['-',   0,   0,   0,   0,   0,   0,   0, '-', '-',   0,   0, '-'],
-            ['-',   0,   0,   0,   0,   0,   0, '-', '-',   0,   0,   0, '-'],
-            ['-',   0,   0,   0,   0,   0, '-', '-',   0,   0,   0,   0, '-'],
-            ['-',   0,   0,   0,   0, '-', '-',   0,   0,   0,   0,   0, '-'],
-            ['-',   0,   0,   0, '-', '-',   0,   0,   0,   0,   0,   0, '-'],
-            ['-',   0,   0, '-', '-',   0,   0,   0,   0,   0,   0,   0, '-'],
-            ['-',   0, '-', '-',   0,   0,   0,   0,   0,   0,   0,   0, '-'],
-            ['-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-'],
-        ]
 
         c = 2
         r = h - 1

@@ -1,6 +1,5 @@
 import random
 import time
-from copy import deepcopy
 
 import multiprocess as mp
 import numpy as np

@@ -1,19 +1,10 @@
 # NOTE: node in the tree, contains a sketch and a queue for searching
-import copy
-import enum
 import pdb
-import queue
-import random
-import time
-from ast import While
-from queue import PriorityQueue
 
-import numpy as np
 from dsl import *
 
 from karel.robot import KarelRobot
-from search import Node
-from utils.logging import init_logging, log_and_print
+from utils.logging import init_logging
 
 if __name__ == "__main__":
     task='topOffPick'

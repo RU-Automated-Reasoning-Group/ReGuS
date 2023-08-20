@@ -1,19 +1,13 @@
 # NOTE: node in the tree, contains a sketch and a queue for searching
 import copy
-import enum
 import pdb
-import queue
 import random
-import time
-from queue import PriorityQueue
 
 import numpy as np
 from dsl import *
-from torch import log_
 
-from karel.robot import KarelRobot
 from search import Node
-from utils.logging import init_logging, log_and_print
+from utils.logging import init_logging
 
 
 def get_structural_cost(program):

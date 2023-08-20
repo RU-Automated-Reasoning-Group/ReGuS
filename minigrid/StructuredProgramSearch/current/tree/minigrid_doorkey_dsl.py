@@ -424,7 +424,7 @@ class ACTION:
                 robot.returned = False
                 print("========= end get locked door ==================")
             elif str(self.action.action) != "return":
-                r = robot.execute_single_action(self.action)
+                robot.execute_single_action(self.action)
             else:
                 robot.active = False
 
@@ -998,7 +998,7 @@ class Program:
                 r_stmts, r_idx = self._find(code.cond)
                 if r_stmts is None:
                     r_stmts, r_idx = self._find(code.stmts)
-                if not r_stmts is None:
+                if r_stmts is not None:
                     return r_stmts, r_idx
             elif isinstance(code, (ACTION, k_cond, C, END)):
                 pass
@@ -1090,7 +1090,7 @@ class Program:
                 pass
             elif isinstance(code, (WHILE, IF, IFELSE)):
                 r_stmts, r_idx = self._find_actions(code.stmts)
-                if not r_stmts is None:
+                if r_stmts is not None:
                     return r_stmts, r_idx
             elif isinstance(code, C):
                 if not self.c_touch or code.touch:
@@ -1117,7 +1117,7 @@ class Program:
                 pass
             elif isinstance(code, (WHILE, IF, IFELSE)):
                 r_stmts, r_idx = self._find_break_point(code.stmts)
-                if not r_stmts is None:
+                if r_stmts is not None:
                     return r_stmts, r_idx
             elif isinstance(code, ACTION):
                 if code.break_point:
@@ -1186,7 +1186,7 @@ class Program:
         assert c_touch
 
         stmts, idx = new_prog.find_actions(c_touch)
-        if not stmts is None:
+        if stmts is not None:
             current_C = stmts[idx]
             if cond_type == "i":
                 # expand in if, add return as one of the actions

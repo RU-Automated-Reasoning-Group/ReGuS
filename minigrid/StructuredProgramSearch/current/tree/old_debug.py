@@ -182,7 +182,7 @@ class Node:
                 # TODO: handle this situation
                 if c_cond is None:
                     c_stmts, c_index = p.find_seq_c()
-                    assert not c_stmts is None
+                    assert c_stmts is not None
                 if c >= self.max_structural_cost:
                     continue
 

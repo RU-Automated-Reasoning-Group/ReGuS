@@ -191,7 +191,7 @@ class Karel(object):
                 text = "{}{}".format(len(prefix) * " ", row_text)
 
             if with_color:
-                text = re.sub('.'.format(self.WALL_CHAR), lambda x: self._color_fn(x), text)
+                text = re.sub('.'.format(), lambda x: self._color_fn(x), text)
 
             if not no_print:
                 if log_print:
@@ -308,7 +308,6 @@ class Karel(object):
     @marker_action
     def pick_marker(self):
         '''Pick marker'''
-        position = self.hero.position
         for i, coord in enumerate(self.markers):
             if coord == self.hero.position:
                 del self.markers[i]

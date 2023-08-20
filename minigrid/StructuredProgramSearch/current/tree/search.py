@@ -2,12 +2,10 @@ import argparse
 import copy
 
 # NOTE: each node is associated with a sketch
-import enum
 import os
 import pickle
 import queue
 import random
-import sys
 import time
 import multiprocessing as mp
 from queue import PriorityQueue
@@ -41,7 +39,7 @@ Robot = MiniGridRobot
 
 import pdb
 
-import reskill
+# import reskill
 
 import debug_program
 from utils.logging import log_and_print
@@ -543,7 +541,6 @@ class Node:
                             return self.FAIL_TYPE, eval_robot
                 else:
                     # avoid insert duplicate programs
-                    success = True
                     if single_seed:
                         pdb.set_trace()
                         log_and_print(
@@ -645,7 +642,6 @@ class Node:
                         return eval_result, eval_robot
             else:
                 # avoid insert duplicate programs
-                success = True
                 if single_seed:
                     # pdb.set_trace()
                     log_and_print(
@@ -915,7 +911,7 @@ class Node:
             (_start, _end) = start_end_idx[k]
             # _bp_stmts[_bp_idx].break_point = False
             # _bp_stmts[_bp_idx].obs_abs_state = None
-            assert new_IF_code[k].stmts[0].break_point == True
+            assert new_IF_code[k].stmts[0].break_point is True
             new_IF_code[k].stmts[0].break_point = False
             new_IF_code[k].stmts[0].obs_abs_state = None
             _bp_stmts[_start:_end] = []
@@ -1101,7 +1097,6 @@ class Node:
                 # get one program
                 if iter == 5927: # or iter == 424:
                     # pdb.set_trace()
-                    axxx = 1
                     # import programskill.dsl
 
                     # programskill.dsl.DSL_DEBUG = True
@@ -1404,7 +1399,7 @@ class Node:
                             # new_robot.execute_single_action(cur_action.action)
                             cur_abs_state = minigrid_base_dsl.get_abs_state(new_robot)
                             prev_abs_state = minigrid_base_dsl.get_abs_state(eval_robot)
-                            new_reward = new_robot.check_reward()
+                            new_robot.check_reward()
                             # drop
                             cand_idx = self.case_two_drop(
                                 candidate,
@@ -1580,7 +1575,6 @@ if __name__ == "__main__":
         print(p)
     # pdb.set_trace()
 
-    import sys
 
     # seed = int(sys.argv[1])
     seed = int(args.seed)

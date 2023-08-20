@@ -144,7 +144,7 @@ class Program:
                 pass
             elif isinstance(code, WHILE):
                 r_stmts, r_idx = self._find_actions(code.stmts)
-                if not r_stmts is None:
+                if r_stmts is not None:
                     return r_stmts, r_idx
             if isinstance(code, (k_action, k_cond, C)):
                 return stmts, idx
@@ -179,7 +179,7 @@ class Program:
                 r_stmts, r_idx = self._find(code.cond)
                 if r_stmts is None:
                     r_stmts, r_idx = self._find(code.stmts)
-                if not r_stmts is None:
+                if r_stmts is not None:
                     return r_stmts, r_idx
             elif isinstance(code, (k_action, k_cond, C)):
                 pass
@@ -562,7 +562,7 @@ if __name__ == "__main__":
                         pass
                     else:
                         r_stmts, r_idx, w = self._find_actions_while(code.stmts)
-                        if not r_stmts is None:
+                        if r_stmts is not None:
                             return r_stmts, r_idx, w
             else:
                 raise ValueError('Invalide code')

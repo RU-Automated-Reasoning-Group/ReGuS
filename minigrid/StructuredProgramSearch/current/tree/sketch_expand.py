@@ -1,13 +1,9 @@
 import copy
-import queue
 import random
-import time
-from queue import PriorityQueue
 
 import numpy as np
 from dsl import *
 
-from karel.robot import KarelRobot
 from search import Node
 
 if __name__ == "__main__":
