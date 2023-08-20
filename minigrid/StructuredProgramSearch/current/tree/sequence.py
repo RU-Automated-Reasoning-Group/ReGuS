@@ -7,7 +7,11 @@ import numpy as np
 import gc
 import pickle
 import argparse
-import Minigrid
+import sys
+
+sys.path.append("Minigrid/")
+import minigrid
+minigrid.register_minigrid_envs()
 
 
 def start_sequence(
