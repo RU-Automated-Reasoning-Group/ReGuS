@@ -1,0 +1,614 @@
+# NOTE: each node is associated with a sketch
+import enum
+import queue
+from sre_constants import SUCCESS
+import time
+import copy
+import random
+from queue import PriorityQueue
+
+import numpy as np
+
+from dsl import *
+from karel.robot import KarelRobot
+
+from utils.logging import log_and_print
+
+import pdb
+
+def get_structural_cost(program):
+    cost = 0
+    program_str = str(program)
+    for s in ACTION_DICT:
+        cost += program_str.count(s)
+
+    return cost
+
+
+# NOTE: each node is associated with a sketch
+class Node:
+    # constant
+    SUCCESS_TYPE = 'success'
+    FAIL_TYPE = 'fail'
+    MORE_WORK_TYPE = 'more_work'
+
+    # init
+    def __init__(self, 
+            sketch, 
+            task, 
+            seed=123,
+            more_seeds=[],
+            max_search_iter = 50,
+            max_structural_cost = 30,
+            shuffle_actions=False):
+        
+        self.sketch = sketch
+        self.task = task
+        self.seed = seed
+        self.more_seeds = more_seeds
+        self.max_search_iter = max_search_iter
+        self.max_structural_cost = max_structural_cost
+        self.shuffle_actions = shuffle_actions
+
+        # store all required robot
+        self.robot_store = {self.seed: KarelRobot(self.task, seed=self.seed)}
+        for e in more_seeds:
+            self.robot_store[e] = KarelRobot(self.task, seed=e)
+
+        self.q = PriorityQueue()
+        self.q.put((
+            0,  # reward
+            time.time(), # timestamp
+            copy.deepcopy(self.sketch)
+        ))
+        # NOTE: tmp code, store potential case 3 programs? not so sure
+        self.case_3_list = []
+ 
+        self.candidates = {  # store success (and unsuccess) programs
+            'success': [],
+            'success_search': [],
+            'failed': [],
+            'no_fuel': [],
+            'complete': []
+        }
+
+        # TODO: # number of top-k programs we select from a node
+        self.k = 1
+
+
+    # get robot from store
+    def get_robot(self, seed):
+        return copy.deepcopy(self.robot_store[seed])
+
+    # add candidate program into queue
+    def add_queue(self, candidate, reward):
+        # add back
+        cost = get_structural_cost(candidate)
+        q_tuple = (
+            -reward + cost * 0.04,
+            time.time(),
+            candidate
+        )
+        if not cost > self.max_structural_cost:
+            self.q.put(q_tuple)
+
+            return cost, True
+        return cost, False
+
+
+    # check whether C exist in statement
+    def check_C_exist(self, stmts):
+        exist = False
+        for idx, code in enumerate(stmts):
+            if isinstance(code, (S, B, ACTION, HIDE_ACTION, k_cond, END)):
+                pass
+            elif isinstance(code, (WHILE, IF)):
+                exist = self.check_C_exist(code.stmts)
+                if exist:
+                    return exist
+            elif isinstance(code, C):
+                return True
+            else:
+                raise ValueError('Invalide code')
+        
+        return exist
+
+
+    def eval_program(self, seed, candidate, check_multiple):
+        success = False
+        single_seed = len(self.more_seeds) == 0
+        check_multiple = False if single_seed else check_multiple
+     
+        # execute and get reward
+        eval_robot = self.get_robot(seed)
+        candidate.execute(eval_robot)
+        r = eval_robot.check_reward()
+
+        # success
+        if r == 1:
+            # multiple seed check
+            if check_multiple:
+                passed = True
+                for e in self.more_seeds:
+                    # force evaluate
+                    force_eval_robot = self.get_robot(e)
+                    force_eval_robot.force_execution = True
+                    candidate.execute(force_eval_robot)
+                    candidate.reset()
+                    force_eval_robot.force_execution = False
+                    passed = passed and force_eval_robot.check_reward() == 1
+                    # attempt to add 
+                    if not passed:
+                        # log and print
+                        log_and_print('\nfound but not success in all seeds for \n {}'.format(candidate))
+                        self.candidates['success_search'].append((1, candidate))
+                        # TODO: double check
+                        eval_result, eval_robot = self.eval_program(e, candidate, check_multiple=False)
+                        assert eval_result != self.SUCCESS_TYPE
+                        return eval_result, eval_robot
+                if passed:
+                    # log and print
+                    log_and_print('\nsuccess and store for \n {}'.format(candidate))
+                    self.candidates['success'].append((1, candidate))
+            else:
+                # avoid insert duplicate programs
+                success = True
+                if single_seed:
+                    pdb.set_trace()
+                    log_and_print('\n success when not check multi for \n {}'.format(candidate))
+                    self.candidates['success'].append((1, candidate))
+
+            return self.SUCCESS_TYPE, eval_robot
+        # fail
+        elif r == -1:
+            # log and print
+            log_and_print('\n fail for \n {}'.format(candidate))
+            self.candidates['failed'].append((-1, candidate))
+            return self.FAIL_TYPE, eval_robot
+        # no fuel
+        elif eval_robot.no_fuel():
+            # log and print
+            log_and_print('\n no fuel for \n {}'.format(candidate))
+            self.candidates['no_fuel'].append((r, candidate))
+            return self.FAIL_TYPE, eval_robot
+        # complete
+        elif candidate.complete():
+            # log and print
+            log_and_print('\n complete for\n {}'.format(candidate))
+            self.candidates['complete'].append((r, candidate))
+            return self.FAIL_TYPE, eval_robot
+        # need additional operation
+        else:
+            return self.MORE_WORK_TYPE, eval_robot
+
+
+    # Add IF (case 1 | expand for one action) or Case 3
+    def add_if_branch(self, candidate, eval_reward, eval_robot):
+        # check break point
+        bp_stmts, bp_idx = candidate.find_break_point()
+        if bp_stmts is None:
+            return
+
+        # if str(candidate) == " WHILE(left_is_clear) { IF(markers_present) { put_marker turn_left move turn_right move IF(front_is_clear) { turn_right move}  put_marker turn_left}  move} ;; END":
+        #     pdb.set_trace()
+
+        # get condition
+        bp = bp_stmts[bp_idx]
+        diff_conds = get_diff_conds(bp.abs_state, bp.obs_abs_state)
+
+        # find starting id of IFS before bp
+        loc = bp_idx
+        while loc-1 >= 0 and isinstance(bp_stmts[loc-1], IF):
+            loc -= 1
+        if_start_id = loc
+
+        # add if branch (case 1 | expand for one action)
+        case_1_applied = False
+        for j in range(len(diff_conds)):
+            # insert IF(cond) {C} at break point
+            for k in range(if_start_id, bp_idx+1):
+                # add IF
+                bp_stmts.insert(k, IF(cond=diff_conds[j]))                
+                tmp_cand = copy.deepcopy(candidate)
+                bp_stmts.pop(k)
+                
+                # add action
+                new_cand_list, new_action_list = tmp_cand.expand_actions()
+                for new_cand, new_action in zip(new_cand_list, new_action_list):
+                    # case one (only once)
+                    if str(new_action) == str(bp):
+                        if case_1_applied:
+                            continue
+
+                        # update abstract state
+                        prev_abs_state = bp.abs_state
+                        prev_obs_abs_state = bp.obs_abs_state
+                        new_abs_state = merge_abs_state(prev_abs_state, bp.obs_abs_state)
+
+                        bp.obs_abs_state = None
+                        bp.abs_state = new_abs_state
+                        bp.break_point = False
+                        new_cand = copy.deepcopy(candidate)
+                        new_cand.reset()
+                        bp.break_point = True
+                        bp.abs_state = prev_abs_state
+                        bp.obs_abs_state = prev_obs_abs_state
+                        
+                        case_1_applied = True
+                    
+                        # add
+                        cost, add_success = self.add_queue(new_cand, eval_reward)
+
+                        # log and print
+                        if add_success:
+                            log_and_print('case one applied: put into queue and get cost {} reward {} for\n {}'.format(cost, eval_reward, str(new_cand)))
+                        else:
+                            log_and_print('unable to put into queue and get cost {} reward {} for\n {}'.format(cost, eval_reward, str(new_cand)))
+                        continue
+
+                    # direct add
+                    cost, add_success = self.add_queue(new_cand, eval_reward)
+
+                    # log and print
+                    if add_success:
+                        log_and_print('add if: put into queue and get cost {} reward {} for\n {}'.format(cost, eval_reward, str(new_cand)))
+                    else:
+                        log_and_print('unable to put into queue and get cost {} reward {} for\n {}'.format(cost, eval_reward, str(new_cand)))
+                    continue
+
+
+        # case 3: look ahead and put main branch into if branch
+        start_end_idx = []
+        new_IF_code = []
+        new_candidate_code = []
+
+        # TODO: double check from here
+        # NOTE: number of ACTION
+        len_bp_stmts = len(bp_stmts)  # NOTE: C has been removed in bp_stmts
+        len_bp_stmts_effective = 0
+        for k in range(bp_idx, len_bp_stmts):
+            if isinstance(bp_stmts[k], ACTION) or isinstance(bp_stmts[k], HIDE_ACTION):
+                len_bp_stmts_effective += 1
+        
+        if len_bp_stmts_effective >= 1:
+            start_idx = bp_idx  # starting point of case 3 IF branch, will not change
+
+            # try every end index
+            for end_idx in range(start_idx + 1, len_bp_stmts):
+                tmp_end_action = bp_stmts[end_idx]
+                if not isinstance(tmp_end_action, ACTION):
+                    continue
+
+                # attempt to execution a single action
+                # print('double check state of evaluate robot')
+                # pdb.set_trace()
+                _eval_robot = copy.deepcopy(eval_robot)
+                _eval_robot.execute_single_action(tmp_end_action.action)
+                _eval_robot_current_state = get_abs_state(_eval_robot)
+
+                if satisfy_abs_state(tmp_end_action.post_abs_state, _eval_robot_current_state):
+                    for j in range(len(diff_conds)):
+                        # clone
+                        _candidate = copy.deepcopy(candidate)
+                        _bp_stmts, _bp_idx = _candidate.find_break_point()
+
+                        neg_cond = get_neg_cond(diff_conds[j])
+                        IF_code = IF(cond=neg_cond)
+                        IF_code.stmts.pop()  # remove C
+                        IF_code.stmts += _bp_stmts[start_idx: end_idx]
+                        
+                        start_end_idx.append((start_idx, end_idx))
+                        new_IF_code.append(IF_code)
+                        new_candidate_code.append(_candidate)
+
+            # consider special case when inside if branch (can combine with above case just specify here to mark special case)
+            if isinstance(bp_stmts[-1], HIDE_ACTION):
+                # pdb.set_trace()
+                assert len_bp_stmts - bp_idx > 1
+
+                _eval_robot = copy.deepcopy(eval_robot)
+                _eval_robot.execute_single_action(bp_stmts[-1].action.action)
+                _eval_robot_current_state = get_abs_state(_eval_robot)
+
+                if satisfy_abs_state(bp_stmts[-1].action.post_abs_state, _eval_robot_current_state):
+                    for j in range(len(diff_conds)):
+                        # clone
+                        _candidate = copy.deepcopy(candidate)
+                        _bp_stmts, _bp_idx = _candidate.find_break_point()
+
+                        neg_cond = get_neg_cond(diff_conds[j])
+                        IF_code = IF(cond=neg_cond)
+                        IF_code.stmts.pop()  # remove C
+                        IF_code.stmts += _bp_stmts[start_idx:]
+
+                        start_end_idx.append((start_idx, len_bp_stmts-1))
+                        new_IF_code.append(IF_code)
+                        new_candidate_code.append(_candidate)
+
+        assert len(start_end_idx) == len(new_IF_code)
+        for k in range(len(new_IF_code)):
+
+            _candidate = new_candidate_code[k]
+            _bp_stmts, _bp_idx = _candidate.find_break_point()
+            
+            (_start, _end) = start_end_idx[k]
+            # _bp_stmts[_bp_idx].break_point = False
+            # _bp_stmts[_bp_idx].obs_abs_state = None
+            try:
+                assert new_IF_code[k].stmts[0].break_point == True
+            except:
+                pdb.set_trace()
+            new_IF_code[k].stmts[0].break_point = False
+            new_IF_code[k].stmts[0].obs_abs_state = None
+            _bp_stmts[_start: _end] = []
+            _bp_stmts.insert(_start, new_IF_code[k])
+            _candidate.reset()
+
+            # add to queue
+            cost, add_success = self.add_queue(_candidate, eval_reward)
+
+            # log print
+            if add_success:
+                log_and_print('case 3: put into queue and get cost {} reward {} for\n {}'.format(cost, eval_reward, str(_candidate)))
+            else:
+                log_and_print('unable to put into queue and get cost {} reward {} for\n {}'.format(cost, eval_reward, str(_candidate)))
+
+
+    # Note:
+    # Execute Program:
+    # -> Success -> multi. seed -> END
+    # -> Fail -> END
+    # -> Break Point -> Add IF (case 1 | expand for one action) or Case 3  (should before Find C)
+    # -> Find C -> Delete (case 2 | while finish) or Expand (while | IF | drop C (while;C))
+    def search(self):
+        for iter in range(self.max_search_iter):
+            log_and_print('[ITER] {}'.format(iter))
+
+            # get one program
+            try:
+                r, ts, p = self.q.get_nowait()
+            except queue.Empty:
+                break
+
+            # get action before C
+            c_stmts, c_idx = p.find_actions()
+            tmp_action = None
+            if c_stmts is not None and len(c_stmts)>1:
+                tmp_action = c_stmts[c_idx-1]
+
+            # log print
+            log_and_print('searching base on {}'.format(str(p)))
+
+            # Execute Program
+            eval_result, eval_robot = self.eval_program(self.seed, p, check_multiple=False)
+            eval_reward = eval_robot.check_reward()
+            p.reset()
+
+            # 1) Success
+            if eval_result == self.SUCCESS_TYPE:
+                c_stmts, c_idx = p.find_actions()
+                c_cond, cond_type = p.find_c_cond()
+                set_fail = False
+
+                # has C
+                if c_stmts is not None:
+                    # get break point
+                    bp_stmts, bp_idx = p.find_break_point()
+                    if bp_stmts is not None:
+                        bp = bp_stmts[bp_idx]
+                        bp.break_point = False
+                        if cond_type is not None and cond_type == 'i' and str(tmp_action) == str(bp):
+                            # drop if
+                            if len(c_stmts) == 1:
+                                bp_stmts.pop(bp_idx-1)
+                            # remove duplicate action
+                            else:
+                                assert str(tmp_action) == str(c_stmts[c_idx-1])
+                                c_stmts.pop(c_idx-1)
+                            bp.abs_state = merge_abs_state(bp.abs_state, tmp_action.abs_state)
+
+                    c_stmts, c_idx = p.find_actions()
+                    # remove C
+                    while c_stmts is not None:
+                        if len(c_stmts) == 1:
+                            # TODO: might be wiser to get into other seed
+                            set_fail = True
+                            break
+                        c_stmts.pop(c_idx)
+                        c_stmts, c_idx = p.find_actions()
+                    
+                if not set_fail:
+                    p.reset()
+                    eval_result, eval_robot = self.eval_program(self.seed, p, check_multiple=True)
+                    if eval_result == self.MORE_WORK_TYPE:
+                        eval_reward = eval_robot.check_reward()
+                        p.reset()
+                    else:
+                        continue
+                else:
+                    log_and_print('\nfound but not success in all seeds (special) for \n {}'.format(p))
+                    continue
+
+            # 2) Fail
+            elif eval_result == self.FAIL_TYPE:
+                continue
+
+            # 3) Find Break Point
+            bp_stmts, bp_idx = p.find_break_point()
+            # check whether if branch has been added
+            expand_IF = False
+            if bp_stmts is not None:
+                bp = bp_stmts[bp_idx]
+                for check_id in range(bp_idx-1, -1, -1):
+                    if isinstance(bp_stmts[check_id], IF):
+                        if self.check_C_exist(bp_stmts[check_id].stmts):
+                            expand_IF = True
+                    else:
+                        break
+            
+                # case 3 as well as add if
+                if not expand_IF:
+                    # TODO: double check
+                    self.add_if_branch(copy.deepcopy(p), eval_reward, copy.deepcopy(eval_robot))
+                    continue
+
+            # 4) Find C
+            c_cond, cond_type = p.find_c_cond()
+            assert c_stmts is not None
+
+            # for debug
+            if expand_IF:
+                assert cond_type == 'i'
+            
+            # Delete (case 2)
+            # consider special
+            # TODO: can use smarter way to handle, now just skip it
+            if expand_IF and tmp_action.abs_state is None:
+                log_and_print('Special case appear and drop for now\n {}'.format(str(p)))
+                continue
+
+            if expand_IF and len(c_stmts) > 2 and \
+                str(tmp_action) == str(bp) and satisfy_abs_state(tmp_action.post_abs_state, bp.post_abs_state):
+                
+                # update abstract state
+                bp.abs_state = merge_abs_state(bp.abs_state, tmp_action.abs_state)
+                bp.break_point = False
+                # remove C
+                c_stmts.pop(c_idx)
+                # remove duplicate action
+                c_stmts.pop(c_idx-1)
+
+                # add hidden action as label
+                assert len(c_stmts) == c_idx-1
+                hidden_action = HIDE_ACTION(bp)
+                c_stmts.append(hidden_action)
+
+                # add back
+                cost, add_success = self.add_queue(p, eval_reward)
+
+                # log print
+                if add_success:
+                    log_and_print('case 2: put into queue and get cost {} reward {} for\n {}'.format(cost, eval_reward, str(p)))
+                else:
+                    log_and_print('unable to put into queue and get cost {} reward {} for\n {}'.format(cost, eval_reward, str(p)))
+                continue
+
+            # Delete (while finish)
+            if cond_type == 'w' and eval_robot.execute_single_cond(c_cond) and len(c_stmts)>1:
+                w_stmt = p.find_c_stmt(cond_type='w')
+                # TODO: check whether use
+                # if w_stmt.robot_move:
+                # remove C
+                # pdb.set_trace()
+                c_stmts.pop(c_idx)
+
+                # add back
+                cost, add_success = self.add_queue(p, eval_reward)
+
+                # log print
+                if add_success:
+                    log_and_print('while finish: put into queue and get cost {} reward {} for\n {}'.format(cost, eval_reward, str(p)))
+                else:
+                    log_and_print('unable to put into queue and get cost {} reward {} for\n {}'.format(cost, eval_reward, str(p)))
+                continue
+
+            # Expand (drop when while;C)
+            p_list, action_list = p.expand_actions()
+            index = list(range(len(p_list)))
+            if self.shuffle_actions:
+                random.shuffle(index)
+
+            # for either IF or WHILE
+            for i in index:
+                # get action and program
+                cur_action = action_list[i]
+                candidate = p_list[i]
+
+                # add back
+                cost, add_success = self.add_queue(candidate, eval_reward)
+
+                # log print
+                if cur_action is None:
+                    log_and_print('attempt to drop:')
+                if add_success:
+                    log_and_print('expand: put into queue and get cost {} reward {} for\n {}'.format(cost, eval_reward, str(candidate)))
+                else:
+                    log_and_print('unable to put into queue and get cost {} reward {} for\n {}'.format(cost, eval_reward, str(p)))
+                continue
+
+            # log print
+            log_and_print('------ end current search -------\n')
+
+        print('[success programs]')
+        for reward, program in self.candidates['success']:
+            print(program)
+
+
+# TODO: 1) set structural cost limit [done]
+#       2-1) case 1 [done] 
+#       2-2) case 2 [done]
+#       2-3) case 3 [done]
+#       2) N = 3 test cases for success program [done]
+#       3) multiple C in a sketch [done]
+#       4) check chain of rules [done]
+#       5) candidate.execute(eval_robot), stop when reward is 1 or -1 [done]
+#       6) shuffle WRAPPED_ACTION_LIST / COND_LIST [done]
+#       7) topOff [done*]
+#       8) stairClimber [done*]
+#       9) fourCorner [done*]
+#      10) randomMaze ----> generator is not fixed?
+
+
+if __name__ == "__main__":
+
+    random.seed(123)
+    np.random.seed(123)
+
+    # NOTE: for simplicity, not a tree right now
+    program_db = []
+
+    p = Program()
+    program_db.append(p)
+
+    _p = copy.deepcopy(program_db[0])
+    program_db += _p.expand()
+
+    _p = copy.deepcopy(program_db[1])
+    program_db += _p.expand()
+
+    _p = copy.deepcopy(program_db[2])
+    program_db += _p.expand()
+
+    _p = copy.deepcopy(program_db[3])
+    program_db += _p.expand()
+
+    
+    # task    : topOff
+    # program : WHILE(front_is_clear) { C } ; S ; END
+    # example_program = program_db[-2]
+    # node = Node(sketch=example_program, task='topOff', seed=123, more_seeds=[999, 321], max_search_iter=100, max_structural_cost=20, shuffle_actions=True)
+    # node.search()
+
+    # task    : stairClimber
+    # program : WHILE(not (front_is_clear)) { C } ; S ; END
+    # example_program = program_db[7].expand()[0]
+    # node = Node(sketch=example_program, task='stairClimber', seed=321, more_seeds=[1, 123], max_search_iter=100, max_structural_cost=20, shuffle_actions=True)
+    # node.search()
+    
+    # task    : fourCorner
+    # program : WHILE(not (markers_present)) { WHILE(front_is_clear) { C } ; C } ; S ; END
+    # example_program = copy.deepcopy(program_db[-3]).expand()[-1].expand()[0].expand()[0].expand()[0]
+    # node = Node(sketch=example_program, task='fourCorners', seed=123, more_seeds=[], max_search_iter=100, max_structural_cost=20, shuffle_actions=True)
+    # node.search()
+
+    # task    : randomMaze
+    # program : WHILE(not (markers_present)) { WHILE(front_is_clear) { C } ; C } ; S ; END
+    example_program = copy.deepcopy(program_db[-3]).expand()[-1].expand()[0].expand()[0].expand()[0]
+    #more_seeds = [666, 546, 321, 11]
+    #more_seeds = [666]
+    more_seeds = []
+    node = Node(sketch=example_program, task='randomMaze', seed=666, more_seeds=more_seeds, max_search_iter=300, max_structural_cost=40, shuffle_actions=True)
+    node.search()
+
+    # NOTE: seed=123, iter=100 can learn
+    # NOTE: seed=321, iter=1000 can learn

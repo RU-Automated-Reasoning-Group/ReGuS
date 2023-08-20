@@ -1,0 +1,39 @@
+Notes in implementation and more:
+
+1) early_return looks good, but we may unable to recover the program? We should build the program before termination.
+
+2) rewards, rewards, rewards
+
+3) linked list? at least we should keep track of next element?
+
+4) situation 1: no need to create a new branch
+
+5) finished execution  / no fuel
+
+Some updates:
+1) only one final reward would be considered
+
+2) print and evaluate these programs, especially the main branch
+
+
+Some updates:
+1) removed intermediate rewards, only one final reward
+
+2) reduce the number of max prediction AND execution, may helpful to the agent?
+
+3) not sure if we need to terminate when if we missed any marker (in TopOff?) (maybe it is unfair to do so)
+
+4) don't forget to record the reward when max_ep_len reached...
+
+
+Print the program
+
+1) Main branch is able to solve the task {move} {pick pick move}, etc...
+
+
+Only one marker exists in the last row
+1) robot / self.robot, program / self.program
+
+2) monitor the predictions, {put, move}
+
+3) more generalized situations

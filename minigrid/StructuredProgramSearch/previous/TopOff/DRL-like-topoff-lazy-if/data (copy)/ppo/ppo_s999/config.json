@@ -1,0 +1,43 @@
+{
+    "ac_kwargs":	{
+        "hidden_sizes":	[
+            64,
+            64
+        ]
+    },
+    "actor_critic":	"MLPActorCritic",
+    "clip_ratio":	0.1,
+    "env_fn":	"env_fn",
+    "epochs":	500,
+    "exp_name":	"ppo",
+    "gamma":	0.99,
+    "lam":	0.97,
+    "logger":	{
+        "<spinup.utils.logx.EpochLogger object at 0x7f7026fe0400>":	{
+            "epoch_dict":	{},
+            "exp_name":	"ppo",
+            "first_row":	true,
+            "log_current_row":	{},
+            "log_headers":	[],
+            "output_dir":	"/home/roadsong/Desktop/DRL-like-topoff-lazy-if/data/ppo/ppo_s999",
+            "output_file":	{
+                "<_io.TextIOWrapper name='/home/roadsong/Desktop/DRL-like-topoff-lazy-if/data/ppo/ppo_s999/progress.txt' mode='w' encoding='UTF-8'>":	{
+                    "mode":	"w"
+                }
+            }
+        }
+    },
+    "logger_kwargs":	{
+        "exp_name":	"ppo",
+        "output_dir":	"/home/roadsong/Desktop/DRL-like-topoff-lazy-if/data/ppo/ppo_s999"
+    },
+    "max_ep_len":	50,
+    "pi_lr":	0.001,
+    "save_freq":	10,
+    "seed":	999,
+    "steps_per_epoch":	500,
+    "target_kl":	0.01,
+    "train_pi_iters":	16,
+    "train_v_iters":	16,
+    "vf_lr":	0.001
+}
