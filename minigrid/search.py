@@ -16,31 +16,10 @@ import numpy as np
 from minigrid_implement.robot import MiniGridRobot
 import minigrid_implement.dsl
 
-# from minigrid_lockedroom_dsl import *
-# from minigrid_unlockpickup_dsl import *
-
-# from minigrid_multiroom_dsl import *
-# from minigrid_doorkey_dsl import *
-
 import minigrid_base_dsl
-
-# from minigrid_lava_dsl import *
-
-# from minigrid_multiroom_nodoor_dsl import *
-
-# from robot_push_dsl import *
-from programskill.robot import SkillRobot
-
-# sys.path.append('yourpath/StructuredProgramSearch/current/tree/programskill/programskill/')
-
-# set the global state
 Robot = MiniGridRobot
-# Robot = SkillRobot
 
 import pdb
-
-# import reskill
-
 import debug_program
 from utils.logging import log_and_print
 
@@ -250,16 +229,7 @@ class Node:
         return robot
 
     def copy_robot(self, robot):
-        if isinstance(robot, SkillRobot):
-            robot_copy = copy.deepcopy(robot)
-            # robot_copy.env.sim.set_state(copy.deepcopy(robot.env.sim.get_state()))
-            # robot_copy.env.sim.forward()
-            robot_copy.env.env.goal = copy.deepcopy(robot.env.goal)
-            robot_copy.env.env.initial_state = copy.deepcopy(robot.env.initial_state)
-            robot_copy.env.env.obs = copy.deepcopy(robot.env.obs)
-            robot_copy.env.env.sim_state = copy.deepcopy(robot.env.sim_state)
-        else:
-            robot_copy = copy.deepcopy(robot)
+        robot_copy = copy.deepcopy(robot)
         return robot_copy
 
     # add candidate program into queue

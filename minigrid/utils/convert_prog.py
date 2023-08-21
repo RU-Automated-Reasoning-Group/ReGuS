@@ -1,4 +1,4 @@
-from robot_dsl import *
+from minigrid_base_dsl import *
 
 
 class ConvertProg:

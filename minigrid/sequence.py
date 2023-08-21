@@ -100,12 +100,12 @@ def start_sequence(
         )
 
         try:
-            if idx in []:
+            if idx in [0]:
                 success_prog = node.search()
             else:
                 mcts_search.mcts_search(
                     1000,
-                    2000,
+                    1000,
                     task=env,
                     seed=seed,
                     more_seeds=more_seeds,
