@@ -1,2 +1,0 @@
-# clear
-Second Research Project
