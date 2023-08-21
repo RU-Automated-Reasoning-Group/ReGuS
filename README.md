@@ -309,6 +309,12 @@ Here we show the program synthesized for each of the 5 environemtns.
     ; END
     ```
 
+<figure>
+<p align='center'>
+<img src='./minigrid/figs/RandomCrossing.gif'  height=300 width=300 loop=infinite>
+<center>
+<hr><br>
+</figure>
 
 - **Program search for LavaCrossing**
 
@@ -327,6 +333,14 @@ Here we show the program synthesized for each of the 5 environemtns.
     } ;
     ; END
     ```
+
+<figure>
+<p align='center'>
+<img src='./minigrid/figs/LavaCrossing.gif'  height=300 width=300>
+<center>
+<hr><br>
+</figure>
+
 
 - **Program search for MultiRoom**
 
@@ -350,6 +364,13 @@ Here we show the program synthesized for each of the 5 environemtns.
     } ;
     ; END
     ```
+
+<figure>
+<p align='center'>
+<img src='./minigrid/figs/MultiRoom.gif'  height=300 width=300 loop=infinite>
+<center>
+<hr><br>
+</figure>
 
 - **Program search for LockedRoom**
 
@@ -383,6 +404,13 @@ Here we show the program synthesized for each of the 5 environemtns.
     ; END
     ```
 
+<figure>
+<p align='center'>
+<img src='./minigrid/figs/LockedRoom.gif'  height=300 width=300 loop=infinite>
+<center>
+<hr><br>
+</figure>
+
 - **Program search for DoorKey**
 
     Synthesized Program:
@@ -414,3 +442,10 @@ Here we show the program synthesized for each of the 5 environemtns.
     } ;
     ; END
     ```
+
+<figure>
+<p align='center'>
+<img src='./minigrid/figs/DoorKey.gif'  height=300 width=300 loop=infinite>
+<center>
+<hr><br>
+</figure>
