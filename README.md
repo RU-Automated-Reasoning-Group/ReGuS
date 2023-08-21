@@ -263,3 +263,143 @@ Our code will search for program from root sketch ```S;``` until a sucess progra
 <center>
 <hr><br>
 </figure>
+
+## MiniGrid Environment
+
+To demonstrate the library learning feature of our approach, we use five environments that are of increaing difficulty from the [MiniGrid](https://github.com/Farama-Foundation/Minigrid) repository. The environments used are shown below
+
+![5 environments](minigrid/figs/envs.png)
+
+To run our approach and solve this 5 environments in order, please use the following commands
+
+```
+cd minigrid/StructuredProgramSearch/current/tree
+python3 sequence.py
+```
+
+### Examples
+
+Here we show the program synthesized for each of the 5 environemtns.
+
+- **Program search for RandomCrossing**
+
+    Synthesized Program:
+    ```
+    WHILE(not (goal_on_right)) { 
+        IF(left_is_clear) { turn_left}  
+        IF(goal_present) { return}  
+        IF(not (front_is_clear)) { turn_right}  
+        move
+    } ; 
+    turn_right 
+    WHILE(not (goal_present)) { 
+        move
+    } ;
+    ; END
+    ```
+
+
+- **Program search for LavaCrossing**
+
+    Synthesized Program:
+    ```
+    WHILE(not (goal_on_right)) { 
+        IF(left_is_clear) { turn_left}  
+        IF(goal_present) { return}  
+        IF(not (front_is_clear)) { turn_right}  
+        IF(front_is_lava) { turn_right}  
+        move
+    } ; 
+    turn_right 
+    WHILE(not (goal_present)) { 
+        move
+    } ;
+    ; END
+    ```
+
+- **Program search for MultiRoom**
+
+    Synthesized Program:
+    ```
+    WHILE(front_is_clear) { 
+        IF(front_is_closed_door) { turn_left}  
+        move
+    } ; 
+    turn_right 
+    WHILE(not (goal_on_right)) { 
+        IF(left_is_clear) { turn_left}  
+        IF(goal_present) { return}  
+        IF(front_is_closed_door) { toggle}  
+        IF(not (front_is_clear)) { turn_right}  
+        move
+    } ; 
+    turn_right 
+    WHILE(not (goal_present)) { 
+        move
+    } ;
+    ; END
+    ```
+
+- **Program search for LockedRoom**
+
+    Synthesized Program:
+    ```
+    WHILE(front_is_clear) { 
+        IF(front_is_closed_door) { turn_left}  
+        move
+    } ; 
+    turn_right 
+    WHILE(not (goal_on_right)) { 
+        IF(left_is_clear) { turn_left}  
+        IF(front_is_key) { pickup}  
+        IF(goal_present) { return}  
+        IF(front_is_closed_door) { 
+            IF(front_is_locked_door) { 
+                IF(not (has_key)) { 
+                    get_key pickup
+                } 
+                get_locked_door
+            }  
+            toggle
+        }  
+        IF(not (front_is_clear)) { turn_right}  
+        move
+    } ;
+    turn_right
+    WHILE(not (goal_present)) { 
+        move
+    } ;
+    ; END
+    ```
+
+- **Program search for DoorKey**
+
+    Synthesized Program:
+    ```
+    WHILE(front_is_clear) { 
+        IF(front_is_closed_door) { turn_left}  
+        move
+    } ; 
+    turn_right 
+    WHILE(not (goal_on_right)) { 
+        IF(left_is_clear) { turn_left}  
+        IF(front_is_key) { pickup}  
+        IF(goal_present) { return}  
+        IF(front_is_closed_door) { 
+            IF(front_is_locked_door) { 
+                IF(not (has_key)) { 
+                    get_key pickup
+                }  
+                get_locked_door
+            }  
+            toggle
+        }  
+        IF(not (front_is_clear)) { turn_right}  
+        move
+    } ; 
+    turn_right
+    WHILE(not (goal_present)) { 
+        move
+    } ;
+    ; END
+    ```
