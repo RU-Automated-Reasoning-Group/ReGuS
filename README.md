@@ -74,7 +74,9 @@ Our code will search for program from root sketch ```S;``` until a sucess progra
 
 <figure>
 <p align='center'>
-<img src='./karel/figs/doorkey.gif'  height=300 width=300>
+<img src='./karel/figs/doorkey.gif'  height=200 width=200>
+<img src='./karel/figs/doorkey_1.gif'  height=200 width=200>
+<img src='./karel/figs/doorkey_2.gif'  height=200 width=200>
 <center>
 <hr><br>
 </figure>
@@ -108,7 +110,9 @@ Our code will search for program from root sketch ```S;``` until a sucess progra
 
 <figure>
 <p align='center'>
-<img src='./karel/figs/seeder.gif'  height=300 width=300>
+<img src='./karel/figs/seeder.gif'  height=200 width=200>
+<img src='./karel/figs/seeder_1.gif'  height=200 width=200>
+<img src='./karel/figs/seeder_2.gif'  height=200 width=200>
 <center>
 <hr><br>
 </figure>
@@ -130,7 +134,9 @@ Our code will search for program from root sketch ```S;``` until a sucess progra
 
 <figure>
 <p align='center'>
-<img src='./karel/figs/topOff.gif'  height=300 width=300>
+<img src='./karel/figs/topOff.gif'  height=200 width=200>
+<img src='./karel/figs/topOff_1.gif'  height=200 width=200>
+<img src='./karel/figs/topOff_2.gif'  height=200 width=200>
 <center>
 <hr><br>
 </figure>
@@ -158,7 +164,8 @@ Our code will search for program from root sketch ```S;``` until a sucess progra
 
 <figure>
 <p align='center'>
-<img src='./karel/figs/cleanHouse.gif'  height=300 width=500>
+<img src='./karel/figs/cleanHouse.gif'  height=200 width=300>
+<img src='./karel/figs/cleanHouse_1.gif'  height=200 width=300>
 <center>
 <hr><br>
 </figure>
@@ -180,7 +187,9 @@ Our code will search for program from root sketch ```S;``` until a sucess progra
 
 <figure>
 <p align='center'>
-<img src='./karel/figs/stairClimber.gif'  height=300 width=300>
+<img src='./karel/figs/stairClimber.gif'  height=200 width=200>
+<img src='./karel/figs/stairClimber_1.gif'  height=200 width=200>
+<img src='./karel/figs/stairClimber_2.gif'  height=200 width=200>
 <center>
 <hr><br>
 </figure>
@@ -204,7 +213,9 @@ Our code will search for program from root sketch ```S;``` until a sucess progra
 
 <figure>
 <p align='center'>
-<img src='./karel/figs/randomMaze.gif'  height=300 width=300>
+<img src='./karel/figs/randomMaze.gif'  height=200 width=200>
+<img src='./karel/figs/randomMaze_1.gif'  height=200 width=200>
+<img src='./karel/figs/randomMaze_2.gif'  height=200 width=200>
 <center>
 <hr><br>
 </figure>
