@@ -392,7 +392,7 @@ python3 sequence.py
         IF(present(key)) { pickup()}  
         IF(present(goal)) { return}  
         IF(present(closed_door)) { 
-            IF(front_is_locked_door) { 
+            IF(present(locked_door)) { 
                 IF(not (hasKey())) { 
                     get(key)
                     pickup()
@@ -434,7 +434,7 @@ python3 sequence.py
         IF(present(key)) { pickup}  
         IF(present(goal)) { return}  
         IF(present(closed_door)) { 
-            IF(front_is_locked_door) { 
+            IF(present(locked_door)) { 
                 IF(not (hasKey())) { 
                     get(key)
                     pickup()
