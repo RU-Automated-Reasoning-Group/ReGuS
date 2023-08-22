@@ -45,11 +45,11 @@ The synthesizer runs until a successful program is found or times-out after 2 ho
     Synthesized Program:
 
     ```
-    WHILE(front_is_clear) { 
-        IF(markers_present) { 
-            put_marker
+    WHILE(frontIsClear()) { 
+        IF(present(marker)) { 
+            put(marker)
         }  
-        move
+        move()
     } ;
     ; END
     ```
@@ -69,17 +69,17 @@ The synthesizer runs until a successful program is found or times-out after 2 ho
     Synthesized Program:
 
     ```
-    WHILE(not (markers_present)) { 
-        WHILE(not (markers_present)) { 
-            IF(left_is_clear) { 
-                turn_left
+    WHILE(not (present(marker))) { 
+        WHILE(not (present(marker))) { 
+            IF(leftIsClear()) { 
+                turnLeft()
             }  
-            IF(not (front_is_clear)) { 
-                turn_right
+            IF(not (frontIsClear())) { 
+                turnRight()
             }  
-            move
+            move()
         } ; 
-        pick_marker
+        pickUp(marker)
     } ;
     ; END
     ```
@@ -98,11 +98,11 @@ The synthesizer runs until a successful program is found or times-out after 2 ho
     Synthesized Program:
 
     ```
-    WHILE(not (front_is_clear)) { 
-        turn_left 
-        move 
-        turn_right 
-        move
+    WHILE(not (frontIsClear())) { 
+        turnLeft() 
+        move() 
+        turnRight() 
+        move()
     } ;
     ; END
     ```
@@ -121,14 +121,14 @@ The synthesizer runs until a successful program is found or times-out after 2 ho
     Synthesized Program:
 
     ```
-    WHILE(not (markers_present)) { 
+    WHILE(not (present(marker))) { 
         IF(right_is_clear) { 
-            turn_right
+            turnRight()
         }  
-        IF(not (front_is_clear)) { 
-            turn_left
+        IF(not (frontIsClear())) { 
+            turnLeft()
         } 
-        move
+        move()
     } ;
     ; END
     ```
@@ -148,12 +148,12 @@ The synthesizer runs until a successful program is found or times-out after 2 ho
     Synthesized Program:
 
     ```
-    WHILE(left_is_clear) { 
-        IF(not (front_is_clear)) { 
-            put_marker 
-            turn_left
+    WHILE(leftIsClear()) { 
+        IF(not (frontIsClear())) { 
+            put(marker) 
+            turnLeft()
         }  
-        move
+        move()
     } ;
     ; END
     ```
@@ -170,22 +170,22 @@ The synthesizer runs until a successful program is found or times-out after 2 ho
     Synthesized Program:
 
     ```
-    WHILE(left_is_clear) { 
-        IF(not (markers_present)) { 
+    WHILE(leftIsClear()) { 
+        IF(not (present(marker))) { 
             IF(right_is_clear) { 
-                move
+                move()
             }  
-            IF(not (markers_present)) { 
-                turn_left
+            IF(not (present(marker))) { 
+                turnLeft()
             } 
         } 
         ELSE { 
-            pick_marker
+            pickUp(marker)
         } 
-        IF(markers_present) { 
-            turn_right
+        IF(present(marker)) { 
+            turnRight()
         } 
-        move
+        move()
     } ;
     ; END
     ```
@@ -202,31 +202,31 @@ The synthesizer runs until a successful program is found or times-out after 2 ho
     Synthesized Program:
 
     ```
-    WHILE(not (markers_present)) { 
-        IF(not (left_is_clear)) { 
-            move
+    WHILE(not (present(marker))) { 
+        IF(not (leftIsClear())) { 
+            move()
         }  
-        IF(markers_present) { 
-            IF(front_is_clear) { 
-                turn_right
+        IF(present(marker)) { 
+            IF(frontIsClear()) { 
+                turnRight()
             } 
         }  
-        IF(not (markers_present)) { 
-            turn_right
+        IF(not (present(marker))) { 
+            turnRight()
         }  
-        move
+        move()
     } ; 
-    pick_marker 
-    WHILE(not (markers_present)) { 
-        IF(front_is_clear) { 
-            turn_left
+    pickUp(marker) 
+    WHILE(not (present(marker))) { 
+        IF(frontIsClear()) { 
+            turnLeft()
         }  
-        IF(not (front_is_clear)) { 
-            turn_right
+        IF(not (frontIsClear())) { 
+            turnRight()
         } 
-        move
+        move()
     } ; 
-    put_marker
+    put(marker)
     ; END
     ```
 
@@ -244,24 +244,24 @@ The synthesizer runs until a successful program is found or times-out after 2 ho
     Synthesized Program:
 
     ```
-    WHILE(not (markers_present)) { 
-        WHILE(not (markers_present)) { 
-            put_marker 
-            move
+    WHILE(not (present(marker))) { 
+        WHILE(not (present(marker))) { 
+            put(marker) 
+            move()
         } ; 
-        IF(front_is_clear) { 
+        IF(frontIsClear()) { 
             IF(not (right_is_clear)) { 
-                move
+                move()
             } 
         }  
-        IF(front_is_clear) { 
-            move
+        IF(frontIsClear()) { 
+            move()
         }  
-        IF(front_is_clear) { 
-            move
+        IF(frontIsClear()) { 
+            move()
         }  
-        turn_left 
-        pick_marker
+        turnLeft() 
+        pickUp(marker)
     } ;
     ; END
     ```
@@ -282,7 +282,7 @@ We evaluate how PBR can expedite program synthesis for a stream of tasks with va
 
 ![5 environments](minigrid/figs/envs.png)
 
-As the environments above increase in complexity as the number of objects to manipulate increases, PBR adds programs synthesized for a simpler environment as a new skill that can be reused to constitute sophisticated programs for more complex environments. For example, PBR adds the goal-reaching program synthesized for the third environment Multiroom as a new skill skill3 (obj) to our DSL (domain-specific langauge). This skill can then be reused as a new control action in the form of callable procedures such as skill3 (key) and skill3 (door). When synthesizing a program in LockedRoom, the agent can call skill3 (key) to grab the key if it faces a locked door. It can then return to the locked door via skill3 (door) to open it. New skills effectively compress the search space for the agent to explore long-horizon tasks. Using curriculum synthesis, PBR achieves the maximum 1.0 reward on all the 5 environments above evaluated over 5000 random seeds. The synthesized programs feature multiple sequential loops with deeply nested conditionals making them impossible to be synthesized by program enumeration.
+As the environments above increase in complexity as the number of objects to manipulate increases, PBR adds programs synthesized for a simpler environment as a new skill that can be reused to constitute sophisticated programs for more complex environments. For example, PBR adds the goal-reaching program synthesized for the third environment Multiroom as a new skill skill3 (obj) to our DSL (domain-specific language). This skill can then be reused as a new control action in the form of callable procedures such as skill3 (key) and skill3 (door). When synthesizing a program in LockedRoom, the agent can call skill3 (key) to grab the key if it faces a locked door. It can then return to the locked door via skill3 (door) to open it. New skills effectively compress the search space for the agent to explore long-horizon tasks. Using curriculum synthesis, PBR achieves the maximum 1.0 reward on all the 5 environments above evaluated over 5000 random seeds. The synthesized programs feature multiple sequential loops with deeply nested conditionals making them impossible to be synthesized by program enumeration.
 
 To run PBR and solve the above 5 environments in the order of their complexity, use the following script:
 
@@ -296,15 +296,15 @@ python3 sequence.py
 
     Synthesized Program:
     ```
-    WHILE(not (goal_on_right)) { 
-        IF(left_is_clear) { turn_left}  
-        IF(goal_present) { return}  
-        IF(not (front_is_clear)) { turn_right}  
-        move
+    WHILE(not (rightIs(goal))) { 
+        IF(leftIsClear()) { turnLeft()}  
+        IF(present(goal)) { return}  
+        IF(not (frontIsClear())) { turnRight()}  
+        move()
     } ; 
-    turn_right 
-    WHILE(not (goal_present)) { 
-        move
+    turnRight() 
+    WHILE(not (present(goal))) { 
+        move()
     } ;
     ; END
     ```
@@ -322,16 +322,16 @@ python3 sequence.py
 
     Synthesized Program:
     ```
-    WHILE(not (goal_on_right)) { 
-        IF(left_is_clear) { turn_left}  
-        IF(goal_present) { return}  
-        IF(not (front_is_clear)) { turn_right}  
-        IF(front_is_lava) { turn_right}  
-        move
+    WHILE(not (rightIs(goal))) { 
+        IF(leftIsClear()) { turnLeft()}  
+        IF(present(goal)) { return}  
+        IF(not (frontIsClear())) { turnRight()}  
+        IF(present(lava)) { turnRight()}  
+        move()
     } ; 
-    turn_right 
-    WHILE(not (goal_present)) { 
-        move
+    turnRight() 
+    WHILE(not (present(goal))) { 
+        move()
     } ;
     ; END
     ```
@@ -350,21 +350,21 @@ python3 sequence.py
 
     Synthesized Program:
     ```
-    WHILE(front_is_clear) { 
-        IF(front_is_closed_door) { turn_left}  
-        move
+    WHILE(frontIsClear()) { 
+        IF(present(closed_door)) { turnLeft()}  
+        move()
     } ; 
-    turn_right 
-    WHILE(not (goal_on_right)) { 
-        IF(left_is_clear) { turn_left}  
-        IF(goal_present) { return}  
-        IF(front_is_closed_door) { toggle}  
-        IF(not (front_is_clear)) { turn_right}  
-        move
+    turnRight() 
+    WHILE(not (rightIs(goal))) { 
+        IF(leftIsClear()) { turnLeft()}  
+        IF(present(goal)) { return}  
+        IF(present(closed_door)) { toggle()}  
+        IF(not (frontIsClear())) { turnRight()}  
+        move()
     } ; 
-    turn_right 
-    WHILE(not (goal_present)) { 
-        move
+    turnRight() 
+    WHILE(not (present(goal))) { 
+        move()
     } ;
     ; END
     ```
@@ -382,30 +382,31 @@ python3 sequence.py
 
     Synthesized Program:
     ```
-    WHILE(front_is_clear) { 
-        IF(front_is_closed_door) { turn_left}  
-        move
+    WHILE(frontIsClear()) { 
+        IF(present(closed_door)) { turnLeft()}  
+        move()
     } ; 
-    turn_right 
-    WHILE(not (goal_on_right)) { 
-        IF(left_is_clear) { turn_left}  
-        IF(front_is_key) { pickup}  
-        IF(goal_present) { return}  
-        IF(front_is_closed_door) { 
+    turnRight() 
+    WHILE(not (rightIs(goal))) { 
+        IF(leftIsClear()) { turnLeft()}  
+        IF(present(key)) { pickup()}  
+        IF(present(goal)) { return}  
+        IF(present(closed_door)) { 
             IF(front_is_locked_door) { 
-                IF(not (has_key)) { 
-                    get_key pickup
+                IF(not (hasKey())) { 
+                    get(key)
+                    pickup()
                 } 
-                get_locked_door
+                get(locked_door)
             }  
-            toggle
+            toggle()
         }  
-        IF(not (front_is_clear)) { turn_right}  
-        move
+        IF(not (frontIsClear())) { turnRight()}  
+        move()
     } ;
-    turn_right
-    WHILE(not (goal_present)) { 
-        move
+    turnRight()
+    WHILE(not (present(goal))) { 
+        move()
     } ;
     ; END
     ```
@@ -423,30 +424,31 @@ python3 sequence.py
 
     Synthesized Program:
     ```
-    WHILE(front_is_clear) { 
-        IF(front_is_closed_door) { turn_left}  
-        move
+    WHILE(frontIsClear()) { 
+        IF(present(closed_door)) { turnLeft()}  
+        move()
     } ; 
-    turn_right 
-    WHILE(not (goal_on_right)) { 
-        IF(left_is_clear) { turn_left}  
-        IF(front_is_key) { pickup}  
-        IF(goal_present) { return}  
-        IF(front_is_closed_door) { 
+    turnRight() 
+    WHILE(not (rightIs(goal))) { 
+        IF(leftIsClear()) { turnLeft()}  
+        IF(present(key)) { pickup}  
+        IF(present(goal)) { return}  
+        IF(present(closed_door)) { 
             IF(front_is_locked_door) { 
-                IF(not (has_key)) { 
-                    get_key pickup
+                IF(not (hasKey())) { 
+                    get(key)
+                    pickup()
                 }  
-                get_locked_door
+                get(locked_door)
             }  
-            toggle
+            toggle()
         }  
-        IF(not (front_is_clear)) { turn_right}  
-        move
+        IF(not (frontIsClear())) { turnRight()}  
+        move()
     } ; 
-    turn_right
-    WHILE(not (goal_present)) { 
-        move
+    turnRight()
+    WHILE(not (present(goal))) { 
+        move()
     } ;
     ; END
     ```
