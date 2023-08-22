@@ -311,7 +311,9 @@ Here we show the program synthesized for each of the 5 environemtns.
 
 <figure>
 <p align='center'>
-<img src='./minigrid/figs/RandomCrossing.gif'  height=300 width=300 loop=infinite>
+<img src='./minigrid/figs/RandomCrossing.gif'  height=200 width=200>
+<img src='./minigrid/figs/RandomCrossing_1.gif'  height=200 width=200>
+<img src='./minigrid/figs/RandomCrossing_2.gif'  height=200 width=200>
 <center>
 <hr><br>
 </figure>
@@ -336,7 +338,9 @@ Here we show the program synthesized for each of the 5 environemtns.
 
 <figure>
 <p align='center'>
-<img src='./minigrid/figs/LavaCrossing.gif'  height=300 width=300>
+<img src='./minigrid/figs/LavaCrossing.gif'  height=200 width=200>
+<img src='./minigrid/figs/LavaCrossing_1.gif'  height=200 width=200>
+<img src='./minigrid/figs/LavaCrossing_2.gif'  height=200 width=200>
 <center>
 <hr><br>
 </figure>
@@ -367,7 +371,9 @@ Here we show the program synthesized for each of the 5 environemtns.
 
 <figure>
 <p align='center'>
-<img src='./minigrid/figs/MultiRoom.gif'  height=300 width=300 loop=infinite>
+<img src='./minigrid/figs/MultiRoom.gif'  height=200 width=200>
+<img src='./minigrid/figs/MultiRoom_1.gif'  height=200 width=200>
+<img src='./minigrid/figs/MultiRoom_2.gif'  height=200 width=200>
 <center>
 <hr><br>
 </figure>
@@ -406,7 +412,9 @@ Here we show the program synthesized for each of the 5 environemtns.
 
 <figure>
 <p align='center'>
-<img src='./minigrid/figs/LockedRoom.gif'  height=300 width=300 loop=infinite>
+<img src='./minigrid/figs/LockedRoom.gif'  height=200 width=200>
+<img src='./minigrid/figs/LockedRoom_1.gif'  height=200 width=200>
+<img src='./minigrid/figs/LockedRoom_2.gif'  height=200 width=200>
 <center>
 <hr><br>
 </figure>
@@ -445,7 +453,9 @@ Here we show the program synthesized for each of the 5 environemtns.
 
 <figure>
 <p align='center'>
-<img src='./minigrid/figs/DoorKey.gif'  height=300 width=300 loop=infinite>
+<img src='./minigrid/figs/DoorKey.gif'  height=200 width=200>
+<img src='./minigrid/figs/DoorKey_1.gif'  height=200 width=200>
+<img src='./minigrid/figs/DoorKey_2.gif'  height=200 width=200>
 <center>
 <hr><br>
 </figure>
