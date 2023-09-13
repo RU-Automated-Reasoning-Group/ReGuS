@@ -57,14 +57,51 @@ def set_action_dict(env: str):
     elif env.startswith("MiniGrid-DoorKey"):
         add_action(
             action_dict,
-            ["RC_get", "toggle", "get_key", "get_locked_door", "pickup", "LK_get", "turn_right"],
+            [
+                "RC_get",
+                "toggle",
+                "get_key",
+                "get_locked_door",
+                "pickup",
+                "LK_get",
+                "turn_right",
+            ],
+        )
+    elif env == "MiniGrid-PutNearTwoRoom-v0":
+        add_action(
+            action_dict,
+            [
+                "RC_get",
+                "toggle",
+                "get_key",
+                "get_locked_door",
+                "pickup",
+                "LK_get",
+                "turn_right",
+                "DK_get",
+                "drop",
+                "get_ball",
+            ],
         )
     elif env == "MiniGrid-UnlockPickup-v0":
-          add_action(
+        add_action(
             action_dict,
-            ["RC_get", "toggle", "get_key", "get_locked_door", "pickup", "LK_get", "turn_right", "DK_get", "drop", "get_ball"],
-        )      
+            [
+                "RC_get",
+                "toggle",
+                "get_key",
+                "get_locked_door",
+                "pickup",
+                "LK_get",
+                "turn_right",
+                "DK_get",
+                "drop",
+                "get_ball",
+                "put_near",
+            ],
+        )
     else:
+        print(f"error env: {env}")
         assert False
 
     global ACTION_DICT, ACTION_NAME, ACTION_LIST, WRAPPED_ACTION_LIST
@@ -126,6 +163,18 @@ def set_cond_dict(env: str):
                 "front_is_key",
             ],
         )
+    elif env == "MiniGrid-PutNearTwoRoom-v0":
+        add_cond(
+            cond_dict,
+            [
+                "front_is_lava",
+                "front_is_closed_door",
+                "front_is_locked_door",
+                "has_key",
+                "front_is_key",
+                "clear_to_drop",
+            ],
+        )
     elif env == "MiniGrid-UnlockPickup-v0":
         add_cond(
             cond_dict,
@@ -136,9 +185,9 @@ def set_cond_dict(env: str):
                 "has_key",
                 "front_is_key",
                 "clear_to_drop",
-                "front_is_ball"
+                "front_is_ball",
             ],
-        )      
+        )
     else:
         print(env)
         assert False
@@ -211,7 +260,7 @@ class ABS_STATE:
                     "front_is_closed_door",
                     "front_is_locked_door",
                     "front_is_key",
-                    # "has_key",
+                    "has_key", # can I add this back? Why I commmented it
                 ],
             )
         elif ENV.startswith("MiniGrid-DoorKey"):
@@ -223,6 +272,19 @@ class ABS_STATE:
                     "front_is_locked_door",
                     "has_key",
                     "front_is_key",
+                ],
+            )
+        elif ENV == "MiniGrid-PutNearTwoRoom-v0":
+            add_state(
+                self.state,
+                [
+                    "front_is_lava",
+                    "front_is_closed_door",
+                    "front_is_locked_door",
+                    "has_key",
+                    "front_is_key",
+                    "clear_to_drop",
+                    "front_is_ball",
                 ],
             )
         elif ENV == "MiniGrid-UnlockPickup-v0":
@@ -379,15 +441,7 @@ class ACTION:
 
     def execute(self, robot, stop):
         if robot.active:
-            if str(self.action.action) in [
-                "RC_get",
-                "get_key",
-                "get_locked_door",
-                "LK_get",
-                "DK_get",
-                "get_ball",
-                "get",
-            ]:
+            if str(self.action.action) in LIBRARY_DICT:
                 if robot.force_execution:
                     # assert not self.resume_point
                     program = LIBRARY_DICT[self.action.action]
@@ -484,7 +538,7 @@ class ACTION:
             new_abs_state = get_abs_state(robot)
             self.abs_state = merge_abs_state(self.abs_state, new_abs_state)
 
-            if str(self.action.action) in ["RC_get", "get_key", "get_locked_door"]:
+            if str(self.action.action) in LIBRARY_DICT:
                 tmp_program = copy.deepcopy(LIBRARY_DICT[self.action.action])
                 tmp_program.execute_and_update(robot)
                 robot.active = True
@@ -1138,6 +1192,7 @@ class Program:
                 pass
             else:
                 import pdb
+
                 pdb.set_trace()
                 raise ValueError("Invalid code")
 

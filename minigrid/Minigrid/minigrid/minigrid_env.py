@@ -621,6 +621,13 @@ class MiniGridEnv(gym.Env):
             if self.carrying is not None:
                 reward = 1.0 if type(self.carrying) == Ball else 0.0
             return reward
+        elif self.mission.find("put down") >= 0:
+            reward = 0.0
+            for pos in self.target_pos_set:
+                if type(self.grid.get(*pos)) == Key:
+                    reward = 1.0
+                    break 
+            return reward
             
         x, y = self.agent_pos
         reward = float(type(self.grid.get(x, y)) == Goal)

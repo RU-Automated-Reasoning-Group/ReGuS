@@ -11,6 +11,7 @@ import sys
 
 sys.path.append("Minigrid/")
 import minigrid
+
 minigrid.register_minigrid_envs()
 
 
@@ -58,6 +59,30 @@ def start_sequence(
                 .expand()[0]
                 .expand()[0]
             )
+        elif idx == 1:
+            p = copy.deepcopy(library_dict["RC_get"])
+        elif idx == 3:
+            p = copy.deepcopy(library_dict["get"])
+        elif idx == 4:
+            p = copy.deepcopy(library_dict["get"])
+        elif idx == 5:
+            p = copy.deepcopy(library_dict["LK_get"])
+        elif idx == 6:
+            p = (
+                minigrid_base_dsl.Program()
+                .expand()[1]
+                .expand()[18]
+                .expand()[0]
+                .expand()[0]
+            )
+        elif idx == 7:
+            p = (
+                minigrid_base_dsl.Program()
+                .expand()[1]
+                .expand()[25]
+                .expand()[0]
+                .expand()[0]
+            )
         # elif idx == 6:
         #     # p = (
         #     #     minigrid_base_dsl.Program()
@@ -81,7 +106,7 @@ def start_sequence(
 
         random.seed(3)
         np.random.seed(3)
-        seed = 0
+        seed = 5
         more_seeds = [i for i in range(1, 50)]
         eval_seeds = [i for i in range(1, 1000)]
         make_video = False
@@ -100,12 +125,12 @@ def start_sequence(
         )
 
         try:
-            if idx in [0]:
+            if idx in [0, 1, 3, 4, 5, 6, 7]:
                 success_prog = node.search()
             else:
                 mcts_search.mcts_search(
                     1000,
-                    1000,
+                    2000,
                     task=env,
                     seed=seed,
                     more_seeds=more_seeds,
@@ -171,6 +196,8 @@ def start_sequence(
 
             library.append(ball_get)
             library_dict["get_ball"] = ball_get
+        elif idx == 6:
+            library_dict["put_near"] = success_prog
 
         # update the library to the DSL module
         minigrid_base_dsl.set_library(library, library_dict)
@@ -183,6 +210,7 @@ def start_sequence(
             pickle.dump(library_dict, library_dict_f)
 
         print("============ Moving to next env ================")
+        exit()
 
 
 if __name__ == "__main__":
@@ -198,6 +226,7 @@ if __name__ == "__main__":
         "MiniGrid-MultiRoom-N6-v0",
         "MiniGrid-LockedRoom-v0",
         "MiniGrid-DoorKey-8x8-v0",
+        "MiniGrid-PutNearTwoRoom-v0",
         "MiniGrid-UnlockPickup-v0",
     ]
 

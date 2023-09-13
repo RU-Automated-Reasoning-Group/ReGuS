@@ -3,253 +3,30 @@ import pdb
 import numpy as np
 from tqdm import tqdm
 
-# from robot_dsl import *
-from minigrid_base_dsl import *
-# from minigrid_lava_dsl import *
-# from minigrid_multiroom_dsl import *
-# from minigrid_lockedroom_dsl import *
-# from minigrid_unlockpickup_dsl import *
+import minigrid_base_dsl
 from utils.convert_prog import ConvertProg
 from utils.logging import log_and_print
-
-# def get_dsl_dict():
-#     dsl_dict = {
-#         # flow control
-#         'IF': IF,
-#         'WHILE': WHILE,
-#         'IFELSE': IFELSE,
-#         'END': END(),
-#         # predicate
-#         'block_at_goal': COND_DICT['block_at_goal'],
-#         'block_is_grasped': COND_DICT['block_is_grasped'],
-#         'block_above_goal': COND_DICT['block_above_goal'],
-#         'block_below_gripper': COND_DICT['block_below_gripper'],
-#         'block_inside_gripper': COND_DICT['block_inside_gripper'],
-#         'gripper_are_open': COND_DICT['gripper_are_open'],
-
-#         'not(block_at_goal)': COND_DICT['not(block_at_goal)'],
-#         'not(block_is_grasped)': COND_DICT['not(block_is_grasped)'],
-#         'not(block_above_goal)': COND_DICT['not(block_above_goal)'],
-#         'not(block_below_gripper)': COND_DICT['not(block_below_gripper)'],
-#         'not(block_inside_gripper)': COND_DICT['not(block_inside_gripper)'],
-#         'not(gripper_are_open)': COND_DICT['not(gripper_are_open)'],
-#         # actions
-#         'move_to_block': ACTION(ACTION_DICT['move_to_block']),
-#         'move_to_goal': ACTION(ACTION_DICT['move_to_goal']),
-#         'idle': ACTION(ACTION_DICT['idle']),
-#         'move_down': ACTION(ACTION_DICT['move_down']),
-#         'open_gripper': ACTION(ACTION_DICT['open_gripper']),
-#         'close_gripper': ACTION(ACTION_DICT['close_gripper'])
-#     }
-
-#     return dsl_dict
 
 
 # randomCrossing
 def get_dsl_dict():
     dsl_dict = {
         # flow control
-        "IF": IF,
-        "WHILE": WHILE,
-        "IFELSE": IFELSE,
-        "END": END(),
-        # predicate
-        "front_is_clear": COND_DICT["front_is_clear"],
-        "left_is_clear": COND_DICT["left_is_clear"],
-        "right_is_clear": COND_DICT["right_is_clear"],
-        "goal_on_left": COND_DICT["goal_on_left"],
-        "goal_on_right": COND_DICT["goal_on_right"],
-        "goal_present": COND_DICT["goal_present"],
-        "not(front_is_clear)": COND_DICT["not(front_is_clear)"],
-        "not(left_is_clear)": COND_DICT["not(left_is_clear)"],
-        "not(right_is_clear)": COND_DICT["not(right_is_clear)"],
-        "not(goal_on_left)": COND_DICT["not(goal_on_left)"],
-        "not(goal_on_right)": COND_DICT["not(goal_on_right)"],
-        "not(goal_present)": COND_DICT["not(goal_present)"],
-        # actions
-        "move": ACTION(ACTION_DICT["move"]),
-        "turn_left": ACTION(ACTION_DICT["turn_left"]),
-        "turn_right": ACTION(ACTION_DICT["turn_right"]),
-        "return": ACTION(ACTION_DICT["return"]),
+        "IF": minigrid_base_dsl.IF,
+        "WHILE": minigrid_base_dsl.WHILE,
+        "IFELSE": minigrid_base_dsl.IFELSE,
+        "END": minigrid_base_dsl.END,
     }
+
+    # add predicate
+    for key, val in minigrid_base_dsl.COND_DICT.items():
+        dsl_dict[key] = val
+
+    # add actions
+    for key, val in minigrid_base_dsl.ACTION_DICT.items():
+        dsl_dict[key] = minigrid_base_dsl.ACTION(val)
+
     return dsl_dict
-
-
-# # lava crossing
-# def get_dsl_dict():
-#     dsl_dict = {
-#         # flow control
-#         "IF": IF,
-#         "WHILE": WHILE,
-#         "IFELSE": IFELSE,
-#         "END": END(),
-#         # predicate
-#         "front_is_clear": COND_DICT["front_is_clear"],
-#         "left_is_clear": COND_DICT["left_is_clear"],
-#         "right_is_clear": COND_DICT["right_is_clear"],
-#         "goal_on_left": COND_DICT["goal_on_left"],
-#         "goal_on_right": COND_DICT["goal_on_right"],
-#         "goal_present": COND_DICT["goal_present"],
-#         "front_is_lava": COND_DICT["front_is_lava"],
-#         "not(front_is_clear)": COND_DICT["not(front_is_clear)"],
-#         "not(left_is_clear)": COND_DICT["not(left_is_clear)"],
-#         "not(right_is_clear)": COND_DICT["not(right_is_clear)"],
-#         "not(goal_on_left)": COND_DICT["not(goal_on_left)"],
-#         "not(goal_on_right)": COND_DICT["not(goal_on_right)"],
-#         "not(goal_present)": COND_DICT["not(goal_present)"],
-#         "not(front_is_lava)": COND_DICT["not(front_is_lava)"],
-#         # actions
-#         "move": ACTION(ACTION_DICT["move"]),
-#         "turn_left": ACTION(ACTION_DICT["turn_left"]),
-#         "turn_right": ACTION(ACTION_DICT["turn_right"]),
-#         "return": ACTION(ACTION_DICT["return"]),
-#     }
-#     return dsl_dict
-
-
-# def get_dsl_dict():
-#     dsl_dict = {
-#         # flow control
-#         "IF": IF,
-#         "WHILE": WHILE,
-#         "IFELSE": IFELSE,
-#         "END": END(),
-#         # predicate
-#         "front_is_clear": COND_DICT["front_is_clear"],
-#         "left_is_clear": COND_DICT["left_is_clear"],
-#         "right_is_clear": COND_DICT["right_is_clear"],
-#         "goal_on_left": COND_DICT["goal_on_left"],
-#         "goal_on_right": COND_DICT["goal_on_right"],
-#         "goal_present": COND_DICT["goal_present"],
-#         "not(front_is_clear)": COND_DICT["not(front_is_clear)"],
-#         "not(left_is_clear)": COND_DICT["not(left_is_clear)"],
-#         "not(right_is_clear)": COND_DICT["not(right_is_clear)"],
-#         "not(goal_on_left)": COND_DICT["not(goal_on_left)"],
-#         "not(goal_on_right)": COND_DICT["not(goal_on_right)"],
-#         "not(goal_present)": COND_DICT["not(goal_present)"],
-#         # actions
-#         "move": ACTION(ACTION_DICT["move"]),
-#         "turn_left": ACTION(ACTION_DICT["turn_left"]),
-#         "turn_right": ACTION(ACTION_DICT["turn_right"]),
-#         "toggle": ACTION(ACTION_DICT["toggle"]),
-#         "RC_get": ACTION(ACTION_DICT["RC_get"]),
-#     }
-#     return dsl_dict
-
-
-# locked room
-# def get_dsl_dict():
-#     dsl_dict = {
-#         # flow control
-#         "IF": IF,
-#         "WHILE": WHILE,
-#         "IFELSE": IFELSE,
-#         "END": END(),
-#         # predicate
-#         "front_is_clear": COND_DICT["front_is_clear"],
-#         "left_is_clear": COND_DICT["left_is_clear"],
-#         "right_is_clear": COND_DICT["right_is_clear"],
-#         "goal_on_left": COND_DICT["goal_on_left"],
-#         "goal_on_right": COND_DICT["goal_on_right"],
-#         "goal_present": COND_DICT["goal_present"],
-#         "front_is_closed_door": COND_DICT["front_is_closed_door"],
-#         "front_is_locked_door": COND_DICT["front_is_locked_door"],
-#         "front_is_wall": COND_DICT["front_is_wall"],
-#         "front_is_obj": COND_DICT["front_is_obj"],
-#         "front_is_key": COND_DICT["front_is_key"],
-#         "not(front_is_clear)": COND_DICT["not(front_is_clear)"],
-#         "not(left_is_clear)": COND_DICT["not(left_is_clear)"],
-#         "not(right_is_clear)": COND_DICT["not(right_is_clear)"],
-#         "not(goal_on_left)": COND_DICT["not(goal_on_left)"],
-#         "not(goal_on_right)": COND_DICT["not(goal_on_right)"],
-#         "not(goal_present)": COND_DICT["not(goal_present)"],
-#         "not(front_is_closed_door)": COND_DICT["not(front_is_closed_door)"],
-#         "not(front_is_locked_door)": COND_DICT["not(front_is_locked_door)"],
-#         "not(front_is_wall)": COND_DICT["not(front_is_wall)"],
-#         "not(front_is_obj)": COND_DICT["not(front_is_obj)"],
-#         "not(front_is_key)": COND_DICT["not(front_is_key)"],
-#         # actions
-#         "move": ACTION(ACTION_DICT["move"]),
-#         "turn_left": ACTION(ACTION_DICT["turn_left"]),
-#         "turn_right": ACTION(ACTION_DICT["turn_right"]),
-#         "return": ACTION(ACTION_DICT["return"]),
-#         "toggle": ACTION(ACTION_DICT["toggle"]),
-#         "pickup": ACTION(ACTION_DICT["pickup"]),
-#         "get_key": ACTION(ACTION_DICT["get_key"]),
-#         "get_goal": ACTION(ACTION_DICT["get_goal"]),
-#         "get_locked_door": ACTION(ACTION_DICT["get_locked_door"]),
-#     }
-#     return dsl_dict
-
-
-# unlock pickup
-# def get_dsl_dict():
-#     dsl_dict = {
-#         # flow control
-#         "IF": IF,
-#         "WHILE": WHILE,
-#         "IFELSE": IFELSE,
-#         "END": END(),
-#         # predicate
-#         "front_is_clear": COND_DICT["front_is_clear"],
-#         "left_is_clear": COND_DICT["left_is_clear"],
-#         "right_is_clear": COND_DICT["right_is_clear"],
-#         "clear_to_drop": COND_DICT["clear_to_drop"],
-#         "has_key": COND_DICT["has_key"],
-#         "not(front_is_clear)": COND_DICT["not(front_is_clear)"],
-#         "not(left_is_clear)": COND_DICT["not(left_is_clear)"],
-#         "not(right_is_clear)": COND_DICT["not(right_is_clear)"],
-#         "not(clear_to_drop)": COND_DICT["not(clear_to_drop)"],
-#         "not(has_key)": COND_DICT["not(has_key)"],
-#         # actions
-#         "move": ACTION(ACTION_DICT["move"]),
-#         "turn_left": ACTION(ACTION_DICT["turn_left"]),
-#         "turn_right": ACTION(ACTION_DICT["turn_right"]),
-#         "return": ACTION(ACTION_DICT["return"]),
-#         "pickup": ACTION(ACTION_DICT["pickup"]),
-#         "drop": ACTION(ACTION_DICT["drop"]),
-#         "get_box": ACTION(ACTION_DICT["get_box"]),
-#         "get_goal": ACTION(ACTION_DICT["get_goal"]),
-#     }
-#     return dsl_dict
-
-
-# doorkey
-# def get_dsl_dict():
-#     dsl_dict = {
-#         # flow control
-#         "IF": IF,
-#         "WHILE": WHILE,
-#         "IFELSE": IFELSE,
-#         "END": END(),
-#         # predicate
-#         "front_is_clear": COND_DICT["front_is_clear"],
-#         "left_is_clear": COND_DICT["left_is_clear"],
-#         "right_is_clear": COND_DICT["right_is_clear"],
-#         "goal_on_left": COND_DICT["goal_on_left"],
-#         "goal_on_right": COND_DICT["goal_on_right"],
-#         "goal_present": COND_DICT["goal_present"],
-#         "front_is_closed_door": COND_DICT["front_is_closed_door"],
-#         "front_is_locked_door": COND_DICT["front_is_locked_door"],
-#         "not(front_is_clear)": COND_DICT["not(front_is_clear)"],
-#         "not(left_is_clear)": COND_DICT["not(left_is_clear)"],
-#         "not(right_is_clear)": COND_DICT["not(right_is_clear)"],
-#         "not(goal_on_left)": COND_DICT["not(goal_on_left)"],
-#         "not(goal_on_right)": COND_DICT["not(goal_on_right)"],
-#         "not(goal_present)": COND_DICT["not(goal_present)"],
-#         "not(front_is_closed_door)": COND_DICT["not(front_is_closed_door)"],
-#         "not(front_is_locked_door)": COND_DICT["not(front_is_locked_door)"],
-#         # actions
-#         "move": ACTION(ACTION_DICT["move"]),
-#         "turn_left": ACTION(ACTION_DICT["turn_left"]),
-#         "turn_right": ACTION(ACTION_DICT["turn_right"]),
-#         "return": ACTION(ACTION_DICT["return"]),
-#         "toggle": ACTION(ACTION_DICT["toggle"]),
-#         "pickup": ACTION(ACTION_DICT["pickup"]),
-#         "get_key": ACTION(ACTION_DICT["get_key"]),
-#         "get_locked_door": ACTION(ACTION_DICT["get_locked_door"]),
-#     }
-#     return dsl_dict
 
 
 def test():

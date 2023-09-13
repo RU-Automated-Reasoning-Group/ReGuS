@@ -30,3 +30,4 @@ from minigrid.envs.unlockpickup import UnlockPickupEnv
 
 # added envs
 from minigrid.envs.crossingrandom import CrossingRandomEnv
+from minigrid.envs.putnear_tworoom import PutNearTwoRoomEnv

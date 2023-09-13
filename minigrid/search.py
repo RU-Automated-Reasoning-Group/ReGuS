@@ -20,8 +20,13 @@ import minigrid_base_dsl
 Robot = MiniGridRobot
 
 import pdb
+import sys
 import debug_program
 from utils.logging import log_and_print
+
+sys.path.append("Minigrid/")
+import minigrid
+minigrid.register_minigrid_envs()
 
 class SUCC(Exception):
     def __init__(self, p):
@@ -76,18 +81,7 @@ def get_structural_cost(program):
 
 def execute_single_action_with_library(action, robot):
     # action is a action object
-    if action.action.action in [
-        "RC_get",
-        "get_key",
-        "get_locked_door",
-        "LK_get",
-        "get_box",
-        "get_box_multi",
-        "get_goal",
-        "DK_get",
-        "get_ball",
-        "get"
-    ]:
+    if action.action.action in minigrid_base_dsl.LIBRARY_DICT:
         action = minigrid_base_dsl.get_action(action, None, None)
         action.execute(robot, None)
         robot.active = True
@@ -115,7 +109,6 @@ class Node:
         max_structural_cost=30,
         shuffle_actions=False,
         found_one=False,
-        logic_expr=None,
         make_video=False,
     ):
         self.sketch = sketch
@@ -127,7 +120,6 @@ class Node:
         self.max_structural_cost = max_structural_cost
         self.shuffle_actions = shuffle_actions
         self.found_one = found_one
-        self.logic_expr = logic_expr
         self.make_video = make_video
 
         # store all required robot
@@ -460,102 +452,6 @@ class Node:
         return count / num_of_seeds
 
     def eval_program(self, seed, robot, candidate, check_multiple):
-        if self.logic_expr:
-            single_seed = len(self.more_seeds) == 0
-            check_multiple = False if single_seed else check_multiple
-
-            # execute and get reward
-            # eval_robot = self.get_robot(seed)
-            eval_robot = robot
-            candidate.execute(eval_robot)
-            r = 1 if self.logic_expr(eval_robot) and not eval_robot.no_fuel() else 0
-
-            # success
-            if r == 1:
-                # multiple seed check
-                if check_multiple:
-                    passed = True
-                    for e in self.more_seeds:
-                        # force evaluate
-                        force_eval_robot = self.get_robot(e)
-                        force_eval_robot.force_execution = True
-                        candidate.reset()
-                        candidate.execute(force_eval_robot)
-                        candidate.reset()
-                        force_eval_robot.force_execution = False
-                        passed = (
-                            passed
-                            and self.logic_expr(force_eval_robot)
-                            and (not force_eval_robot.no_fuel())
-                        )
-                        # attempt to add
-                        if not passed:
-                            # log and print
-                            log_and_print(
-                                "\nfound but not success in all seeds for \n {}".format(
-                                    candidate
-                                )
-                            )
-                            # print("successful rate", self.test_for_success_rate(candidate))
-                            print("location 2")
-                            print(f"seed {str(e)} failed")
-                            self.candidates["success_search"].append((1, candidate))
-                            # TODO: double check
-                            eval_result, eval_robot = self.eval_program(
-                                e, self.get_robot(e), candidate, check_multiple=False
-                            )
-                            # if eval_result == self.SUCCESS_TYPE:
-                            #     pdb.set_trace()
-                            #     print("enter")
-                            # assert eval_result != self.SUCCESS_TYPE
-                            return self.FAIL_TYPE, eval_robot
-                else:
-                    # avoid insert duplicate programs
-                    if single_seed:
-                        pdb.set_trace()
-                        log_and_print(
-                            "\n success when not check multi for \n {}".format(
-                                candidate
-                            )
-                        )
-                        self.candidates["success"].append((1, candidate))
-
-                return self.SUCCESS_TYPE, eval_robot
-            # fail
-            elif r == -1:
-                # log and print
-                log_and_print("\n fail for \n {}".format(candidate))
-                self.candidates["failed"].append((-1, candidate))
-                return self.FAIL_TYPE, eval_robot
-            # no fuel
-            elif eval_robot.no_fuel():
-                # log and print
-                log_and_print(
-                    "\n no fuel with reward {} for \n {}".format(r, candidate)
-                )
-                self.candidates["no_fuel"].append((r, candidate))
-                return self.FAIL_TYPE, eval_robot
-            # complete
-            elif candidate.complete():
-                # log and print
-                log_and_print(
-                    "\n complete with reward {} for\n {}".format(r, candidate)
-                )
-                self.candidates["complete"].append((r, candidate))
-                return self.FAIL_TYPE, eval_robot
-            # need additional operation
-            else:
-                if candidate.count_C() == 1 and isinstance(
-                    candidate.stmts[-2], minigrid_base_dsl.C
-                ):
-                    log_and_print(
-                        "\n special complete with reward {} for\n {}".format(
-                            r, candidate
-                        )
-                    )
-                    self.candidates["complete"].append((r, candidate))
-
-                return self.MORE_WORK_TYPE, eval_robot
         single_seed = len(self.more_seeds) == 0
         check_multiple = False if single_seed else check_multiple
 
@@ -1065,11 +961,12 @@ class Node:
                 log_and_print("[ITER] {}".format(iter))
 
                 # get one program
-                if iter == 5927: # or iter == 424:
+                if iter == 5: # or iter == 424:
                     # pdb.set_trace()
                     # import programskill.dsl
 
                     # programskill.dsl.DSL_DEBUG = True
+                    a = 1
                     pass
                 try:
                     r, ts, p, robot, state, store_cost = self.q.get_nowait()
@@ -1078,7 +975,7 @@ class Node:
                 # double check: debug
                 # tmp_c_stmts, _ = p.find_actions(c_touch=True)
                 # assert tmp_c_stmts is None
-                if iter == 460000 or iter == 9490000:
+                if iter == 5200000:
                     self.q = PriorityQueue()
                 # log print
                 log_and_print("searching base on {} with cost {}".format(str(p), r))

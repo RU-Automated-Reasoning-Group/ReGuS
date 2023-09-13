@@ -564,6 +564,11 @@ def register_minigrid_envs():
         kwargs={"size": 8, "numObjs": 3},
     )
 
+    register(
+        id="MiniGrid-PutNearTwoRoom-v0",
+        entry_point="minigrid.envs:PutNearTwoRoomEnv",
+    )
+
     # RedBlueDoors
     # ----------------------------------------
 
