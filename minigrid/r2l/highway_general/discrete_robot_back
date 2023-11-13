@@ -1,0 +1,126 @@
+import highway_env
+highway_env.register_highway_envs()
+
+import gymnasium as gym
+import numpy as np
+
+import os
+import pdb
+
+from .discrete_dsl import *
+
+class HighwayRobot:
+    def __init__(self, task='highway-v0', seed=999, debug=False):
+        # init environment
+        self.task = task
+        self.env = gym.make(task)
+        
+        self.config = self.env.config
+        self.config['observation']['type'] = 'TimeToCollision'
+        self.config['observation']['horizon'] = 150
+        # self.config['reward_speed_range'] = [15, 40]
+        self.env.configure(self.config)
+        self.state, _ = self.env.reset(seed=seed)
+
+        pdb.set_trace()
+
+        self.lane_domain = [l_id for l_id in range(len(self.state[0]))]
+        self.velocity_domain = [v_id for v_id in range(len(self.state))]
+
+        # hard code
+        self.real_velocity_domain = [20, 25, 30]
+        self.time_length = 150
+
+        # calculate lane velocity
+        self.lane_velocity_domain = []
+
+        # init agent information
+        self.velocity = self.velocity_domain[len(self.velocity_domain) // 2]
+        self.lane_pos = self.lane_domain[len(self.lane_domain) // 2]
+        self.all_time_pos = [0 for _ in self.real_velocity_domain]
+
+        # init reward
+        self.cur_reward = self.cal_cur_reward()
+
+        # other init for control
+        self.steps = 0
+        self.action_steps = 1
+        self.max_steps = self.time_length
+
+        self.active = True
+        self.force_execution = False
+        self.debug = debug
+
+    def no_fuel(self):
+
+        # return not self.action_steps <= self.max_steps
+        # return not self.steps <= self.max_steps
+        return not self.all_time_pos[0] < self.time_length
+
+    def get_state(self):
+        
+        return self.env.observation_type.observe()
+    
+    def execute_single_action(self, action):
+        assert isinstance(action, h_action)
+
+        state, reward = action(self)
+        # self.state = state
+        self.cur_reward += reward
+        if reward == -1:
+            self.cur_reward = -1
+
+        # debug
+        if self.debug:
+            world = self.draw_state()
+            with open('store/highway_discrete_log/highway_discrete_world.txt', 'a') as f:
+                f.write(str(action))
+                f.write('\n'+world)
+
+        return self.check_reward()
+    
+    def execute_single_cond(self, cond):
+        assert isinstance(cond, h_cond)
+
+        return cond(self)
+
+    def cal_cur_reward(self):
+        time_pos = np.ceil(self.all_time_pos[self.velocity]).astype(int)
+        coll_term = -1 * float(self.state[self.velocity, self.lane_pos, time_pos] > 0)
+        lane_term = 0.1 * (self.lane_pos - self.lane_domain[0]) / (self.lane_domain[-1] - self.lane_domain[0])
+        speed_term = 0.4 * (self.velocity - self.velocity_domain[0]) / (self.velocity_domain[-1] - self.velocity_domain[0])
+
+        if coll_term == -1:
+            reward = -1
+        else:
+            reward = coll_term + lane_term + speed_term
+            reward = (reward + 1) / (0.5 + 1)
+
+        return reward
+
+    def check_reward(self):
+        if self.cur_reward != -1:
+            return self.cur_reward / self.action_steps
+        else:
+            return -1
+        
+    def draw_state(self):
+        time_pos = np.ceil(self.all_time_pos[self.velocity]).astype(int)
+        empty_char = '_'
+        vehicle_char = '>'
+        block_char = 'B'
+        world = ''
+        # draw world and ego vehicle
+        for speed_id, speed in enumerate(self.state):
+            for lane_id, lane in enumerate(speed):
+                for col_id, pos in enumerate(lane):
+                    if self.velocity == speed_id and self.lane_pos == lane_id and time_pos == col_id:
+                        world += vehicle_char
+                    elif pos == 0:
+                        world += empty_char
+                    else:
+                        world += block_char
+                world += '\n'
+            world += '\n'
+
+        return world
