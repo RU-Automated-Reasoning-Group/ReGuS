@@ -1,74 +1,232 @@
-# Program Synthesis of Intelligent Agent from Rewards
+# Program Synthesis for Robot Learning
 
 
- Program Synthesis from Reward (PBR) is a programming-by-reward paradigm to unlock the potential of program synthesis to overcome the exploration challenges. We develop a novel hierarchical synthesis algorithm with decomposed search space for loops, on-demand synthesis of conditional statements, and curriculum synthesis for procedure calls, to effectively compress the search space for long-horizon, multi-stage, and procedural robot-control tasks that are difficult to explore using deep RL techniques. Experiment results demonstrate that PBR significantly outperforms state-of-the-art deep RL algorithms and standard program synthesis baselines on challenging RL tasks including video games, autonomous driving, locomotion control, object manipulation, and embodied AI.
+Deep reinforcement learning (RL) has led to encouraging successes in numerous challenging robotics applications. However, the lack of inductive biases to support logic deduction and generalization in the representation of a deep RL model causes it less effective in exploring complex long-horizon robot-control tasks with sparse reward signals. Existing program synthesis algorithms for RL problems inherit the same limitation, as they either adapt conventional RL algorithms to guide program search or synthesize robot-control programs to imitate an RL model. In this paper, we propose PBR, a programming-by-reward paradigm, to unlock the potential of program synthesis to overcome the exploration challenges. We develop a novel hierarchical synthesis algorithm with decomposed search space for loops, on-demand synthesis of conditional statements, and curriculum synthesis for procedure calls, to effectively compress the search space for long-horizon, multi-stage, and procedural robot-control tasks that are difficult to explore using deep RL techniques.
 
 
 ## Karel Environment
 
-To evaluate the capability of loop sketch synthesis and on-demand conditional statement synthesis, we use a suite of discrete state and action environments with the "Karel The Robot" simulator taken from [Trivedi et al](https://arxiv.org/abs/2108.13643). In Karel environment, an agent navigates inside a 2D grid world with walls and modifies the world state by interaction with markers. These tasks feature randomly sampled agent positions, walls, markers, and goal configurations.
+To evaluate the capability of loop sketch synthesis and on-demand conditional statement synthesis, we use a suite of discrete state and action environments with the "Karel The Robot" simulator, taken from [Trivedi et al](https://arxiv.org/abs/2108.13643). In these environments, an agent
+navigates inside a 2D grid world with walls and modifies the world state by interaction with markers. These tasks feature randomly sampled agent positions, walls, markers, and goal configurations.
+
 
 ### Setup
-- Required Installation
+- Installation
     ```
     Python 3.8+
     Numpy 1.23.5
     ```
 
 ### Low-level Loop Sketch Completion
-Complete low-level loop program based on specific high level sketch. Entering ```karel``` directory, Sketch completion examples could be run by:
+Robot-control Program Synthesis on top of a loop sketch. Loop ketch completion examples can be run by:
 ```
 cd karel
 sh pbr_sketch.sh
 ```
-Seven Karel environments are provided in ```pbr_sketch.sh```. For more details of input parameters:
-- **task_name**: name of karel environment chosen from topOff, cleanHouse, stairClimber, randomMaze, fourCorner, harvester, seeder and doorkey.
-- **search_seed**: starting random seed for program search.
-- **more_seed**: all random seeds for program search.
-- **sub_goals**: intermediate reward goal provided in string with ```,``` as split character.  For example, string ```0.5,1``` for goals ```[0.5, 1.0]```. The default value is ```1```.
-- **search_iter**: maximum iteration for program search. The default value is ```2000```.
-- **max_stru_cost**: limit of structure depth. The default value is ```20```.
-- **stru_weight**: weight for structure cost to calculate synthesis score. The default value is ```0.2```.
+Seven Karel environments are supported in ```pbr_sketch.sh```. The configurable parameters of the script are as follows:
+- **task_name**: the name of the Karel environment which can be chosen from [topOff, cleanHouse, stairClimber, randomMaze, fourCorner, harvester, seeder, and doorkey].
+- **search_seed**: the seed of the environment for program search.
+- **more_seed**: the additional seeds for environments that a synthesized program must pass to be deemed correct.
+- **search_iter**: the maximum number of program search iterations. The default value is ```2000```.
+- **max_stru_cost**: the upper bound of program structure depth. The default value is ```20```.
+- **stru_weight**: the weight of structure cost that is used to regularize reward-based search. The default value is ```0.2```.
 
 ### MCTS Search
-We apply Monte Carlo Tree Search (MCTS) method to search for candidate high quality loop sketch and complete low-level loop program based on selected loop sketch. Entering ```karel``` directory, MCTS search examples could be run by:
+We use a variant of Monte Carlo Tree Search (MCTS) to automatically discover loop sketches for robot-control program synthesis. MCTS-based fully automatic robot-control program search can be run by:
 ```
 cd karel
 sh pbr_mcts.sh
 ```
-Our code will search for program from root sketch ```S;``` until a sucess program is found or limited time (20 hours) is reached.
+The synthesizer runs until a successful program is found or times-out after 2 hours.
 
 ### Examples
-- **Program search for Karel doorkey.**
+- **Program searched for Karel TopOff.**
 
     Synthesized Program:
 
     ```
-    WHILE(not (markers_present)) { 
-        IF(not (left_is_clear)) { 
-            move
+    WHILE(frontIsClear()) { 
+        IF(present(marker)) { 
+            put(marker)
         }  
-        IF(markers_present) { 
-            IF(front_is_clear) { 
-                turn_right
+        move()
+    } ;
+    ; END
+    ```
+
+<figure>
+<p align='center'>
+<img src='./karel/figs/topOff.gif'  height=200 width=200>
+<img src='./karel/figs/topOff_1.gif'  height=200 width=200>
+<img src='./karel/figs/topOff_2.gif'  height=200 width=200>
+<center>
+<hr><br>
+</figure>
+
+
+- **Program searched for Karel CleanHouse.**
+
+    Synthesized Program:
+
+    ```
+    WHILE(not (present(marker))) { 
+        WHILE(not (present(marker))) { 
+            IF(leftIsClear()) { 
+                turnLeft()
+            }  
+            IF(not (frontIsClear())) { 
+                turnRight()
+            }  
+            move()
+        } ; 
+        pickUp(marker)
+    } ;
+    ; END
+    ```
+
+<figure>
+<p align='center'>
+<img src='./karel/figs/cleanHouse.gif'  height=200 width=300>
+<img src='./karel/figs/cleanHouse_1.gif'  height=200 width=300>
+<center>
+<hr><br>
+</figure>
+
+
+- **Program searched for Karel StairClimber.**
+
+    Synthesized Program:
+
+    ```
+    WHILE(not (frontIsClear())) { 
+        turnLeft() 
+        move() 
+        turnRight() 
+        move()
+    } ;
+    ; END
+    ```
+
+<figure>
+<p align='center'>
+<img src='./karel/figs/stairClimber.gif'  height=200 width=200>
+<img src='./karel/figs/stairClimber_1.gif'  height=200 width=200>
+<img src='./karel/figs/stairClimber_2.gif'  height=200 width=200>
+<center>
+<hr><br>
+</figure>
+
+- **Program searched for Karel RandomMaze.**
+
+    Synthesized Program:
+
+    ```
+    WHILE(not (present(marker))) { 
+        IF(right_is_clear) { 
+            turnRight()
+        }  
+        IF(not (frontIsClear())) { 
+            turnLeft()
+        } 
+        move()
+    } ;
+    ; END
+    ```
+
+<figure>
+<p align='center'>
+<img src='./karel/figs/randomMaze.gif'  height=200 width=200>
+<img src='./karel/figs/randomMaze_1.gif'  height=200 width=200>
+<img src='./karel/figs/randomMaze_2.gif'  height=200 width=200>
+<center>
+<hr><br>
+</figure>
+
+
+- **Program searched for Karel FourCorner.**
+
+    Synthesized Program:
+
+    ```
+    WHILE(leftIsClear()) { 
+        IF(not (frontIsClear())) { 
+            put(marker) 
+            turnLeft()
+        }  
+        move()
+    } ;
+    ; END
+    ```
+
+<figure>
+<p align='center'>
+<img src='./karel/figs/fourCorners.gif'  height=300 width=300>
+<center>
+<hr><br>
+</figure>
+
+- **Program searched for Karel Harvester**
+
+    Synthesized Program:
+
+    ```
+    WHILE(leftIsClear()) { 
+        IF(not (present(marker))) { 
+            IF(right_is_clear) { 
+                move()
+            }  
+            IF(not (present(marker))) { 
+                turnLeft()
+            } 
+        } 
+        ELSE { 
+            pickUp(marker)
+        } 
+        IF(present(marker)) { 
+            turnRight()
+        } 
+        move()
+    } ;
+    ; END
+    ```
+
+<figure>
+<p align='center'>
+<img src='./karel/figs/harvester.gif'  height=300 width=300>
+<center>
+<hr><br>
+</figure>
+
+- **Program searched for Karel Doorkey.**
+
+    Synthesized Program:
+
+    ```
+    WHILE(not (present(marker))) { 
+        IF(not (leftIsClear())) { 
+            move()
+        }  
+        IF(present(marker)) { 
+            IF(frontIsClear()) { 
+                turnRight()
             } 
         }  
-        IF(not (markers_present)) { 
-            turn_right
+        IF(not (present(marker))) { 
+            turnRight()
         }  
-        move
+        move()
     } ; 
-    pick_marker 
-    WHILE(not (markers_present)) { 
-        IF(front_is_clear) { 
-            turn_left
+    pickUp(marker) 
+    WHILE(not (present(marker))) { 
+        IF(frontIsClear()) { 
+            turnLeft()
         }  
-        IF(not (front_is_clear)) { 
-            turn_right
+        IF(not (frontIsClear())) { 
+            turnRight()
         } 
-        move
+        move()
     } ; 
-    put_marker
+    put(marker)
     ; END
     ```
 
@@ -86,24 +244,24 @@ Our code will search for program from root sketch ```S;``` until a sucess progra
     Synthesized Program:
 
     ```
-    WHILE(not (markers_present)) { 
-        WHILE(not (markers_present)) { 
-            put_marker 
-            move
+    WHILE(not (present(marker))) { 
+        WHILE(not (present(marker))) { 
+            put(marker) 
+            move()
         } ; 
-        IF(front_is_clear) { 
+        IF(frontIsClear()) { 
             IF(not (right_is_clear)) { 
-                move
+                move()
             } 
         }  
-        IF(front_is_clear) { 
-            move
+        IF(frontIsClear()) { 
+            move()
         }  
-        IF(front_is_clear) { 
-            move
+        IF(frontIsClear()) { 
+            move()
         }  
-        turn_left 
-        pick_marker
+        turnLeft() 
+        pickUp(marker)
     } ;
     ; END
     ```
@@ -118,170 +276,15 @@ Our code will search for program from root sketch ```S;``` until a sucess progra
 </figure>
 
 
-- **Program search for Karel topOff.**
-
-    Synthesized Program:
-
-    ```
-    WHILE(front_is_clear) { 
-        IF(markers_present) { 
-            put_marker
-        }  
-        move
-    } ;
-    ; END
-    ```
-
-<figure>
-<p align='center'>
-<img src='./karel/figs/topOff.gif'  height=200 width=200>
-<img src='./karel/figs/topOff_1.gif'  height=200 width=200>
-<img src='./karel/figs/topOff_2.gif'  height=200 width=200>
-<center>
-<hr><br>
-</figure>
-
-
-- **Program search for Karel cleanHouse.**
-
-    Synthesized Program:
-
-    ```
-    WHILE(not (markers_present)) { 
-        WHILE(not (markers_present)) { 
-            IF(left_is_clear) { 
-                turn_left
-            }  
-            IF(not (front_is_clear)) { 
-                turn_right
-            }  
-            move
-        } ; 
-        pick_marker
-    } ;
-    ; END
-    ```
-
-<figure>
-<p align='center'>
-<img src='./karel/figs/cleanHouse.gif'  height=200 width=300>
-<img src='./karel/figs/cleanHouse_1.gif'  height=200 width=300>
-<center>
-<hr><br>
-</figure>
-
-
-- **Program search for Karel stairClimber.**
-
-    Synthesized Program:
-
-    ```
-    WHILE(not (front_is_clear)) { 
-        turn_left 
-        move 
-        turn_right 
-        move
-    } ;
-    ; END
-    ```
-
-<figure>
-<p align='center'>
-<img src='./karel/figs/stairClimber.gif'  height=200 width=200>
-<img src='./karel/figs/stairClimber_1.gif'  height=200 width=200>
-<img src='./karel/figs/stairClimber_2.gif'  height=200 width=200>
-<center>
-<hr><br>
-</figure>
-
-- **Program search for Karel randomMaze.**
-
-    Synthesized Program:
-
-    ```
-    WHILE(not (markers_present)) { 
-        IF(right_is_clear) { 
-            turn_right
-        }  
-        IF(not (front_is_clear)) { 
-            turn_left
-        } 
-        move
-    } ;
-    ; END
-    ```
-
-<figure>
-<p align='center'>
-<img src='./karel/figs/randomMaze.gif'  height=200 width=200>
-<img src='./karel/figs/randomMaze_1.gif'  height=200 width=200>
-<img src='./karel/figs/randomMaze_2.gif'  height=200 width=200>
-<center>
-<hr><br>
-</figure>
-
-
-- **Program search for Karel fourCorner.**
-
-    Synthesized Program:
-
-    ```
-    WHILE(left_is_clear) { 
-        IF(not (front_is_clear)) { 
-            put_marker 
-            turn_left
-        }  
-        move
-    } ;
-    ; END
-    ```
-
-<figure>
-<p align='center'>
-<img src='./karel/figs/fourCorners.gif'  height=300 width=300>
-<center>
-<hr><br>
-</figure>
-
-- **Program search for Karel Harvester**
-
-    Synthesized Program:
-
-    ```
-    WHILE(left_is_clear) { 
-        IF(not (markers_present)) { 
-            IF(right_is_clear) { 
-                move
-            }  
-            IF(not (markers_present)) { 
-                turn_left
-            } 
-        } 
-        ELSE { 
-            pick_marker
-        } 
-        IF(markers_present) { 
-            turn_right
-        } 
-        move
-    } ;
-    ; END
-    ```
-
-<figure>
-<p align='center'>
-<img src='./karel/figs/harvester.gif'  height=300 width=300>
-<center>
-<hr><br>
-</figure>
-
 ## MiniGrid Environment
 
-To demonstrate the library learning feature of our approach, we use five environments that are of increaing difficulty from the [MiniGrid](https://github.com/Farama-Foundation/Minigrid) repository. The environments used are shown below
+We evaluate how PBR can expedite program synthesis for a stream of tasks with various complexity using [MiniGrid](https://github.com/Farama-Foundation/Minigrid), a collection of grid world environments with goal-oriented tasks, which are widely used to evaluate state-of-the-art reinforcement learning algorithms. The tasks involve solving different mazes and interacting with various objects such as goals (green squares), doors, keys, boxes, and walls. 
 
 ![5 environments](minigrid/figs/envs.png)
 
-To run our approach and solve this 5 environments in order, please use the following commands
+As the environments above increase in complexity as the number of objects to manipulate increases, PBR adds programs synthesized for a simpler environment as a new skill that can be reused to constitute sophisticated programs for more complex environments. For example, PBR adds the goal-reaching program synthesized for the third environment Multiroom as a new skill get(obj) to our DSL (domain-specific language). This skill can then be reused as a new control action in the form of callable procedures such as get(key) and get(door). When synthesizing a program in LockedRoom, the agent can call get(key) to grab the key if it faces a locked door. It can then return to the locked door via get(door) to open it. New skills effectively compress the search space for the agent to explore long-horizon tasks. Using curriculum synthesis, PBR achieves the maximum 1.0 reward on all the 5 environments above evaluated over 5000 random seeds. The synthesized programs feature multiple sequential loops with deeply nested conditionals making them impossible to be synthesized by program enumeration.
+
+To run PBR and solve the above 5 environments in the order of their complexity, use the following script:
 
 ```
 cd minigrid
@@ -289,22 +292,19 @@ python3 sequence.py
 ```
 
 ### Examples
-
-Here we show the program synthesized for each of the 5 environemtns.
-
-- **Program search for RandomCrossing**
+- **Program searched for RandomCrossing**
 
     Synthesized Program:
     ```
-    WHILE(not (goal_on_right)) { 
-        IF(left_is_clear) { turn_left}  
-        IF(goal_present) { return}  
-        IF(not (front_is_clear)) { turn_right}  
-        move
+    WHILE(not (rightIs(goal))) { 
+        IF(leftIsClear()) { turnLeft()}  
+        IF(present(goal)) { return}  
+        IF(not (frontIsClear())) { turnRight()}  
+        move()
     } ; 
-    turn_right 
-    WHILE(not (goal_present)) { 
-        move
+    turnRight() 
+    WHILE(not (present(goal))) { 
+        move()
     } ;
     ; END
     ```
@@ -318,20 +318,20 @@ Here we show the program synthesized for each of the 5 environemtns.
 <hr><br>
 </figure>
 
-- **Program search for LavaCrossing**
+- **Program searched for LavaCrossing**
 
     Synthesized Program:
     ```
-    WHILE(not (goal_on_right)) { 
-        IF(left_is_clear) { turn_left}  
-        IF(goal_present) { return}  
-        IF(not (front_is_clear)) { turn_right}  
-        IF(front_is_lava) { turn_right}  
-        move
+    WHILE(not (rightIs(goal))) { 
+        IF(leftIsClear()) { turnLeft()}  
+        IF(present(goal)) { return}  
+        IF(not (frontIsClear())) { turnRight()}  
+        IF(present(lava)) { turnRight()}  
+        move()
     } ; 
-    turn_right 
-    WHILE(not (goal_present)) { 
-        move
+    turnRight() 
+    WHILE(not (present(goal))) { 
+        move()
     } ;
     ; END
     ```
@@ -346,25 +346,25 @@ Here we show the program synthesized for each of the 5 environemtns.
 </figure>
 
 
-- **Program search for MultiRoom**
+- **Program searched for MultiRoom**
 
     Synthesized Program:
     ```
-    WHILE(front_is_clear) { 
-        IF(front_is_closed_door) { turn_left}  
-        move
+    WHILE(frontIsClear()) { 
+        IF(present(closed_door)) { turnLeft()}  
+        move()
     } ; 
-    turn_right 
-    WHILE(not (goal_on_right)) { 
-        IF(left_is_clear) { turn_left}  
-        IF(goal_present) { return}  
-        IF(front_is_closed_door) { toggle}  
-        IF(not (front_is_clear)) { turn_right}  
-        move
+    turnRight() 
+    WHILE(not (rightIs(goal))) { 
+        IF(leftIsClear()) { turnLeft()}  
+        IF(present(goal)) { return}  
+        IF(present(closed_door)) { toggle()}  
+        IF(not (frontIsClear())) { turnRight()}  
+        move()
     } ; 
-    turn_right 
-    WHILE(not (goal_present)) { 
-        move
+    turnRight() 
+    WHILE(not (present(goal))) { 
+        move()
     } ;
     ; END
     ```
@@ -378,34 +378,35 @@ Here we show the program synthesized for each of the 5 environemtns.
 <hr><br>
 </figure>
 
-- **Program search for LockedRoom**
+- **Program searched for LockedRoom**
 
     Synthesized Program:
     ```
-    WHILE(front_is_clear) { 
-        IF(front_is_closed_door) { turn_left}  
-        move
+    WHILE(frontIsClear()) { 
+        IF(present(closed_door)) { turnLeft()}  
+        move()
     } ; 
-    turn_right 
-    WHILE(not (goal_on_right)) { 
-        IF(left_is_clear) { turn_left}  
-        IF(front_is_key) { pickup}  
-        IF(goal_present) { return}  
-        IF(front_is_closed_door) { 
-            IF(front_is_locked_door) { 
-                IF(not (has_key)) { 
-                    get_key pickup
+    turnRight() 
+    WHILE(not (rightIs(goal))) { 
+        IF(leftIsClear()) { turnLeft()}  
+        IF(present(key)) { pickup()}  
+        IF(present(goal)) { return}  
+        IF(present(closed_door)) { 
+            IF(present(locked_door)) { 
+                IF(not (hasKey())) { 
+                    get(key)
+                    pickup()
                 } 
-                get_locked_door
+                get(locked_door)
             }  
-            toggle
+            toggle()
         }  
-        IF(not (front_is_clear)) { turn_right}  
-        move
+        IF(not (frontIsClear())) { turnRight()}  
+        move()
     } ;
-    turn_right
-    WHILE(not (goal_present)) { 
-        move
+    turnRight()
+    WHILE(not (present(goal))) { 
+        move()
     } ;
     ; END
     ```
@@ -419,34 +420,35 @@ Here we show the program synthesized for each of the 5 environemtns.
 <hr><br>
 </figure>
 
-- **Program search for DoorKey**
+- **Program searched for DoorKey**
 
     Synthesized Program:
     ```
-    WHILE(front_is_clear) { 
-        IF(front_is_closed_door) { turn_left}  
-        move
+    WHILE(frontIsClear()) { 
+        IF(present(closed_door)) { turnLeft()}  
+        move()
     } ; 
-    turn_right 
-    WHILE(not (goal_on_right)) { 
-        IF(left_is_clear) { turn_left}  
-        IF(front_is_key) { pickup}  
-        IF(goal_present) { return}  
-        IF(front_is_closed_door) { 
-            IF(front_is_locked_door) { 
-                IF(not (has_key)) { 
-                    get_key pickup
+    turnRight() 
+    WHILE(not (rightIs(goal))) { 
+        IF(leftIsClear()) { turnLeft()}  
+        IF(present(key)) { pickup}  
+        IF(present(goal)) { return}  
+        IF(present(closed_door)) { 
+            IF(present(locked_door)) { 
+                IF(not (hasKey())) { 
+                    get(key)
+                    pickup()
                 }  
-                get_locked_door
+                get(locked_door)
             }  
-            toggle
+            toggle()
         }  
-        IF(not (front_is_clear)) { turn_right}  
-        move
+        IF(not (frontIsClear())) { turnRight()}  
+        move()
     } ; 
-    turn_right
-    WHILE(not (goal_present)) { 
-        move
+    turnRight()
+    WHILE(not (present(goal))) { 
+        move()
     } ;
     ; END
     ```
