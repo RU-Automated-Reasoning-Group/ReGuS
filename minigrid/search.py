@@ -72,10 +72,7 @@ def get_structural_cost(program):
     program_str = str(program)
     for s in minigrid_base_dsl.ACTION_DICT:
         cost += program_str.count(s)
-
-    # cost += program_str.count("return")
-    # cost += program_str.count("IF") * 0.1
-    cost += program_str.count("get_simple")
+    cost -= program_str.count("clear_to_drop")
     return cost
 
 
@@ -228,10 +225,10 @@ class Node:
     def add_queue(self, candidate, reward, robot, cost=None, is_return=False):
         # calculate reward before add
         print("trying to add", candidate)
-        eval_result, robot = self.eval_program(
+        eval_result, robot, reward = self.eval_program(
             self.seed, robot, candidate, check_multiple=False
         )
-        reward = robot.check_reward()
+        # reward = robot.check_reward()
         if is_return and reward != 1:
             return cost, False
         # add back
@@ -250,22 +247,22 @@ class Node:
             # result = []
             # for e in self.more_seeds:
             #     r = execute_for_reward(self.get_robot(e), candidate, Fa)
-            results = [
-                self.pool.apply_async(
-                    execute_for_reward, args=(self.get_robot(e), candidate, True)
-                )
-                for e in self.more_seeds
-            ]
+            # results = [
+            #     self.pool.apply_async(
+            #         execute_for_reward, args=(self.get_robot(e), candidate, True)
+            #     )
+            #     for e in self.more_seeds
+            # ]
             
-            # for e in self.more_seeds:
-            #     execute_for_reward(self.get_robot(e), candidate, True)
+            # # for e in self.more_seeds:
+            # #     execute_for_reward(self.get_robot(e), candidate, True)
 
-            results = [p.get() for p in results]
-            all_rewards = [x[1] for x in results]
-            reward = np.mean(all_rewards)
-            for idx, s in enumerate(self.more_seeds):
-                print(f"seed {s} with reward {all_rewards[idx]}")
-            print(f"reward updated from 1 to {reward}")
+            # results = [p.get() for p in results]
+            # all_rewards = [x[1] for x in results]
+            # reward = np.mean(all_rewards)
+            # for idx, s in enumerate(self.more_seeds):
+            #     print(f"seed {s} with reward {all_rewards[idx]}")
+            # print(f"reward updated from 1 to {reward}")
 
             # todo:
             if reward == 1 and candidate.find_actions()[0] is None:
@@ -452,102 +449,100 @@ class Node:
         return count / num_of_seeds
 
     def eval_program(self, seed, robot, candidate, check_multiple):
+        always_multi_seed_evaluation = True
         single_seed = len(self.more_seeds) == 0
         check_multiple = False if single_seed else check_multiple
 
-        # execute and get reward
-        # force_eval_robot = self.copy_robot(robot)
-        # force_prog = copy.deepcopy(candidate)
-        # force_eval_robot.force_execution = True
-        # force_prog.execute(force_eval_robot)
-        # r = force_eval_robot.check_reward()
-        # eval_robot = self.get_robot(seed)
         eval_robot = robot
-        # eval_robot.force_execution = True
         candidate.execute(eval_robot)
-        r = eval_robot.check_reward() and not eval_robot.no_fuel()
-        # true_r = eval_robot.env.env.get_reward()
-        # success
-        if r == 1:
-            # multiple seed check
-            if check_multiple:
-                passed = True
-                for e in self.more_seeds:
-                    # force evaluate
-                    force_eval_robot = self.get_robot(e)
-                    force_eval_robot.force_execution = True
-                    candidate.reset()
-                    # candidate.reset_resume_points()
-                    candidate.execute(force_eval_robot)
-                    candidate.reset()
-                    force_eval_robot.force_execution = False
-                    passed = passed and force_eval_robot.env.env.get_reward() == 1
-                    # attempt to add
-                    if not passed:
-                        # log and print
-                        log_and_print(
-                            "\nfound but not success in all seeds for \n {}".format(
-                                candidate
-                            )
-                        )
-                        # print("successful rate", self.test_for_success_rate(candidate))
-                        print(f"seed {str(e)} failed")
-                        print("location 3")
-                        self.candidates["success_search"].append((1, candidate))
-                        # TODO: double check
-                        # pdb.set_trace()
-                        candidate.reset()
-                        candidate.reset_resume_points()
-                        eval_result, eval_robot = self.eval_program(
-                            e, self.get_robot(e), candidate, check_multiple=False
-                        )
-                        # assert eval_result != self.SUCCESS_TYPE
-                        if eval_result == self.SUCCESS_TYPE:
-                            eval_result = self.MORE_WORK_TYPE
-                        # pdb.set_trace()
-                        return eval_result, eval_robot
-            else:
-                # avoid insert duplicate programs
-                if single_seed:
-                    # pdb.set_trace()
-                    log_and_print(
-                        "\n success when not check multi for \n {}".format(candidate)
-                    )
-                    self.candidates["success"].append((1, candidate))
+        r = eval_robot.check_reward()
+        complete = candidate.complete()
+        seed = eval_robot.seed
 
-            return self.SUCCESS_TYPE, eval_robot
         # fail
-        elif r == -1:
+        if r == -1:
             # log and print
             log_and_print("\n fail for \n {}".format(candidate))
             self.candidates["failed"].append((-1, candidate))
-            return self.FAIL_TYPE, eval_robot
-        # no fuel
-        elif eval_robot.no_fuel():
-            # log and print
-            log_and_print("\n no fuel with reward {} for \n {}".format(r, candidate))
-            self.candidates["no_fuel"].append((r, candidate))
-            return self.FAIL_TYPE, eval_robot
-        # complete
-        elif candidate.complete():
-            # log and print
-            log_and_print("\n complete with reward {} for\n {}".format(r, candidate))
-            self.candidates["complete"].append((r, candidate))
-            return self.FAIL_TYPE, eval_robot
-        # need additional operation
-        else:
-            if candidate.count_C() == 1 and isinstance(
-                candidate.stmts[-2], minigrid_base_dsl.C
-            ):
-                log_and_print(
-                    "\n special complete with reward {} for\n {}".format(r, candidate)
-                )
-                self.candidates["complete"].append((r, candidate))
+            return self.FAIL_TYPE, eval_robot, -1
 
-            return self.MORE_WORK_TYPE, eval_robot
+        # success or more work
+        all_rewards = [r]
+        all_no_fuel = [eval_robot.no_fuel()]
+        all_completes = [complete]
+        # success_seeds = [seed]
+        all_seeds = [self.seed] + self.more_seeds
+        all_seeds.pop(all_seeds.index(seed))
+
+        results = [
+                self.pool.apply_async(
+                    execute_for_reward, args=(self.get_robot(e), candidate, True)
+                )
+                for e in self.more_seeds
+            ]
+        results = [p.get() for p in results]
+
+        # pdb.set_trace() 
+        for tmp_seed, (robot_no_fuel, reward, complete) in zip(self.more_seeds, results):
+            # C or breakpoint
+            all_rewards.append(reward)
+            all_no_fuel.append(robot_no_fuel)
+            all_completes.append(complete)
+            print(f"{tmp_seed} with reward {reward}")
+
+        # check fail
+        all_seeds = [seed] + all_seeds
+        for seed, robot_no_fuel, reward, complete in zip(all_seeds, all_no_fuel, all_rewards, all_completes):
+            if reward == -1:
+                # log and print
+                log_and_print('\n fail for \n {}'.format(candidate))
+                self.candidates['failed'].append((-1, candidate))
+                return self.FAIL_TYPE, eval_robot, -1
+            elif reward < 1.0 and robot_no_fuel:
+                # log and print
+                log_and_print('\n no fuel with reward {} under seed {} for \n {}'.format(reward, seed, candidate))
+                self.candidates['no_fuel'].append((r, candidate))
+                return self.FAIL_TYPE, eval_robot, -1
+            elif reward < 1.0 and complete:
+                # log and print
+                log_and_print('\n complete with reward {} under seed {} for\n {}'.format(reward, seed, candidate))
+                self.candidates['complete'].append((r, candidate))
+                return self.FAIL_TYPE, eval_robot, -1
+
+        # more work on search seed
+        if r < 1.0:
+            if candidate.count_C() == 1 and isinstance(candidate.stmts[-2], minigrid_base_dsl.C):
+                log_and_print('\n special complete with reward {} for\n {}'.format(np.mean(all_rewards), candidate))
+                self.candidates['complete'].append((np.mean(all_rewards), candidate))
+            
+            return self.MORE_WORK_TYPE, eval_robot, np.mean(all_rewards)
+
+        # check success
+        if np.mean(np.array(all_rewards) >= 1.0) == 1:
+            # log and print
+            log_and_print('\n success and store for {}'.format(candidate))
+            self.candidates['success'].append((1.0, candidate))
+            return self.SUCCESS_TYPE, eval_robot, 1.0
+        else:
+            log_and_print('\nfound but not success in all seeds with reward {} for \n {}'.format(np.mean(all_rewards), candidate))
+            self.candidates['success_search'].append((np.mean(all_rewards), candidate))
+            
+            for seed, reward in zip(all_seeds, all_rewards):
+                if reward < 1.0:
+                    new_seed = seed
+                    break
+
+            candidate.reset()
+            eval_robot = self.get_robot(new_seed)
+            candidate.execute(eval_robot)
+
+            log_and_print('switch to robot seed {}'.format(new_seed))
+
+            return self.MORE_WORK_TYPE, eval_robot, np.mean(all_rewards)
 
     # Add IF (case 1 | expand for one action) or Case 3
     def add_if_branch(self, candidate, eval_reward, eval_robot, store_cost=None):
+        robot_seed = eval_robot.seed
         # check break point
         bp_stmts, bp_idx = candidate.find_break_point()
         if bp_stmts is None:
@@ -616,15 +611,16 @@ class Node:
                         tmp_c_stmts, tmp_c_idx = new_cand.find_actions(c_touch=True)
                         assert tmp_c_stmts is None
 
+                        new_robot = self.get_robot(robot_seed)
                         if store_cost is None:
                             cost, add_success = self.add_queue(
-                                new_cand, eval_reward, self.get_robot(self.seed)
+                                new_cand, eval_reward, new_robot
                             )
                         else:
                             cost, add_success = self.add_queue(
                                 new_cand,
                                 eval_reward,
-                                self.get_robot(self.seed),
+                                new_robot,
                                 cost=store_cost,
                             )
 
@@ -649,6 +645,7 @@ class Node:
                     tmp_c_stmts, tmp_c_idx = new_cand.find_actions(c_touch=True)
                     assert tmp_c_stmts is None
 
+                    new_robot = self.get_robot(robot_seed)
                     if store_cost is None:
                         # pdb.set_trace()
                         if (
@@ -658,19 +655,19 @@ class Node:
                             cost, add_success = self.add_queue(
                                 new_cand,
                                 eval_reward,
-                                self.get_robot(self.seed),
+                                new_robot,
                                 is_return=True,
                             )
                         else:
                             cost, add_success = self.add_queue(
-                                new_cand, eval_reward, self.get_robot(self.seed)
+                                new_cand, eval_reward, new_robot
                             )
                     else:
                         # pdb.set_trace()
                         cost, add_success = self.add_queue(
                             new_cand,
                             eval_reward,
-                            self.get_robot(self.seed),
+                            new_robot,
                             cost=store_cost + 1,
                         )
 
@@ -785,15 +782,16 @@ class Node:
             _candidate.reset()
 
             # add to queue
+            new_robot = self.get_robot(robot_seed)
             if store_cost is None:
                 cost, add_success = self.add_queue(
-                    _candidate, eval_reward, self.get_robot(self.seed)
+                    _candidate, eval_reward, new_robot
                 )
             else:
                 cost, add_success = self.add_queue(
                     _candidate,
                     eval_reward,
-                    self.get_robot(self.seed),
+                    new_robot,
                     cost=store_cost + 1,
                 )
 
@@ -824,6 +822,7 @@ class Node:
         eval_reward,
         check_IF_id,
         c_cond,
+        robot_seed,
         store_cost=None,
     ):
         bp = bp_stmts[bp_idx]
@@ -849,21 +848,20 @@ class Node:
                 and str(tmp_action) == str(cand_action.action)
             )
             if action_check and abs_state_check:
-                # if str(tmp_action) == str(bp_stmts[bp_idx]) and abs_state_check:
                 cand_idx = idx
                 break
 
         # end if or add else
         if cand_idx is not None:
             # debug
-            # assert bp_stmts[check_IF_id].stmts == c_stmts
+            assert bp_stmts[check_IF_id].stmts == c_stmts
 
             bp.break_point = False
             # remove C
             c_stmts.pop(c_idx)
             # remove duplicate action
             c_stmts.pop(c_idx - 1)
-            # assert len(c_stmts) == c_idx - 1
+            assert len(c_stmts) == c_idx - 1
 
             # directly end if
             if cand_idx == bp_idx:
@@ -919,13 +917,15 @@ class Node:
             assert c_stmts is None
 
             p.reset_resume_points()
+
+            new_robot = self.get_robot(robot_seed)
             if store_cost is None:
                 cost, add_success = self.add_queue(
-                    p, eval_reward, self.get_robot(self.seed)
+                    p, eval_reward, new_robot
                 )
             else:
                 cost, add_success = self.add_queue(
-                    p, eval_reward, self.get_robot(self.seed), cost=store_cost - 1
+                    p, eval_reward, new_robot, cost=store_cost - 1
                 )
 
             # log print
@@ -961,7 +961,7 @@ class Node:
                 log_and_print("[ITER] {}".format(iter))
 
                 # get one program
-                if iter == 5: # or iter == 424:
+                if iter == 87: # or iter == 424:
                     # pdb.set_trace()
                     # import programskill.dsl
 
@@ -975,15 +975,15 @@ class Node:
                 # double check: debug
                 # tmp_c_stmts, _ = p.find_actions(c_touch=True)
                 # assert tmp_c_stmts is None
-                if iter == 5200000:
-                    self.q = PriorityQueue()
+                # if iter in [725]:
+                    # self.q = PriorityQueue()
                 # log print
                 log_and_print("searching base on {} with cost {}".format(str(p), r))
 
                 # Execute Program
                 if state is None:
                     # pdb.set_trace()
-                    eval_result, eval_robot = self.eval_program(
+                    eval_result, eval_robot, reward = self.eval_program(
                         self.seed, robot, p, check_multiple=False
                     )
 
@@ -992,15 +992,8 @@ class Node:
                 else:
                     eval_result, eval_reward = state
                     eval_robot = robot
+                robot_seed = eval_robot.seed
                 p.reset()
-
-                # if str(p) == ' WHILE(not (markers_present)) { move} ; C ; END' or \
-                #    str(p) == ' WHILE(not (markers_present)) { IF(not (front_is_clear)) { put_marker C }  move} ; C ; END' or \
-                #    str(p) == ' WHILE(not (markers_present)) { IF(not (front_is_clear)) { put_marker turn_left C }  move} ; C ; END' or \
-                #    str(p) == ' WHILE(not (markers_present)) { IF(not (front_is_clear)) { put_marker turn_left move C }  move} ; C ; END' or \
-                #    str(p) == ' WHILE(not (markers_present)) { IF(not (front_is_clear)) { put_marker turn_left}  move} ; C ; END':
-                #     if str(p) not in debug_store:
-                #         debug_store[str(p)] = [b copy.deepcopy(p), copy.deepcopy(eval_robot)]
 
                 # get action before C
                 c_stmts, c_idx = p.find_actions(c_touch=True)
@@ -1010,111 +1003,12 @@ class Node:
 
                 # 1) Success
                 if eval_result == self.SUCCESS_TYPE:
-                    # reset resume point
-                    p.reset_resume_points()
-
-                    c_stmts, c_idx = p.find_actions()
-                    # TODO: double check
-                    if c_stmts is not None and len(c_stmts) > 1:
-                        tmp_action = c_stmts[c_idx - 1]
-
-                    c_cond, cond_type = p.find_c_cond()
-                    set_fail = False
-
-                    # has C
-                    if c_stmts is not None:
-                        # get break point
-                        bp_stmts, bp_idx = p.find_break_point()
-                        if bp_stmts is not None:
-                            bp = bp_stmts[bp_idx]
-                            bp.break_point = False
-                            if (
-                                cond_type is not None
-                                and cond_type == "i"
-                                and tmp_action == bp
-                                # and str(tmp_action) == str(bp)
-                                # and len(c_stmts) == len(bp_stmts)
-                            ):
-                                # drop if
-                                if len(c_stmts) == 1:
-                                    bp_stmts.pop(bp_idx - 1)
-                                # remove duplicate action
-                                else:
-                                    assert str(tmp_action) == str(c_stmts[c_idx - 1])
-                                    c_stmts.pop(c_idx - 1)
-                                print("merge 4")
-                                # pdb.set_trace()
-                                if tmp_action.abs_state is not None:
-                                    bp.abs_state = minigrid_implement.merge_abs_state(
-                                        bp.abs_state, tmp_action.abs_state
-                                    )
-
-                        c_stmts, c_idx = p.find_actions()
-                        # remove C
-                        copy_p = copy.deepcopy(p)
-                        while c_stmts is not None:
-                            if len(c_stmts) == 1:
-                                # TODO: might be wiser to get into other seed
-                                set_fail = True
-                                break
-                            c_stmts.pop(c_idx)
-                            c_stmts, c_idx = p.find_actions()
-
-                    if not set_fail:
-                        p.reset()
-                        eval_result, eval_robot = self.eval_program(
-                            self.seed, self.get_robot(self.seed), p, check_multiple=True
-                        )
-                        if eval_result == self.MORE_WORK_TYPE:
-                            eval_reward = eval_robot.check_reward()
-                            log_and_print("more work from other seeds")
-                            p.reset()
-                        elif eval_result == self.SUCCESS_TYPE:
-                            test_result = self.test_program(p)
-                            if self.found_one and test_result == self.SUCCESS_TYPE:
-                                # break
-                                raise SUCC(p)
-                            else:
-                                continue
-                        else:
-                            continue
+                    test_result = self.test_program(p)
+                    if self.found_one and test_result == self.SUCCESS_TYPE:
+                        # break
+                        raise SUCC(p)
                     else:
-                        # check program empty
-                        if iter == 0:
-                            assert self.q.qsize() == 0
-                            restart = True
-                            self.seed = self.more_seeds[cur_id + 1]
-                            self.q.put(
-                                (
-                                    0,  # reward
-                                    time.time(),  # timestamp
-                                    copy.deepcopy(self.sketch),
-                                    self.get_robot(self.seed),
-                                )
-                            )
-                            log_and_print(
-                                "\nswitch from seed {} to {}".format(
-                                    self.more_seeds[cur_id], self.more_seeds[cur_id + 1]
-                                )
-                            )
-                            cur_id += 1
-                            break
-                        else:
-                            log_and_print(
-                                "\nfound but not success in all seeds (special) for \n {}".format(
-                                    p
-                                )
-                            )
-                            copy_p.reset()
-                            copy_p.reset_resume_points()
-                            copy_p.reset_c_touch()
-                            self.seed = self.more_seeds[
-                                (cur_id + 1) % len(self.more_seeds)
-                            ]
-                            print("set self seed to", self.seed)
-                            cur_id += 1
-                            self.add_queue(copy_p, 0, self.get_robot(self.seed))
-                            continue
+                        continue
 
                 # 2) Fail
                 elif eval_result == self.FAIL_TYPE:
@@ -1238,7 +1132,7 @@ class Node:
 
                 # Expand (drop when while;C)
                 # set resume point
-                p.set_resume_points()
+                # p.set_resume_points()
 
                 # expand
                 p_list, action_list = p.expand_actions(
@@ -1280,6 +1174,7 @@ class Node:
                                 eval_reward,
                                 check_IF_id,
                                 c_cond,
+                                robot_seed
                             )
                             if cand_idx is not None:
                                 continue
@@ -1307,7 +1202,8 @@ class Node:
                     c_stmts, c_idx = candidate.find_actions(c_touch=True)
                     assert c_stmts is None
                     # add back
-                    new_robot = self.copy_robot(eval_robot)
+                    # new_robot = self.copy_robot(eval_robot)
+                    new_robot = self.get_robot(robot_seed)
                     new_robot.active = True
 
                     if store_cost is None:

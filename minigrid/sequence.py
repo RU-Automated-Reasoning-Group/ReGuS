@@ -36,6 +36,9 @@ def start_sequence(
     else:
         library_dict = {}
 
+    # import pdb
+    # pdb.set_trace()
+    # library_dict.pop("get")
     minigrid_base_dsl.set_library(library, library_dict)
 
     for idx in range(starting_idx, len(envs)):
@@ -68,21 +71,30 @@ def start_sequence(
         elif idx == 5:
             p = copy.deepcopy(library_dict["LK_get"])
         elif idx == 6:
-            p = (
-                minigrid_base_dsl.Program()
-                .expand()[1]
-                .expand()[18]
-                .expand()[0]
-                .expand()[0]
-            )
+            # import pdb
+            # pdb.set_trace()
+            # p = (
+            #     minigrid_base_dsl.Program()
+            #     .expand()[1]
+            #     .expand()[19]
+            #     .expand()[0]
+            #     .expand()[0]
+            # )
+            p = minigrid_base_dsl.Program().expand()[1]
+            p.stmts.pop(1)
+            p.stmts.pop(1)
+            p.stmts[0] = minigrid_base_dsl.C()
         elif idx == 7:
-            p = (
-                minigrid_base_dsl.Program()
-                .expand()[1]
-                .expand()[25]
-                .expand()[0]
-                .expand()[0]
-            )
+            # import pdb
+            # pdb.set_trace()
+            p = minigrid_base_dsl.Program().expand()[1].expand()[23].expand()[0].expand()[0]
+            # p = (
+            #     minigrid_base_dsl.Program()
+            #     .expand()[1]
+            #     .expand()[25]
+            #     .expand()[0]
+            #     .expand()[0]
+            # )
         # elif idx == 6:
         #     # p = (
         #     #     minigrid_base_dsl.Program()
@@ -106,10 +118,18 @@ def start_sequence(
 
         random.seed(3)
         np.random.seed(3)
-        seed = 5
+        seed = 2
         more_seeds = [i for i in range(1, 50)]
+        # more_seeds.pop(more_seeds.index(6))
+        # eval_seeds = [i for i in range(1, 1000)]
         eval_seeds = [i for i in range(1, 1000)]
-        make_video = False
+        # tmp_list = [6, 14, 34, 54, 68, 70, 94, 102, 107, 110, 116, 117, 119, 131, 148, 150, 151, 155, 158, 163, 164, 165, 184, 200, 201, 210, 247, 253, 259, 265, 267, 272, 274, 286, 311, 312, 320, 324, 340, 350, 353, 366, 373, 380, 383, 386, 389, 415, 428, 430, 433, 444, 445, 447, 452, 457, 475, 486, 494, 523, 524, 544, 548, 554, 556, 558, 565, 581, 608, 610, 625, 630, 636, 649, 653, 654, 678, 679, 695, 701, 704, 713, 715, 727, 731, 732, 734, 745, 747, 750, 753, 759, 767, 788, 793, 798, 814, 816, 856, 858, 859, 865, 873, 881, 885, 894, 897, 907, 921, 929, 937, 941, 956, 971, 973, 988]
+        # lst = []
+        # for i in eval_seeds:
+        #     if i not in tmp_list:
+        #         lst.append(i)
+        # eval_seeds = lst
+        make_video = True
         # if idx in [0, 6]:
         node = search.Node(
             sketch=p,
@@ -124,6 +144,11 @@ def start_sequence(
             make_video=make_video,
         )
 
+        # import debug_program
+        # prog = debug_program.convert_program("  get_ball WHILE(has_key) { IF(not (left_is_clear)) { drop}  IF(not (left_is_clear)) { move}  turn_left} ")
+        # node.test_for_success_rate(prog)
+        # exit()
+        
         try:
             if idx in [0, 1, 3, 4, 5, 6, 7]:
                 success_prog = node.search()

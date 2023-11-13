@@ -1029,9 +1029,13 @@ class MiniGridEnv(gym.Env):
         return False
 
     def has_key(self):
-        # if self.front_is_locked_door():
         if self.carrying is not None:
             return type(self.carrying) == Key
+        return False
+    
+    def has_ball(self):
+        if self.carrying is not None:
+            return type(self.carrying) == Ball
         return False
 
     def clear_to_drop(self):

@@ -172,7 +172,7 @@ def set_cond_dict(env: str):
                 "front_is_locked_door",
                 "has_key",
                 "front_is_key",
-                "clear_to_drop",
+                # "clear_to_drop",
             ],
         )
     elif env == "MiniGrid-UnlockPickup-v0":
@@ -184,8 +184,9 @@ def set_cond_dict(env: str):
                 "front_is_locked_door",
                 "has_key",
                 "front_is_key",
-                "clear_to_drop",
+                # "clear_to_drop",
                 "front_is_ball",
+                # "has_ball",
             ],
         )
     else:
@@ -337,6 +338,8 @@ def get_abs_state(robot):
 
 def satisfy_abs_state(current, required):
     satisfied = True
+    if required is None:
+        pdb.set_trace()
     for e in required.state:
         if required.state[e] == "DNC":  # does not care
             pass
@@ -642,7 +645,7 @@ class C:
 
     # def execute(self, robot):
     #    raise NotImplementedError('Invalid code')
-    def execute(self, robot, stop):
+    def execute(self, robot, stop=False):
         if not self.resume_point:
             assert robot.active
             robot.active = False
