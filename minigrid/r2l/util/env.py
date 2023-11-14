@@ -3,7 +3,7 @@ import time
 import torch
 import numpy as np
 import pdb
-import reskill
+# import reskill
 
 
 def env_factory(path, verbose=False, **kwargs):
@@ -189,7 +189,8 @@ def env_factory(path, verbose=False, **kwargs):
         return partial(HighwayEnv, task="highway-fast-v0")
 
     # pdb.set_trace()
-    if "FetchHookAbs" in path:
+    if "MiniGrid" in path:
+        # pdb.set_trace()
         import gymnasium
         spec = gymnasium.spec(path)
         _kwargs = spec.kwargs.copy()
@@ -512,6 +513,7 @@ def train_normalizer(policy, min_timesteps, max_traj_len=1000, noise=0.5):
                 policy.init_hidden_state()
 
             while not done and timesteps < max_traj_len:
+                # pdb.set_trace()
                 state = torch.from_numpy(state).float()
                 if noise is None:
                     action = policy.forward(

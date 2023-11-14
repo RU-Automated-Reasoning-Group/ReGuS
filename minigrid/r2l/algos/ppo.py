@@ -461,8 +461,9 @@ def run_experiment(args):
     print(f"obs dim is {obs_dim}")
     action_dim = 7
   else:
+    # pdb.set_trace()
     print(env_fn().observation_space)
-    print(env_fn().action_space.n)
+    print(env_fn().action_space)
     obs_dim = env_fn().observation_space.shape[0]
     action_dim = env_fn().action_space.n
 
@@ -500,7 +501,7 @@ def run_experiment(args):
   env = env_fn()
 
   print("Collecting normalization statistics with {} states...".format(args.prenormalize_steps))
-  if 'karel' in args.env or 'highway' in args.env or "FetchPlaceABS" in args.env or "FetchHookAbs" in args.env:
+  if 'karel' in args.env or 'highway' in args.env or "FetchPlaceABS" in args.env or "FetchHookAbs" in args.env or "MiniGrid" in args.env:
     print("pick in args.env")
     train_normalizer(policy, args.prenormalize_steps, max_traj_len=args.traj_len, noise=None)    
   else:

@@ -82,7 +82,7 @@ def register_minigrid_envs():
         kwargs={"size": 11, "num_crossings": 5, "obstacle_type": Wall},
     )
 
-    # randome crossing env
+    # random crossing env
     register(
         id="MiniGrid-RandomCrossingS11N5-v0",
         entry_point="minigrid.envs:CrossingRandomEnv",
@@ -94,6 +94,21 @@ def register_minigrid_envs():
         entry_point="minigrid.envs:CrossingRandomEnv",
         kwargs={"size": 11, "num_crossings": 5},
     )
+
+    # r2l random crossing env
+    register(
+        id="MiniGrid-RandomCrossingR2LS11N5-v0",
+        entry_point="minigrid.envs:CrossingRandomR2LEnv",
+        kwargs={"size": 11, "num_crossings": 5, "obstacle_type": Wall},
+    )
+
+    # r2l lava crossing
+    register(
+        id="MiniGrid-LavaCrossingR2LS11N5-v0",
+        entry_point="minigrid.envs:LavaCrossingRandomR2LEnv",
+        kwargs={"size": 11, "num_crossings": 5},
+    )
+
     print("======== minigrid environment registered ===========")
 
     # DistShift

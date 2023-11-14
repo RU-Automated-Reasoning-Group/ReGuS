@@ -1,11 +1,17 @@
 import os
-
+import sys
 import torch
 import hashlib
 from collections import OrderedDict
 
 from util.env import env_factory, eval_policy, interactive_eval
 from util.logo import print_logo
+
+# sys.path.append("../Minigrid/")
+# import minigrid
+# minigrid.register_minigrid_envs()
+import minigrid
+minigrid.register_minigrid_envs()
 
 if __name__ == "__main__":
   import sys, argparse, time, os

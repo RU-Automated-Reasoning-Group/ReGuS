@@ -3,6 +3,7 @@ from __future__ import annotations
 import itertools as itt
 
 import numpy as np
+import gymnasium
 
 from minigrid.core.grid import Grid
 from minigrid.core.mission import MissionSpace
@@ -215,3 +216,141 @@ class CrossingRandomEnv(MiniGridEnv):
             if self.obstacle_type == Lava
             else "find the opening and get to the green goal square"
         )
+
+
+class CrossingRandomR2LEnv(CrossingRandomEnv):
+    def __init__(
+        self,
+        size=9,
+        num_crossings=1,
+        obstacle_type=Lava,
+        max_steps: int | None = None,
+        **kwargs,
+    ):
+
+        super().__init__(
+            size=size,
+            num_crossings=num_crossings,
+            obstacle_type=obstacle_type,
+            max_steps=max_steps,
+            **kwargs,
+        )
+
+        # set action space and observation space for r2l agent
+        
+        # turn_left, turn_right, move
+        self.action_space = gymnasium.spaces.Discrete(3)
+
+        # front_is_clear, left_is_clear, right_is_clear, goal_on_left, goal_on_right, goal_present
+        self.observation_space = gymnasium.spaces.Box(low=0.0, high=1.0, shape=(6, ))
+
+
+    def step(self, action):
+        # import pdb
+        # pdb.set_trace()
+        if action == 0:
+            # turn_left
+            real_action = self.actions.left
+        elif action == 1:
+            # turn_right
+            real_action = self.actions.right
+        elif action == 2:
+            # move
+            real_action = self.actions.forward
+        else:
+            assert False
+        _, rwd, terminated, truncated, info = CrossingRandomEnv.step(self, real_action)
+        return self.public_get_abs_obs(), rwd, terminated, truncated, info
+    
+    def public_get_abs_obs(self):
+        b_front_is_clear = self.front_is_clear()
+        b_left_is_clear = self.left_is_clear()
+        b_right_is_clear = self.right_is_clear()
+        b_goal_on_left = self.goal_on_left()
+        b_goal_on_right = self.goal_on_right()
+        b_goal_present = self.goal_present()
+
+        obs = [
+            float(b_front_is_clear),
+            float(b_left_is_clear),
+            float(b_right_is_clear),
+            float(b_goal_on_left),
+            float(b_goal_on_right),
+            float(b_goal_present),
+        ]
+
+        return np.array(obs)
+
+    def reset(self, *, seed: int | None = None, options=None):
+        CrossingRandomEnv.reset(self, seed=seed, options=options)
+        return self.public_get_abs_obs()
+
+class LavaCrossingRandomR2LEnv(CrossingRandomEnv):
+    def __init__(
+        self,
+        size=9,
+        num_crossings=1,
+        obstacle_type=Lava,
+        max_steps: int | None = None,
+        **kwargs,
+    ):
+
+        super().__init__(
+            size=size,
+            num_crossings=num_crossings,
+            obstacle_type=obstacle_type,
+            max_steps=max_steps,
+            **kwargs,
+        )
+
+        # set action space and observation space for r2l agent
+        
+        # turn_left, turn_right, move
+        # TODO:
+        self.action_space = gymnasium.spaces.Discrete(3)
+
+        # front_is_clear, left_is_clear, right_is_clear, goal_on_left, goal_on_right, goal_present, front_is_lava
+        self.observation_space = gymnasium.spaces.Box(low=0.0, high=1.0, shape=(7, ))
+
+
+    def step(self, action):
+        # import pdb
+        # pdb.set_trace()
+        if action == 0:
+            # turn_left
+            real_action = self.actions.left
+        elif action == 1:
+            # turn_right
+            real_action = self.actions.right
+        elif action == 2:
+            # move
+            real_action = self.actions.forward
+        else:
+            assert False
+        _, rwd, terminated, truncated, info = CrossingRandomEnv.step(self, real_action)
+        return self.public_get_abs_obs(), rwd, terminated, truncated, info
+    
+    def public_get_abs_obs(self):
+        b_front_is_clear = self.front_is_clear()
+        b_left_is_clear = self.left_is_clear()
+        b_right_is_clear = self.right_is_clear()
+        b_goal_on_left = self.goal_on_left()
+        b_goal_on_right = self.goal_on_right()
+        b_goal_present = self.goal_present()
+        b_front_is_lava = self.front_is_lava()
+
+        obs = [
+            float(b_front_is_clear),
+            float(b_left_is_clear),
+            float(b_right_is_clear),
+            float(b_goal_on_left),
+            float(b_goal_on_right),
+            float(b_goal_present),
+            float(b_front_is_lava),
+        ]
+
+        return np.array(obs)
+
+    def reset(self, *, seed: int | None = None, options=None):
+        CrossingRandomEnv.reset(self, seed=seed, options=options)
+        return self.public_get_abs_obs()
