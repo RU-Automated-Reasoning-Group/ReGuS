@@ -9,7 +9,6 @@ import pickle
 import argparse
 import sys
 
-sys.path.append("Minigrid/")
 import minigrid
 
 minigrid.register_minigrid_envs()

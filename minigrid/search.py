@@ -24,7 +24,6 @@ import sys
 import debug_program
 from utils.logging import log_and_print
 
-sys.path.append("Minigrid/")
 import minigrid
 minigrid.register_minigrid_envs()
 
@@ -454,6 +453,7 @@ class Node:
         check_multiple = False if single_seed else check_multiple
 
         eval_robot = robot
+        pdb.set_trace()
         candidate.execute(eval_robot)
         r = eval_robot.check_reward()
         complete = candidate.complete()
