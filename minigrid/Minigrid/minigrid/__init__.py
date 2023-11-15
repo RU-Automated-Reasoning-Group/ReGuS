@@ -109,6 +109,13 @@ def register_minigrid_envs():
         kwargs={"size": 11, "num_crossings": 5},
     )
 
+    # r2l multiroom no door
+    register(
+        id="MiniGrid-MultiRoomNoDoorR2L-N6-v0",
+        entry_point="minigrid.envs:MultiRoomNoDoorR2LEnv",
+        kwargs={"minNumRooms": 6, "maxNumRooms": 6}
+    )
+
     print("======== minigrid environment registered ===========")
 
     # DistShift

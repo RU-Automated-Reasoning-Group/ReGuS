@@ -6,6 +6,9 @@ from minigrid.core.mission import MissionSpace
 from minigrid.core.world_object import Door, Goal, Wall
 from minigrid.minigrid_env import MiniGridEnv
 
+import gymnasium
+import torch
+import numpy as np
 
 class MultiRoom:
     def __init__(self, top, size, entryDoorPos, exitDoorPos):
@@ -95,7 +98,7 @@ class MultiRoomNoDoorEnv(MiniGridEnv):
         self.size = 25
 
         if max_steps is None:
-            max_steps = maxNumRooms * 20
+            max_steps = 150
 
         super().__init__(
             mission_space=mission_space,
@@ -278,3 +281,74 @@ class MultiRoomNoDoorEnv(MiniGridEnv):
                 break
 
         return True
+
+class MultiRoomNoDoorR2LEnv(MultiRoomNoDoorEnv):
+    def __init__(
+        self,
+        minNumRooms,
+        maxNumRooms,
+        maxRoomSize=10,
+        max_steps: int | None = None,
+        **kwargs,
+    ):
+        super().__init__(
+            minNumRooms=minNumRooms,
+            maxNumRooms=maxNumRooms,
+            maxRoomSize=maxRoomSize,
+            max_steps=max_steps,
+            **kwargs
+        )
+
+        # turn_left, turn_right, move, RC_get
+        self.action_space = gymnasium.spaces.Discrete(4)
+
+        # front_is_clear, left_is_clear, right_is_clear, goal_on_left, goal_on_right, goal_present, front_is_lava
+        self.observation_space = gymnasium.spaces.Box(low=0.0, high=1.0, shape=(7, ))
+
+    def step(self, action):
+        if action == 0:
+            # turn_left
+            real_action = self.actions.left
+        elif action == 1:
+            # turn_right
+            real_action = self.actions.right
+        elif action == 2:
+            # move
+            real_action = self.actions.forward
+        elif action == 3:
+            policy_path = "MiniGrid-RandomCrossingR2LS11N5-v0/MiniGrid-RandomCrossingR2LS11N5-v0_seed_104_length_100.pt"
+            normalizer_path = policy_path.replace(".pt", ".pkl")
+            policy = torch.load(policy_path)
+            policy.load_normalizer_param(path=normalizer_path)
+            policy.init_hidden_state()
+            state = torch.Tensor(self.public_get_abs_obs()[:-1])
+            real_action = policy(state, deterministic=True) 
+        else:
+            assert False
+        _, rwd, terminated, truncated, info = MultiRoomNoDoorEnv.step(self, real_action)
+        return self.public_get_abs_obs(), rwd, terminated, truncated, info
+
+    def public_get_abs_obs(self):
+        b_front_is_clear = self.front_is_clear()
+        b_left_is_clear = self.left_is_clear()
+        b_right_is_clear = self.right_is_clear()
+        b_goal_on_left = self.goal_on_left()
+        b_goal_on_right = self.goal_on_right()
+        b_goal_present = self.goal_present()
+        b_front_is_lava = self.front_is_lava()
+
+        obs = [
+            float(b_front_is_clear),
+            float(b_left_is_clear),
+            float(b_right_is_clear),
+            float(b_goal_on_left),
+            float(b_goal_on_right),
+            float(b_goal_present),
+            float(b_front_is_lava),
+        ]
+
+        return np.array(obs)
+
+    def reset(self, *, seed: int | None = None, options=None):
+        MultiRoomNoDoorEnv.reset(self, seed=seed, options=options)
+        return self.public_get_abs_obs()
