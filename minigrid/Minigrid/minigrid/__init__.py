@@ -123,6 +123,18 @@ def register_minigrid_envs():
         kwargs={"minNumRooms": 6, "maxNumRooms": 6},
     )
 
+    # r2l lockedroom
+    register(
+        id="MiniGrid-LockedRoomR2L-v0",
+        entry_point="minigrid.envs:LockedRoomR2LEnv"
+    )
+
+    # r2l doorkey
+    register(
+        id="MiniGrid-DoorKeyR2L-v0",
+        entry_point="minigrid.envs:DoorKeyR2LEnv"
+    )
+
     print("======== minigrid environment registered ===========")
 
     # DistShift
