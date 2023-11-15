@@ -5,6 +5,7 @@ import torch.nn.functional as F
 from policies.base import FF_Base, LSTM_Base, GRU_Base, QBN_GRU_Base
 
 import pdb
+import pickle
 
 class Actor:
   """
@@ -251,3 +252,19 @@ class GRU_Stochastic_Discrete_Actor(GRU_Base, Stochastic_Discrete_Actor):
 
   def forward(self, x, deterministic=True, update_norm=False, return_log_probs=False):
     return self.stochastic_forward(x, deterministic=deterministic, update=update_norm, log_probs=return_log_probs)
+
+  def save_normalizer_prarm(self, path):
+    d = {"mean": self.welford_state_mean,
+         "diff": self.welford_state_mean_diff,
+         "n": self.welford_state_n}
+    with open(path, "wb") as f:
+      pickle.dump(d, f)
+    
+  def load_normalizer_param(self, path):
+    with open(path, "rb") as f:
+      d = pickle.load(f)
+
+      self.welford_state_mean = d["mean"]
+      self.welford_state_mean_diff = d["diff"]
+      self.welford_state_n = d["n"]
+    

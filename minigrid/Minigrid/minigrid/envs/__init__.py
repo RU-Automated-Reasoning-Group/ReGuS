@@ -34,4 +34,4 @@ from minigrid.envs.putnear_tworoom import PutNearTwoRoomEnv
 
 
 # r2l envs
-from minigrid.envs.crossingrandom import CrossingRandomR2LEnv
+from minigrid.envs.crossingrandom import CrossingRandomR2LEnv, LavaCrossingRandomR2LEnv

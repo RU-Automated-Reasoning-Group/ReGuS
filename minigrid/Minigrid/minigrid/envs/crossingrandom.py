@@ -12,6 +12,7 @@ from minigrid.minigrid_env import MiniGridEnv
 
 import collections
 import random
+import torch
 
 
 class CrossingRandomEnv(MiniGridEnv):
@@ -105,7 +106,7 @@ class CrossingRandomEnv(MiniGridEnv):
             mission_space = MissionSpace(mission_func=self._gen_mission)
 
         if max_steps is None:
-            max_steps = 4 * size**2
+            max_steps = 100
 
         super().__init__(
             mission_space=mission_space,
@@ -305,8 +306,7 @@ class LavaCrossingRandomR2LEnv(CrossingRandomEnv):
 
         # set action space and observation space for r2l agent
         
-        # turn_left, turn_right, move
-        # TODO:
+        # turn_left, turn_right, move, RC_get
         self.action_space = gymnasium.spaces.Discrete(3)
 
         # front_is_clear, left_is_clear, right_is_clear, goal_on_left, goal_on_right, goal_present, front_is_lava
@@ -325,6 +325,27 @@ class LavaCrossingRandomR2LEnv(CrossingRandomEnv):
         elif action == 2:
             # move
             real_action = self.actions.forward
+        elif action == 3:
+            # RC_get
+            policy_path = "MiniGrid-RandomCrossingR2LS11N5-v0/MiniGrid-RandomCrossingR2LS11N5-v0_seed_104_length_100.pt"
+            normalizer_path = policy_path.replace(".pt", ".pkl")
+            policy = torch.load(policy_path)
+            policy.load_normalizer_param(path=normalizer_path)
+            policy.init_hidden_state()
+            # import pdb
+            # pdb.set_trace()
+            done = False
+            state = torch.Tensor(self.public_get_abs_obs()[:-1])
+            current_steps = 0
+            while not done:
+                action = policy(state, deterministic=True)
+                next_state, reward, terminated, truncated, info = CrossingRandomEnv.step(self, action)
+                done = terminated or truncated
+                state = torch.Tensor(self.public_get_abs_obs()[:-1])
+                current_steps += 1
+            print(f"final rwd is {reward}")
+            info["action_total_steps"] = current_steps
+            return self.public_get_abs_obs(), reward, terminated, truncated, info
         else:
             assert False
         _, rwd, terminated, truncated, info = CrossingRandomEnv.step(self, real_action)

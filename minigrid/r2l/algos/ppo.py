@@ -203,9 +203,9 @@ class PPO_Worker:
 
             step_returns = self.env.step(action.numpy())
             if len(step_returns) == 4:
-              next_state, reward, done, _ = step_returns
+              next_state, reward, done, info = step_returns
             elif len(step_returns) == 5:
-              next_state, reward, terminated, truncated, _ = step_returns
+              next_state, reward, terminated, truncated, info = step_returns
               done = terminated or truncated
             else:
               assert False
@@ -216,8 +216,13 @@ class PPO_Worker:
 
             state = next_state
 
-            traj_len += 1
-            num_steps += 1
+            if "action_total_steps" in info:
+              print(f"action {action} takes {info['action_total_steps']} steps")
+              num_steps += info["action_total_steps"]
+              traj_len += info["action_total_steps"]
+            else:
+              traj_len += 1
+              num_steps += 1
 
         value = (not done) * critic(torch.Tensor(state)).numpy()
         memory.end_trajectory(terminal_value=value)
@@ -251,14 +256,17 @@ class PPO_Worker:
 
           step_returns = self.env.step(action.numpy())
           if len(step_returns) == 4:
-            next_state, reward, done, _ = step_returns
+            next_state, reward, done, info = step_returns
           elif len(step_returns) == 5:
-            next_state, reward, terminated, truncated, _ = step_returns
+            next_state, reward, terminated, truncated, info = step_returns
             done = terminated or truncated
 
           state = torch.Tensor(next_state)
           ep_return += reward
-          traj_len += 1
+          if "action_total_steps" in info:
+            traj_len += info["action_total_steps"]
+          else:
+            traj_len += 1
         ep_returns += [ep_return]
 
     if store:
@@ -507,6 +515,10 @@ def run_experiment(args):
   else:
     train_normalizer(policy, args.prenormalize_steps, max_traj_len=args.traj_len, noise=1)
 
+  print("saving the normalizer")
+  normalizer_path = args.save_actor.replace(".pt", ".pkl")
+  assert args.save_actor != normalizer_path
+  policy.save_normalizer_prarm(path=normalizer_path)
   critic.copy_normalizer_stats(policy)
 
   # policy.train(0)

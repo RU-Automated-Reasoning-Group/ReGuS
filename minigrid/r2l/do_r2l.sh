@@ -41,9 +41,24 @@ do_train_randomcrossing(){
     --prenormalize_steps 100 \
     --timesteps 1000000 \
     --workers 7 \
-    --traj_len 150 \
+    --traj_len 100 \
     --logdir './rc_logs' \
     --seed 0
+}
+
+do_eval_randomcrossing(){
+    python3 r2l.py ppo_eval \
+    --env 'MiniGrid-RandomCrossingR2LS11N5-v0' \
+    --arch 'gru' \
+    --layers 64 \
+    --batch_size 6 \
+    --num_steps 10000 \
+    --prenormalize_steps 100 \
+    --timesteps 1000000 \
+    --policy 'MiniGrid-RandomCrossingR2LS11N5-v0/MiniGrid-RandomCrossingR2LS11N5-v0_seed_104_length_100.pt' \
+    --eval_num 300 \
+    --workers 1 \
+    --traj_len 100
 }
 # do_train
 # do_train_doorkey
@@ -54,4 +69,4 @@ do_train_randomcrossing(){
 # do_eval_highway
 # do_train_pick
 # do_eval_pick
-do_train_randomcrossing
+do_eval_randomcrossing

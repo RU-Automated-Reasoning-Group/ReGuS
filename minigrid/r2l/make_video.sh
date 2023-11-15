@@ -1,0 +1,1 @@
+echo y | ffmpeg -f image2 -framerate 10 -i frames/img%6d.png randomcrossing.mp4

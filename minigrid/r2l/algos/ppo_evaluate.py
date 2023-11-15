@@ -453,6 +453,8 @@ def run_experiment(args):
     obs_dim = env_fn().observation_space.n
     action_dim = env_fn().action_space.n
   else:
+    print(env_fn().observation_space)
+    print(env_fn().action_space)
     obs_dim = env_fn().observation_space.shape[0]
     action_dim = env_fn().action_space.n
     # action_dim = env_fn().action_space.shape[0]
@@ -484,29 +486,37 @@ def run_experiment(args):
   policy.legacy = False
   env = env_fn()
 
-  print("Collecting normalization statistics with {} states...".format(args.prenormalize_steps))
-  if 'karel' in args.env or 'highway' in args.env or "FetchPlaceABS" in args.env:
-    train_normalizer(policy, args.prenormalize_steps, max_traj_len=args.traj_len, noise=None)
-    print("finished train normalizer")
-  else:
-    train_normalizer(policy, args.prenormalize_steps, max_traj_len=args.traj_len, noise=1)
+  # pdb.set_trace()
+  # print("Collecting normalization statistics with {} states...".format(args.prenormalize_steps))
+  # if 'karel' in args.env or 'highway' in args.env or "FetchPlaceABS" in args.env or "MiniGrid" in args.env:
+    # train_normalizer(policy, args.prenormalize_steps, max_traj_len=args.traj_len, noise=None)
+    # print("finished train normalizer")
+  # else:
+    # train_normalizer(policy, args.prenormalize_steps, max_traj_len=args.traj_len, noise=1)
 
-  critic.copy_normalizer_stats(policy)
+  # pdb.set_trace()
 
   # load policy
   policy = torch.load(args.policy)
+  normalizer_path = args.policy.replace(".pt", ".pkl")
+  policy.load_normalizer_param(path=normalizer_path)
 
+  # pdb.set_trace()
+  critic.copy_normalizer_stats(policy)
   # policy.train(False)
   # critic.train(False)
 
   algo = PPO(policy, critic, env_fn, args)
   torch.set_num_threads(1)
-  trajs = 100
+  num_trajs = 100
+  true_traj_len = 100
   frame_id = 0
   success_count = 0
+  full_rwd = 1.0
+  env.render_mode = "rgb_array"
   with torch.no_grad():
     ep_returns = []
-    for traj in range(trajs):
+    for traj in range(num_trajs):
       env.dynamics_randomization = False
       state = torch.Tensor(env.reset())
 
@@ -516,25 +526,29 @@ def run_experiment(args):
 
       if hasattr(policy, 'init_hidden_state'):
         policy.init_hidden_state()
-
-      while not done and traj_len < 100:
+      while not done and traj_len <= true_traj_len:
         action = policy(state, deterministic=True)
 
-        next_state, reward, done, _ = env.step(action.numpy())
-        data = env.render(mode='rgb_array')
-        # print(f"rendering img{frame_id:06d}.png")
+        next_state, reward, terminate, truncated, info = env.step(action.numpy())
+        # pdb.set_trace()
+        env.render(dir=f"frames/img{frame_id:06d}.png")
+        done = terminate or truncated
+        print(f"rendering img{frame_id:06d}.png")
         # pdb.set_trace()
         # cv2.imwrite(f"frames/img{frame_id:06d}.png", data)
         state = torch.Tensor(next_state)
         ep_return += reward
-        traj_len += 1
+        if "action_total_steps" in info:
+          traj_len += info["action_total_steps"]
+        else:
+          traj_len += 1
         frame_id += 1
-      if ep_return == 1.5:
+      if ep_return == full_rwd:
         success_count += 1
       ep_returns += [ep_return]
       print("=====================")
     print(ep_returns)
-    print(f"success rate is {success_count / trajs}")
+    print(f"success rate is {success_count / num_trajs}")
   # evaluation
   # all_rewards = []
   # all_values = []
