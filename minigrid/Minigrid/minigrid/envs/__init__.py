@@ -39,3 +39,5 @@ from minigrid.envs.multiroom_nodoor import MultiRoomNoDoorR2LEnv
 from minigrid.envs.multiroom import MultiRoomR2LEnv
 from minigrid.envs.lockedroom import LockedRoomR2LEnv
 from minigrid.envs.doorkey import DoorKeyR2LEnv
+from minigrid.envs.putnear_tworoom import PutNearTwoRoomR2LEnv
+from minigrid.envs.unlockpickup import UnlockPickupR2LEnv

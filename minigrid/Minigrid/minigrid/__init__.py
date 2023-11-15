@@ -135,6 +135,18 @@ def register_minigrid_envs():
         entry_point="minigrid.envs:DoorKeyR2LEnv"
     )
 
+    # r2l put near two room
+    register(
+        id="MiniGrid-PutNearTwoRoomR2L-v0",
+        entry_point="minigrid.envs:PutNearTwoRoomR2LEnv"
+    )
+
+    # r2l unlock pickup
+    register(
+        id="MiniGrid-UnlockPickupR2L-v0",
+        entry_point="minigrid.envs:UnlockPickupR2LEnv"
+    )
+
     print("======== minigrid environment registered ===========")
 
     # DistShift

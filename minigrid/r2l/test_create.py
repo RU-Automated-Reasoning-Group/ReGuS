@@ -4,7 +4,7 @@ import pdb
 import policies
 
 minigrid.register_minigrid_envs()
-env_name = "MiniGrid-LockedRoomR2L-v0"
+env_name = "MiniGrid-UnlockPickupR2L-v0"
 a = gym.make(env_name, render_mode="rgb_array") 
 for i in range(0, 10):
     a.reset()
