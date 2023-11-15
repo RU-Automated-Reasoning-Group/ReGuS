@@ -322,7 +322,15 @@ class MultiRoomNoDoorR2LEnv(MultiRoomNoDoorEnv):
             policy.load_normalizer_param(path=normalizer_path)
             policy.init_hidden_state()
             state = torch.Tensor(self.public_get_abs_obs()[:-1])
-            real_action = policy(state, deterministic=True) 
+            action = policy(state, deterministic=True)
+            if action == 0:
+                real_action = self.actions.left
+            elif action == 1:
+                real_action = self.actions.right
+            elif action == 2:
+                real_action = self.actions.forward
+            else:
+                assert False
         else:
             assert False
         _, rwd, terminated, truncated, info = MultiRoomNoDoorEnv.step(self, real_action)

@@ -1,5 +1,9 @@
 from __future__ import annotations
 
+import gymnasium
+import numpy as np
+import torch
+
 from minigrid.core.constants import COLOR_NAMES
 from minigrid.core.grid import Grid
 from minigrid.core.mission import MissionSpace
@@ -95,7 +99,7 @@ class MultiRoomEnv(MiniGridEnv):
         self.size = 25
 
         if max_steps is None:
-            max_steps = maxNumRooms * 20
+            max_steps = 150
 
         super().__init__(
             mission_space=mission_space,
@@ -279,3 +283,86 @@ class MultiRoomEnv(MiniGridEnv):
                 break
 
         return True
+
+class MultiRoomR2LEnv(MultiRoomEnv):
+    def __init__(
+        self,
+        minNumRooms,
+        maxNumRooms,
+        maxRoomSize=10,
+        max_steps: int | None = None,
+        **kwargs,
+    ):
+        super().__init__(
+            minNumRooms=minNumRooms,
+            maxNumRooms=maxNumRooms,
+            maxRoomSize=maxRoomSize,
+            max_steps=max_steps,
+            **kwargs
+        )
+
+        # turn_left, turn_right, move, toggle, RC_get
+        self.action_space = gymnasium.spaces.Discrete(5)
+
+        # front_is_clear, left_is_clear, right_is_clear, goal_on_left, goal_on_right, goal_present, front_is_lava, front_is_closed_door
+        self.observation_space = gymnasium.spaces.Box(low=0.0, high=1.0, shape=(8, ))
+
+    def step(self, action):
+        if action == 0:
+            # turn_left
+            real_action = self.actions.left
+        elif action == 1:
+            # turn_right
+            real_action = self.actions.right
+        elif action == 2:
+            # move
+            real_action = self.actions.forward
+        elif action == 3:
+            real_action = self.actions.toggle
+        elif action == 4:
+            policy_path = "MiniGrid-RandomCrossingR2LS11N5-v0/MiniGrid-RandomCrossingR2LS11N5-v0_seed_104_length_100.pt"
+            normalizer_path = policy_path.replace(".pt", ".pkl")
+            policy = torch.load(policy_path)
+            policy.load_normalizer_param(path=normalizer_path)
+            policy.init_hidden_state()
+            state = torch.Tensor(self.public_get_abs_obs()[:-2])
+            action = policy(state, deterministic=True)
+            if action == 0:
+                real_action = self.actions.left
+            elif action == 1:
+                real_action = self.actions.right
+            elif action == 2:
+                real_action = self.actions.forward
+            else:
+                assert False
+        else:
+            assert False
+        _, rwd, terminated, truncated, info = MultiRoomEnv.step(self, real_action)
+        return self.public_get_abs_obs(), rwd, terminated, truncated, info
+
+    def public_get_abs_obs(self):
+        b_front_is_clear = self.front_is_clear()
+        b_left_is_clear = self.left_is_clear()
+        b_right_is_clear = self.right_is_clear()
+        b_goal_on_left = self.goal_on_left()
+        b_goal_on_right = self.goal_on_right()
+        b_goal_present = self.goal_present()
+        b_front_is_lava = self.front_is_lava()
+        b_front_is_closed_door = self.front_is_closed_door()
+
+        obs = [
+            float(b_front_is_clear),
+            float(b_left_is_clear),
+            float(b_right_is_clear),
+            float(b_goal_on_left),
+            float(b_goal_on_right),
+            float(b_goal_present),
+            float(b_front_is_lava),
+            float(b_front_is_closed_door),
+        ]
+
+        return np.array(obs)
+
+    def reset(self, *, seed: int | None = None, options=None):
+        MultiRoomEnv.reset(self, seed=seed, options=options)
+        return self.public_get_abs_obs()
