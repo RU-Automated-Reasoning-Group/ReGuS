@@ -53,7 +53,7 @@ def set_action_dict(env: str):
         add_action(
             action_dict, ["RC_get", "toggle", "get_key", "get_locked_door", "pickup"]
         )
-        action_dict.pop("turn_right")
+        # action_dict.pop("turn_right")
     elif env.startswith("MiniGrid-DoorKey"):
         add_action(
             action_dict,
@@ -444,6 +444,7 @@ class ACTION:
 
     def execute(self, robot, stop):
         if robot.active:
+            # pdb.set_trace()
             if str(self.action.action) in LIBRARY_DICT:
                 if robot.force_execution:
                     # assert not self.resume_point
@@ -864,7 +865,7 @@ class WHILE:
                     break
 
                 # debug test
-                robot.steps += 1
+                # robot.steps += 1
                 # robot.draw()
                 # pdb.set_trace()
             # check robot position

@@ -277,7 +277,7 @@ class Node:
         q_tuple = (
             # -reward + cost * 0.02,
             # -reward + cost,
-            -reward + cost * 0.5,
+            -4 * reward + cost * 0.5,
             # -reward + cost * 0.1,
             # -reward + cost * 0.2,
             time.time(),
@@ -353,7 +353,7 @@ class Node:
                 print("location 1")
                 print(f"seed {str(e)} failed")
                 self.candidates["success_search"].append((1, prog))
-                minigrid_implement.dsl.SEARCH_STATUS = False
+                minigrid_implement.dsl.SEARCH_STATUS = True
                 return self.FAIL_TYPE
         # success
         log_and_print("\nsuccess and store for \n {}".format(prog))
@@ -399,7 +399,7 @@ class Node:
         #     minigrid_implement.dsl.print_interaction()
         #     exit()
         self.candidates["success"].append((1, prog))
-        minigrid_implement.dsl.SEARCH_STATUS = False
+        minigrid_implement.dsl.SEARCH_STATUS = True
         return self.SUCCESS_TYPE
 
     def test_for_success_rate(self, prog):
@@ -453,7 +453,7 @@ class Node:
         check_multiple = False if single_seed else check_multiple
 
         eval_robot = robot
-        pdb.set_trace()
+        # pdb.set_trace()
         candidate.execute(eval_robot)
         r = eval_robot.check_reward()
         complete = candidate.complete()
@@ -474,13 +474,16 @@ class Node:
         all_seeds = [self.seed] + self.more_seeds
         all_seeds.pop(all_seeds.index(seed))
 
-        results = [
-                self.pool.apply_async(
-                    execute_for_reward, args=(self.get_robot(e), candidate, True)
-                )
-                for e in self.more_seeds
-            ]
-        results = [p.get() for p in results]
+        # results = [
+        #         self.pool.apply_async(
+        #             execute_for_reward, args=(self.get_robot(e), candidate, True)
+        #         )
+        #         for e in self.more_seeds
+        #     ]
+        # results = [p.get() for p in results]
+        results = []
+        for e in self.more_seeds:
+            results.append(execute_for_reward(self.get_robot(e), candidate, True))
 
         # pdb.set_trace() 
         for tmp_seed, (robot_no_fuel, reward, complete) in zip(self.more_seeds, results):
@@ -1406,6 +1409,7 @@ if __name__ == "__main__":
     # debug_prog_str = "WHILE(not (goal_on_right)) { IF(left_is_clear) { IF(not (goal_present)) { turn_left} }  IF(not (front_is_clear)) { turn_right}  IF(goal_present) { turn_left}  move} turn_right WHILE(not (goal_present)) { move}"
     debug_prog_str = "WHILE(not (goal_on_right)) { IF(left_is_clear) { turn_left}  IF(goal_present) { return}  IF(not (front_is_clear)) { turn_right}  IF(front_is_lava) { turn_right}  move} turn_right WHILE(not (goal_present)) { move}"
     debug_prog_str = "WHILE(not (goal_on_right)) { IF(front_is_clear) { IF(not (left_is_clear)) { IF(goal_present) { turn_right }  move}  turn_left} ELSE { IF(not (goal_present)) { turn_right} } move}  turn_right WHILE(not (goal_present)) { move}"
+    debug_prog_str = "get_ball"
     if args.task == "test":
         program = debug_program.convert_program(debug_prog_str)
         # with open("doorkey_program", "rb")  as f:

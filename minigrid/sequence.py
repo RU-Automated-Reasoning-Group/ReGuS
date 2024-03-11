@@ -11,6 +11,7 @@ import sys
 
 import minigrid
 
+import minigrid_implement.dsl
 minigrid.register_minigrid_envs()
 
 
@@ -35,7 +36,7 @@ def start_sequence(
     else:
         library_dict = {}
 
-    # import pdb
+    import pdb
     # pdb.set_trace()
     # library_dict.pop("get")
     minigrid_base_dsl.set_library(library, library_dict)
@@ -83,6 +84,7 @@ def start_sequence(
             p.stmts.pop(1)
             p.stmts.pop(1)
             p.stmts[0] = minigrid_base_dsl.C()
+            # p = copy.deepcopy(library_dict["get_ball"])
         elif idx == 7:
             # import pdb
             # pdb.set_trace()
@@ -115,12 +117,15 @@ def start_sequence(
         else:
             p = None
 
-        random.seed(3)
-        np.random.seed(3)
-        seed = 2
+        import debug_program
+
+        # p = debug_program.convert_program('WHILE(front_is_clear) { IF(front_is_closed_door) { turn_left}  IF(front_is_key) { turn_left}  move}  turn_right WHILE(not (goal_on_right)) { IF(left_is_clear) { turn_left}  IF(goal_present) { return}  IF(front_is_closed_door) { IF(not (front_is_clear)) { IF(not (has_key)) { IF(not (right_is_clear)) { turn_right}  IF(not (front_is_clear)) { get_key}  pickup}  get_locked_door}  toggle}  IF(front_is_key) { pickup}  IF(not (front_is_clear)) { turn_right}  move}  turn_right WHILE(not (goal_present)) { move}')
+        random.seed(100)
+        np.random.seed(100)
+        seed = 0
         more_seeds = [i for i in range(1, 50)]
         # more_seeds.pop(more_seeds.index(6))
-        # eval_seeds = [i for i in range(1, 1000)]
+        # eval_seeds = [35, 408]
         eval_seeds = [i for i in range(1, 1000)]
         # tmp_list = [6, 14, 34, 54, 68, 70, 94, 102, 107, 110, 116, 117, 119, 131, 148, 150, 151, 155, 158, 163, 164, 165, 184, 200, 201, 210, 247, 253, 259, 265, 267, 272, 274, 286, 311, 312, 320, 324, 340, 350, 353, 366, 373, 380, 383, 386, 389, 415, 428, 430, 433, 444, 445, 447, 452, 457, 475, 486, 494, 523, 524, 544, 548, 554, 556, 558, 565, 581, 608, 610, 625, 630, 636, 649, 653, 654, 678, 679, 695, 701, 704, 713, 715, 727, 731, 732, 734, 745, 747, 750, 753, 759, 767, 788, 793, 798, 814, 816, 856, 858, 859, 865, 873, 881, 885, 894, 897, 907, 921, 929, 937, 941, 956, 971, 973, 988]
         # lst = []
@@ -128,7 +133,7 @@ def start_sequence(
         #     if i not in tmp_list:
         #         lst.append(i)
         # eval_seeds = lst
-        make_video = True
+        make_video = False
         # if idx in [0, 6]:
         node = search.Node(
             sketch=p,
@@ -142,6 +147,10 @@ def start_sequence(
             found_one=True,
             make_video=make_video,
         )
+        # import minigrid_implement.dsl
+        # minigrid_implement.dsl.DSL_DEBUG = True
+        # print(node.test_for_success_rate(p))
+        # exit()
 
         # import debug_program
         # prog = debug_program.convert_program("  get_ball WHILE(has_key) { IF(not (left_is_clear)) { drop}  IF(not (left_is_clear)) { move}  turn_left} ")
@@ -234,6 +243,7 @@ def start_sequence(
             pickle.dump(library_dict, library_dict_f)
 
         print("============ Moving to next env ================")
+        print(f"total number of interaction is {minigrid_implement.dsl.search_counter}")
         exit()
 
 

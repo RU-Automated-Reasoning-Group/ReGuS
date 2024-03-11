@@ -81,6 +81,8 @@ class k_action:
 
         if not robot.no_fuel():
             # getattr(k, self.action)()
+            robot.steps += 1
+
             if self.action == "move":
                 _, rwd, _, _, _ = k.step(k.actions.forward)
                 if DSL_DEBUG:

@@ -28,6 +28,8 @@ class MiniGridRobot:
             max_steps = 100
         elif task == "MiniGrid-UnlockPickup-v0":
             max_steps = 120
+        elif task == "MiniGrid-PutNearTwoRoom-v0":
+            max_steps = 150
         self.task = task
         self.seed = seed
         self.max_steps = max_steps
@@ -42,6 +44,9 @@ class MiniGridRobot:
             render_mode="rgb_array",
         )
         self.env.reset(seed=seed)
+        # import pdb
+        # pdb.set_trace()
+        # self.env.env.env.render(dir=f"initial/{self.seed}.png")
 
         self.reward = 0
 
