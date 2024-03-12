@@ -10,7 +10,7 @@ from mcts.search_alg import SearchAlg
 from utils.logging import init_logging, log_and_print
 
 
-def mcts_search(search_steps, search_iter, task='topOff', seed=123, more_seeds=[], eval_seeds=[], lib_actions=None, post_condition=None, allow_action_first=False):
+def mcts_search(search_steps, search_iter, task='topOff', seed=123, more_seeds=[], eval_seeds=[], lib_actions=None, post_condition=None, allow_action_first=False, multi_seed_eval=False, step_limit_per_sketch=1e9):
     # create root 
     root_sketch = minigrid_base_dsl.Program()
     root = SearchNode(None, root_sketch, 0, False, lib_actions=lib_actions, allow_action_first=allow_action_first)
@@ -20,7 +20,7 @@ def mcts_search(search_steps, search_iter, task='topOff', seed=123, more_seeds=[
     alg = SearchAlg(task=task, seed=seed, \
                     more_seeds=more_seeds, \
                     eval_seeds = eval_seeds, \
-                    max_search_iter=search_iter, max_structural_cost=20, shuffle_actions=True, post_condition=post_condition, allow_action_first=allow_action_first)
+                    max_search_iter=search_iter, max_structural_cost=20, shuffle_actions=True, post_condition=post_condition, allow_action_first=allow_action_first, multi_seed_eval=multi_seed_eval, step_limit_per_sketch=step_limit_per_sketch)
     log_and_print('#####################')
     log_and_print('for task {} with search seed {}'.format(task, seed))
     log_and_print('#####################')

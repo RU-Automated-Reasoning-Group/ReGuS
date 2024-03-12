@@ -532,7 +532,7 @@ class Node:
             # log and print
             log_and_print('\n success and store for {}'.format(candidate))
             print("eval success")
-            pdb.set_trace()
+            # pdb.set_trace()
             self.candidates['success'].append((1.0, candidate))
             return self.SUCCESS_TYPE, eval_robot, 1.0
         else:

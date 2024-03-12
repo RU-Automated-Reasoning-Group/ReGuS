@@ -1,0 +1,1 @@
+ WHILE(not (goal_on_right)) { IF(left_is_clear) { turn_left}  IF(goal_present) { return}  IF(not (front_is_clear)) { turn_right}  IF(front_is_lava) { turn_right}  move} ; turn_right WHILE(not (goal_present)) { move} ;; END (False)

@@ -1,0 +1,1 @@
+ get_ball turn_right drop turn_right IF(not (right_is_clear)) { drop}  turn_right drop turn_right pickup; END (False)
