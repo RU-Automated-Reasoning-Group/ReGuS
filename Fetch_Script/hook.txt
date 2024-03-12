@@ -1,0 +1,1 @@
+ WHILE(not (block_at_goal)) { IF(hook_grasped) { IF(hook_aligned) { sweep} ELSE { align}} ELSE { pick_up_hook} idle} ;; END

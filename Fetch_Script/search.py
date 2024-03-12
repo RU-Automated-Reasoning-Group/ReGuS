@@ -229,11 +229,11 @@ class Node:
         dsl.stop_count()
         visualization_rwd = []
         if reward == 0.5:
-            print("sampling 15 seeds")
+            print("sampling 3 seeds")
             sampled_seeds = random.sample(self.eval_seeds, 3)
         elif reward == 1.0:
-            print("sampling 150 seeds")
-            sampled_seeds = random.sample(self.eval_seeds, 700)
+            print("sampling 300 seeds")
+            sampled_seeds = random.sample(self.eval_seeds, 300)
         else:
             sampled_seeds = []
             visualization_rwd.append(0.0)
@@ -330,7 +330,7 @@ class Node:
         # fail
         success_rate = success_count / len(self.eval_seeds)
         print(f"success rate is {success_rate}")
-        if success_rate < 0.9:
+        if success_rate < 0.85:
             log_and_print(
                 "\nfound but not success in all seeds for \n {}".format(prog)
             )
@@ -339,6 +339,10 @@ class Node:
         # success
         log_and_print("\nsuccess and store for \n {}".format(prog))
         self.candidates["success"].append((1, prog))
+        df2 = pd.DataFrame([[dsl.get_g_counter(), success_rate]], columns=["Step", "Value"])
+        global df
+        df = df.append(df2)
+
         return self.SUCCESS_TYPE
 
     def test_for_success_rate(self, prog):
@@ -1069,6 +1073,8 @@ class Node:
                         elif eval_result == self.SUCCESS_TYPE:
                             test_result = self.test_program(p)
                             if self.found_one and test_result == self.SUCCESS_TYPE:
+                                with open("pick.txt", "w") as f:
+                                    f.write(str(p))
                                 break
                             else:
                                 continue

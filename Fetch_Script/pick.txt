@@ -1,0 +1,1 @@
+ WHILE(not (block_at_goal)) { IF(block_below_gripper) { IF(gripper_are_open) { IF(block_inside_gripper) { close_gripper} ELSE { move_down}} ELSE { IF(block_inside_gripper) { move_to_goal} ELSE { open_gripper}}} ELSE { move_to_block} idle} ;; END
