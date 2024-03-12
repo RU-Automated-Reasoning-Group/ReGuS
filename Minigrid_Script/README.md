@@ -5,6 +5,12 @@ To run the code for MiniGrid environments, use conda env regus 2 by running
 conda activate regus2
 ```
 
+Install MiniGrid Package
+```
+cd Minigrid
+python3 -m pip install -e .
+```
+
 ## 1.  Synthesizing a new program for a specific minigrid environment with library
 
 ReGuS is capable of complicated programs based simple programs that synthesized for other environments, i.e. curriculum synthesis. For each environment, represented as an index number, we provide a checkpoint library that contains all synthesized programs for previous environments. Such a library will be used as building blocks for later environments.

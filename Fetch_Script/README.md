@@ -5,6 +5,11 @@ To run the code for fetch environments, use conda env regus 2 by running
 conda activate regus2
 ```
 
+Set environment variable in bash
+```
+export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/root/.mujoco/mujoco210/bin
+```
+
 ## 1.  Synthesizing a new program for Pick&Place environment 
 There are two required arguments. Seed is used to specify different environment initial configuration. Random_seed is is used to control the randomness in the program
 
