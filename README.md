@@ -15,12 +15,12 @@ This artifact is built as a Docker image. Before proceeding, ensure Docker is in
 
 You might fetch our pre-built Docker image from Docker Hug:
 ```
-docker pull gfc669/pldi_ubuntu_latest:latest
+docker pull gfc669/pldi_new:latest
 ```
 
 To launch a shell n docker image:
 ```
-docker run --platform linux/x86_64 -it gfc669/pldi_ubuntu_latest
+docker run --platform linux/x86_64 -it gfc669/pldi_new
 ```
 
 ### Basis Test
