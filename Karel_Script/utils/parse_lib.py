@@ -13,7 +13,7 @@ def get_parse():
                         help='root path to store results')
     
     # search
-    parser.add_argument('-num_exps', type=int, default=1, \
+    parser.add_argument('--num_exps', type=int, default=1, \
                         help='number of search experiments')
     parser.add_argument('--search_seed_list', type=str, default='0,1000,2000', \
                         help='list of search seeds')
