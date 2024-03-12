@@ -149,9 +149,28 @@ def test(search_steps, search_iter, task='topOff', seed=123, more_seeds=[], eval
 
     return best_reward, total_time, cur_step, [alg.total_iter, alg.total_reward, alg.total_eval_reward]
 
+def build_config(args):
+    # general
+    args.store_path = 'store/mcts_test/karel_log/{}'.format(args.task)
+    if args.task in ['seeder', 'doorkey']:
+        args.search_iter = '600,3500'
+    else:
+        args.search_iter = '500'
+
+    # search
+    args.search_seed_list = ','.join([str(1000 * exp_id) for exp_id in range(args.num_exps)])
+    if args.num_exps > 5:
+        args.support_seed_list = args.search_seed_list
+    if args.task == 'harvester':
+        args.support_seed_list = ''
+    if args.task in ['seeder', 'doorkey']:
+        args.cost_w = 0.2
+    else:
+        args.cost_w = 0.04
 
 if __name__ == '__main__':
     args = get_parse()
+    build_config(args)
 
     # initialize task from argument
     task = args.task

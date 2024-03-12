@@ -4,7 +4,7 @@ def get_parse():
     parser = argparse.ArgumentParser()
 
     # general
-    parser.add_argument('--task', type=str ,default='cleanHouse', \
+    parser.add_argument('--task', type=str ,default='highway-fast-v0', \
                         choices=['highway-fast-v0'], \
                         help='task name for karel')
     parser.add_argument('--search_iter', type=str, default='80', \
@@ -13,9 +13,11 @@ def get_parse():
                         help='root path to store results')
     
     # search
+    parser.add_argument('--num_exps', type=int, default=1, \
+                        help='number of search experiments')
     parser.add_argument('--search_seed_list', type=str, default='0,1000,2000', \
                         help='list of search seeds')
-    parser.add_argument('--support_seed_list', type=str, default='0,1000,2000,3000,4000', \
+    parser.add_argument('--support_seed_list', type=str, default='40000,70000,10000,50000,60000', \
                         help='list of support seeds')
 
     # evaluation

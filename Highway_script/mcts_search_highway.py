@@ -136,9 +136,17 @@ def test(search_steps, search_iter, task='highway-fast-v0', seed=123, more_seeds
 
     return best_reward, total_time, cur_step, [alg.total_iter, alg.total_reward, alg.total_eval_reward]
 
+def build_config(args):
+    # general
+    args.store_path = 'store/mcts_test/highway'
+
+    # search
+    args.search_seed_list = ','.join([str(1000 * exp_id) for exp_id in range(args.num_exps)])
+
 
 if __name__ == '__main__':
     args = get_parse()
+    build_config(args)
 
     # initialize task from argument
     task = args.task

@@ -1,0 +1,520 @@
+[ITER] 0
+searching base on  WHILE(not (present_goal)) { C } ; C ; END with cost 0
+all rewards: [0, 0, 0, 0, 0]
+current time: 4.451952219009399
+all rewards: [0, 0, 0, 0, 0]
+expand: put into queue and get cost 1 reward 0.0 for seed 0 for
+  WHILE(not (present_goal)) { turn_left C } ; C ; END
+current time: 8.774818897247314
+all rewards: [0, 0, 0, 0, 0]
+
+ special complete with reward 0.0 for
+  WHILE(not (present_goal)) { move} ; C ; END
+expand: put into queue and get cost 1 reward 0.0 for seed 0 for
+  WHILE(not (present_goal)) { move} ; C ; END
+current time: 45.83403491973877
+all rewards: [0, 0, 0, 0, 0]
+expand: put into queue and get cost 1 reward 0.0 for seed 0 for
+  WHILE(not (present_goal)) { turn_right C } ; C ; END
+------ end current search -------
+
+[ITER] 1
+searching base on  WHILE(not (present_goal)) { turn_left C } ; C ; END with cost 0.04
+current time: 50.13731646537781
+all rewards: [0, 0, 0, 0, 0]
+expand: put into queue and get cost 2 reward 0.0 for seed 0 for
+  WHILE(not (present_goal)) { turn_left turn_left C } ; C ; END
+current time: 54.433656454086304
+all rewards: [0, 0, 0, 0, 0]
+
+ special complete with reward 0.0 for
+  WHILE(not (present_goal)) { turn_left move} ; C ; END
+expand: put into queue and get cost 2 reward 0.0 for seed 0 for
+  WHILE(not (present_goal)) { turn_left move} ; C ; END
+------ end current search -------
+
+[ITER] 2
+searching base on  WHILE(not (present_goal)) { move} ; C ; END with cost 0.04
+current time: 91.34201717376709
+all rewards: [0, 0, 0, 0, 0]
+
+ special complete with reward 0.0 for
+  WHILE(not (present_goal)) { move} ; C ; END
+case one applied: put into queue and get cost 1 reward 0.0 for seed 0 for 
+  WHILE(not (present_goal)) { move} ; C ; END
+current time: 132.42466139793396
+all rewards: [0, 0, 0, 0, 0]
+add if: put into queue and get cost 3 reward 0.0 for seed 0 for
+  WHILE(not (present_goal)) { IF(left_is_clear) { turn_right WHILE(left_is_clear) { C } ; C }  move} ; C ; END
+current time: 147.38780570030212
+all rewards: [0, 0, 0, 0, 0]
+add if: put into queue and get cost 3 reward 0.0 for seed 0 for
+  WHILE(not (present_goal)) { IF(left_is_clear) { turn_left WHILE(left_is_clear) { C } ; C }  move} ; C ; END
+current time: 162.40199422836304
+all rewards: [0, 0, 0, 0, 0]
+add if: put into queue and get cost 2 reward 0.0 for seed 0 for
+  WHILE(not (present_goal)) { IF(left_is_clear) { WHILE(left_is_clear) { C } ; C }  move} ; C ; END
+[ITER] 3
+searching base on  WHILE(not (present_goal)) { turn_right C } ; C ; END with cost 0.04
+current time: 177.82358169555664
+all rewards: [0, 0, 0, 0, 0]
+
+ special complete with reward 0.0 for
+  WHILE(not (present_goal)) { turn_right move} ; C ; END
+expand: put into queue and get cost 2 reward 0.0 for seed 0 for
+  WHILE(not (present_goal)) { turn_right move} ; C ; END
+current time: 214.41349959373474
+all rewards: [0, 0, 0, 0, 0]
+expand: put into queue and get cost 2 reward 0.0 for seed 0 for
+  WHILE(not (present_goal)) { turn_right turn_right C } ; C ; END
+------ end current search -------
+
+[ITER] 4
+searching base on  WHILE(not (present_goal)) { move} ; C ; END with cost 0.04
+current time: 218.81843495368958
+all rewards: [0, 0, 0, 0, 0]
+
+ no fuel with reward 0 under seed 0 for 
+  WHILE(not (present_goal)) { move} ; C ; END
+unable to put into queue and get cost 1 reward 0 for seed 0 for
+  WHILE(not (present_goal)) { move} ; C ; END
+current time: 287.02845454216003
+all rewards: [0, 0, 0, 0, 0]
+add if: put into queue and get cost 3 reward 0.0 for seed 0 for
+  WHILE(not (present_goal)) { IF(not (front_is_clear)) { turn_right WHILE(not (front_is_clear)) { C } ; C }  move} ; C ; END
+current time: 302.2691535949707
+all rewards: [0, 0, 0, 0, 0]
+add if: put into queue and get cost 3 reward 0.0 for seed 0 for
+  WHILE(not (present_goal)) { IF(not (front_is_clear)) { turn_left WHILE(not (front_is_clear)) { C } ; C }  move} ; C ; END
+current time: 317.4846022129059
+all rewards: [0, 0, 0, 0, 0]
+add if: put into queue and get cost 2 reward 0.0 for seed 0 for
+  WHILE(not (present_goal)) { IF(not (front_is_clear)) { WHILE(not (front_is_clear)) { C } ; C }  move} ; C ; END
+[ITER] 5
+searching base on  WHILE(not (present_goal)) { turn_left turn_left C } ; C ; END with cost 0.08
+current time: 333.3245937824249
+all rewards: [0, 0, 0, 0, 0]
+expand: put into queue and get cost 3 reward 0.0 for seed 0 for
+  WHILE(not (present_goal)) { turn_left turn_left turn_left C } ; C ; END
+current time: 337.5969252586365
+all rewards: [0, 0, 0, 0, 0]
+
+ special complete with reward 0.0 for
+  WHILE(not (present_goal)) { turn_left turn_left move} ; C ; END
+expand: put into queue and get cost 3 reward 0.0 for seed 0 for
+  WHILE(not (present_goal)) { turn_left turn_left move} ; C ; END
+------ end current search -------
+
+[ITER] 6
+searching base on  WHILE(not (present_goal)) { turn_left move} ; C ; END with cost 0.08
+current time: 375.11591267585754
+all rewards: [0, 0, 0, 0, 0]
+add if: put into queue and get cost 4 reward 0.0 for seed 0 for
+  WHILE(not (present_goal)) { IF(right_is_clear) { move WHILE(right_is_clear) { C } ; C }  turn_left move} ; C ; END
+current time: 379.9537568092346
+all rewards: [0, 0, 0, 0, 0]
+add if: put into queue and get cost 4 reward 0.0 for seed 0 for
+  WHILE(not (present_goal)) { IF(right_is_clear) { turn_right WHILE(right_is_clear) { C } ; C }  turn_left move} ; C ; END
+current time: 384.0803098678589
+all rewards: [0, 0, 0, 0, 0]
+
+ special complete with reward 0.0 for
+  WHILE(not (present_goal)) { turn_left move} ; C ; END
+case one applied: put into queue and get cost 2 reward 0.0 for seed 0 for 
+  WHILE(not (present_goal)) { turn_left move} ; C ; END
+current time: 420.76725220680237
+all rewards: [0, 0, 0, 0, 0]
+add if: put into queue and get cost 3 reward 0.0 for seed 0 for
+  WHILE(not (present_goal)) { IF(right_is_clear) { WHILE(right_is_clear) { C } ; C }  turn_left move} ; C ; END
+current time: 425.66164445877075
+all rewards: [0, 0, 0, 0, 0]
+
+ special complete with reward 0.0 for
+  WHILE(not (present_goal)) { IF(not (right_is_clear)) { turn_left}  move} ; C ; END
+case 3: put into queue and get cost 3 reward 0.0 for seed 0 for
+  WHILE(not (present_goal)) { IF(not (right_is_clear)) { turn_left}  move} ; C ; END
+[ITER] 7
+searching base on  WHILE(not (present_goal)) { IF(left_is_clear) { WHILE(left_is_clear) { C } ; C }  move} ; C ; END with cost 0.08
+current time: 473.6616222858429
+all rewards: [0, 0, 0, 0, 0]
+expand: put into queue and get cost 3 reward 0.0 for seed 0 for
+  WHILE(not (present_goal)) { IF(left_is_clear) { WHILE(left_is_clear) { turn_right C } ; C }  move} ; C ; END
+current time: 489.33790469169617
+all rewards: [0, 0, 0, 0, 0]
+expand: put into queue and get cost 3 reward 0.0 for seed 0 for
+  WHILE(not (present_goal)) { IF(left_is_clear) { WHILE(left_is_clear) { move} ; C }  move} ; C ; END
+current time: 523.3043158054352
+all rewards: [0, 0, 0, 0, 0]
+expand: put into queue and get cost 3 reward 0.0 for seed 0 for
+  WHILE(not (present_goal)) { IF(left_is_clear) { WHILE(left_is_clear) { turn_left C } ; C }  move} ; C ; END
+------ end current search -------
+
+[ITER] 8
+searching base on  WHILE(not (present_goal)) { turn_right move} ; C ; END with cost 0.08
+current time: 538.2439105510712
+all rewards: [0, 0, 0, 0, 0]
+add if: put into queue and get cost 4 reward 0.0 for seed 0 for
+  WHILE(not (present_goal)) { IF(left_is_clear) { move WHILE(left_is_clear) { C } ; C }  turn_right move} ; C ; END
+current time: 542.4211716651917
+all rewards: [0, 0, 0, 0, 0]
+
+ special complete with reward 0.0 for
+  WHILE(not (present_goal)) { turn_right move} ; C ; END
+case one applied: put into queue and get cost 2 reward 0.0 for seed 0 for 
+  WHILE(not (present_goal)) { turn_right move} ; C ; END
+current time: 579.1374189853668
+all rewards: [0, 0, 0, 0, 0]
+add if: put into queue and get cost 4 reward 0.0 for seed 0 for
+  WHILE(not (present_goal)) { IF(left_is_clear) { turn_left WHILE(left_is_clear) { C } ; C }  turn_right move} ; C ; END
+current time: 583.5330076217651
+all rewards: [0, 0, 0, 0, 0]
+add if: put into queue and get cost 3 reward 0.0 for seed 0 for
+  WHILE(not (present_goal)) { IF(left_is_clear) { WHILE(left_is_clear) { C } ; C }  turn_right move} ; C ; END
+current time: 588.1054677963257
+all rewards: [0, 0, 0, 0, 0]
+
+ special complete with reward 0.0 for
+  WHILE(not (present_goal)) { IF(not (left_is_clear)) { turn_right}  move} ; C ; END
+case 3: put into queue and get cost 3 reward 0.0 for seed 0 for
+  WHILE(not (present_goal)) { IF(not (left_is_clear)) { turn_right}  move} ; C ; END
+[ITER] 9
+searching base on  WHILE(not (present_goal)) { turn_right turn_right C } ; C ; END with cost 0.08
+current time: 625.906054019928
+all rewards: [0, 0, 0, 0, 0]
+
+ special complete with reward 0.0 for
+  WHILE(not (present_goal)) { turn_right turn_right move} ; C ; END
+expand: put into queue and get cost 3 reward 0.0 for seed 0 for
+  WHILE(not (present_goal)) { turn_right turn_right move} ; C ; END
+current time: 663.7348730564117
+all rewards: [0, 0, 0, 0, 0]
+expand: put into queue and get cost 3 reward 0.0 for seed 0 for
+  WHILE(not (present_goal)) { turn_right turn_right turn_right C } ; C ; END
+------ end current search -------
+
+[ITER] 10
+searching base on  WHILE(not (present_goal)) { IF(not (front_is_clear)) { WHILE(not (front_is_clear)) { C } ; C }  move} ; C ; END with cost 0.08
+current time: 668.0582737922668
+all rewards: [0, 0, 0, 0, 0]
+expand: put into queue and get cost 3 reward 0.0 for seed 0 for
+  WHILE(not (present_goal)) { IF(not (front_is_clear)) { WHILE(not (front_is_clear)) { turn_left C } ; C }  move} ; C ; END
+current time: 684.2421908378601
+all rewards: [0, 0, 0, 0, 0]
+expand: put into queue and get cost 3 reward 0.0 for seed 0 for
+  WHILE(not (present_goal)) { IF(not (front_is_clear)) { WHILE(not (front_is_clear)) { turn_right C } ; C }  move} ; C ; END
+current time: 700.4837453365326
+all rewards: [0, 0, 0, 0, 0]
+expand: put into queue and get cost 3 reward 0.0 for seed 0 for
+  WHILE(not (present_goal)) { IF(not (front_is_clear)) { WHILE(not (front_is_clear)) { move} ; C }  move} ; C ; END
+------ end current search -------
+
+[ITER] 11
+searching base on  WHILE(not (present_goal)) { turn_left move} ; C ; END with cost 0.08
+current time: 721.1442432403564
+all rewards: [0, 0, 0, 0, 0]
+
+ special complete with reward 0.0 for
+  WHILE(not (present_goal)) { turn_left move} ; C ; END
+case one applied: put into queue and get cost 2 reward 0.0 for seed 0 for 
+  WHILE(not (present_goal)) { turn_left move} ; C ; END
+current time: 757.7329440116882
+all rewards: [0, 0, 0, 0, 0]
+add if: put into queue and get cost 4 reward 0.0 for seed 0 for
+  WHILE(not (present_goal)) { turn_left IF(not (right_is_clear)) { turn_right WHILE(not (right_is_clear)) { C } ; C }  move} ; C ; END
+current time: 762.4704504013062
+all rewards: [0, 0, 0, 0, 0]
+add if: put into queue and get cost 4 reward 0.0 for seed 0 for
+  WHILE(not (present_goal)) { turn_left IF(not (right_is_clear)) { turn_left WHILE(not (right_is_clear)) { C } ; C }  move} ; C ; END
+current time: 766.5901749134064
+all rewards: [0, 0, 0, 0, 0]
+add if: put into queue and get cost 3 reward 0.0 for seed 0 for
+  WHILE(not (present_goal)) { turn_left IF(not (right_is_clear)) { WHILE(not (right_is_clear)) { C } ; C }  move} ; C ; END
+[ITER] 12
+searching base on  WHILE(not (present_goal)) { turn_right move} ; C ; END with cost 0.08
+current time: 771.4939932823181
+all rewards: [0, 0, 0, 0, 0]
+
+ special complete with reward 0.0 for
+  WHILE(not (present_goal)) { turn_right move} ; C ; END
+case one applied: put into queue and get cost 2 reward 0.0 for seed 0 for 
+  WHILE(not (present_goal)) { turn_right move} ; C ; END
+current time: 808.155793428421
+all rewards: [0, 0, 0, 0, 0]
+add if: put into queue and get cost 4 reward 0.0 for seed 0 for
+  WHILE(not (present_goal)) { turn_right IF(not (left_is_clear)) { turn_right WHILE(not (left_is_clear)) { C } ; C }  move} ; C ; END
+current time: 812.6173899173737
+all rewards: [0, 0, 0, 0, 0]
+add if: put into queue and get cost 4 reward 0.0 for seed 0 for
+  WHILE(not (present_goal)) { turn_right IF(not (left_is_clear)) { turn_left WHILE(not (left_is_clear)) { C } ; C }  move} ; C ; END
+current time: 816.8841099739075
+all rewards: [0, 0, 0, 0, 0]
+add if: put into queue and get cost 3 reward 0.0 for seed 0 for
+  WHILE(not (present_goal)) { turn_right IF(not (left_is_clear)) { WHILE(not (left_is_clear)) { C } ; C }  move} ; C ; END
+[ITER] 13
+searching base on  WHILE(not (present_goal)) { turn_left move} ; C ; END with cost 0.08
+current time: 821.5925261974335
+all rewards: [0, 0, 0, 0, 0]
+
+ special complete with reward 0.0 for
+  WHILE(not (present_goal)) { turn_left move} ; C ; END
+case one applied: put into queue and get cost 2 reward 0.0 for seed 0 for 
+  WHILE(not (present_goal)) { turn_left move} ; C ; END
+current time: 858.6751055717468
+all rewards: [0, 0, 0, 0, 0]
+add if: put into queue and get cost 4 reward 0.0 for seed 0 for
+  WHILE(not (present_goal)) { turn_left IF(left_is_clear) { turn_right WHILE(left_is_clear) { C } ; C }  move} ; C ; END
+current time: 863.5435144901276
+all rewards: [0, 0, 0, 0, 0]
+add if: put into queue and get cost 4 reward 0.0 for seed 0 for
+  WHILE(not (present_goal)) { turn_left IF(left_is_clear) { turn_left WHILE(left_is_clear) { C } ; C }  move} ; C ; END
+current time: 867.7981407642365
+all rewards: [0, 0, 0, 0, 0]
+add if: put into queue and get cost 3 reward 0.0 for seed 0 for
+  WHILE(not (present_goal)) { turn_left IF(left_is_clear) { WHILE(left_is_clear) { C } ; C }  move} ; C ; END
+[ITER] 14
+searching base on  WHILE(not (present_goal)) { turn_right move} ; C ; END with cost 0.08
+current time: 872.6895184516907
+all rewards: [0, 0, 0, 0, 0]
+
+ special complete with reward 0.0 for
+  WHILE(not (present_goal)) { turn_right move} ; C ; END
+case one applied: put into queue and get cost 2 reward 0.0 for seed 0 for 
+  WHILE(not (present_goal)) { turn_right move} ; C ; END
+current time: 910.38414478302
+all rewards: [0, 0, 0, 0, 0]
+add if: put into queue and get cost 4 reward 0.0 for seed 0 for
+  WHILE(not (present_goal)) { turn_right IF(right_is_clear) { turn_right WHILE(right_is_clear) { C } ; C }  move} ; C ; END
+current time: 915.4154121875763
+all rewards: [0, 0, 0, 0, 0]
+add if: put into queue and get cost 4 reward 0.0 for seed 0 for
+  WHILE(not (present_goal)) { turn_right IF(right_is_clear) { turn_left WHILE(right_is_clear) { C } ; C }  move} ; C ; END
+current time: 919.8263804912567
+all rewards: [0, 0, 0, 0, 0]
+add if: put into queue and get cost 3 reward 0.0 for seed 0 for
+  WHILE(not (present_goal)) { turn_right IF(right_is_clear) { WHILE(right_is_clear) { C } ; C }  move} ; C ; END
+[ITER] 15
+searching base on  WHILE(not (present_goal)) { turn_left move} ; C ; END with cost 0.08
+current time: 924.5313436985016
+all rewards: [0, 0, 0, 0, 0]
+add if: put into queue and get cost 4 reward 0.0 for seed 0 for
+  WHILE(not (present_goal)) { IF(left_is_clear) { move WHILE(left_is_clear) { C } ; C }  turn_left move} ; C ; END
+current time: 928.9990141391754
+all rewards: [0, 0, 0, 0, 0]
+add if: put into queue and get cost 4 reward 0.0 for seed 0 for
+  WHILE(not (present_goal)) { IF(left_is_clear) { turn_right WHILE(left_is_clear) { C } ; C }  turn_left move} ; C ; END
+current time: 933.3358342647552
+all rewards: [0, 0, 0, 0, 0]
+
+ special complete with reward 0.0 for
+  WHILE(not (present_goal)) { turn_left move} ; C ; END
+case one applied: put into queue and get cost 2 reward 0.0 for seed 0 for 
+  WHILE(not (present_goal)) { turn_left move} ; C ; END
+current time: 972.1455302238464
+all rewards: [0, 0, 0, 0, 0]
+add if: put into queue and get cost 3 reward 0.0 for seed 0 for
+  WHILE(not (present_goal)) { IF(left_is_clear) { WHILE(left_is_clear) { C } ; C }  turn_left move} ; C ; END
+current time: 976.8037714958191
+all rewards: [0, 0, 0, 0, 0]
+
+ special complete with reward 0.0 for
+  WHILE(not (present_goal)) { IF(not (left_is_clear)) { turn_left}  move} ; C ; END
+case 3: put into queue and get cost 3 reward 0.0 for seed 0 for
+  WHILE(not (present_goal)) { IF(not (left_is_clear)) { turn_left}  move} ; C ; END
+[ITER] 16
+searching base on  WHILE(not (present_goal)) { turn_right move} ; C ; END with cost 0.08
+current time: 1014.6530969142914
+all rewards: [0, 0, 0, 0, 0]
+add if: put into queue and get cost 4 reward 0.0 for seed 0 for
+  WHILE(not (present_goal)) { IF(right_is_clear) { move WHILE(right_is_clear) { C } ; C }  turn_right move} ; C ; END
+current time: 1018.8671243190765
+all rewards: [0, 0, 0, 0, 0]
+
+ special complete with reward 0.0 for
+  WHILE(not (present_goal)) { turn_right move} ; C ; END
+case one applied: put into queue and get cost 2 reward 0.0 for seed 0 for 
+  WHILE(not (present_goal)) { turn_right move} ; C ; END
+current time: 1056.1508390903473
+all rewards: [0, 0, 0, 0, 0]
+add if: put into queue and get cost 4 reward 0.0 for seed 0 for
+  WHILE(not (present_goal)) { IF(right_is_clear) { turn_left WHILE(right_is_clear) { C } ; C }  turn_right move} ; C ; END
+current time: 1060.7611978054047
+all rewards: [0, 0, 0, 0, 0]
+add if: put into queue and get cost 3 reward 0.0 for seed 0 for
+  WHILE(not (present_goal)) { IF(right_is_clear) { WHILE(right_is_clear) { C } ; C }  turn_right move} ; C ; END
+current time: 1065.480718612671
+all rewards: [0, 0, 0, 0, 0]
+
+ no fuel with reward 0 under seed 0 for 
+  WHILE(not (present_goal)) { IF(not (right_is_clear)) { turn_right}  move} ; C ; END
+unable to put into queue and get cost 3 reward 0 for seed 0 for
+  WHILE(not (present_goal)) { IF(not (right_is_clear)) { turn_right}  move} ; C ; END
+[ITER] 17
+searching base on  WHILE(not (present_goal)) { turn_left move} ; C ; END with cost 0.08
+current time: 1135.337158203125
+all rewards: [0, 0, 0, 0, 0]
+
+ special complete with reward 0.0 for
+  WHILE(not (present_goal)) { turn_left move} ; C ; END
+case one applied: put into queue and get cost 2 reward 0.0 for seed 0 for 
+  WHILE(not (present_goal)) { turn_left move} ; C ; END
+current time: 1172.8592326641083
+all rewards: [0, 0, 0, 0, 0]
+add if: put into queue and get cost 4 reward 0.0 for seed 0 for
+  WHILE(not (present_goal)) { turn_left IF(not (front_is_clear)) { turn_right WHILE(not (front_is_clear)) { C } ; C }  move} ; C ; END
+current time: 1178.9401261806488
+all rewards: [0, 0, 0, 0, 0]
+add if: put into queue and get cost 4 reward 0.0 for seed 0 for
+  WHILE(not (present_goal)) { turn_left IF(not (front_is_clear)) { turn_left WHILE(not (front_is_clear)) { C } ; C }  move} ; C ; END
+current time: 1184.9448745250702
+all rewards: [0, 0, 0, 0, 0]
+add if: put into queue and get cost 3 reward 0.0 for seed 0 for
+  WHILE(not (present_goal)) { turn_left IF(not (front_is_clear)) { WHILE(not (front_is_clear)) { C } ; C }  move} ; C ; END
+[ITER] 18
+searching base on  WHILE(not (present_goal)) { turn_right move} ; C ; END with cost 0.08
+current time: 1191.6399688720703
+all rewards: [0, 0, 0, 0, 0]
+add if: put into queue and get cost 4 reward 0.0 for seed 0 for
+  WHILE(not (present_goal)) { IF(not (front_is_clear)) { move WHILE(not (front_is_clear)) { C } ; C }  turn_right move} ; C ; END
+current time: 1197.1581060886383
+all rewards: [0, 0, 0, 0, 0]
+
+ special complete with reward 0.0 for
+  WHILE(not (present_goal)) { turn_right move} ; C ; END
+case one applied: put into queue and get cost 2 reward 0.0 for seed 0 for 
+  WHILE(not (present_goal)) { turn_right move} ; C ; END
+current time: 1234.1317987442017
+all rewards: [0, 0, 0, 0, 0]
+add if: put into queue and get cost 4 reward 0.0 for seed 0 for
+  WHILE(not (present_goal)) { IF(not (front_is_clear)) { turn_left WHILE(not (front_is_clear)) { C } ; C }  turn_right move} ; C ; END
+current time: 1239.844140291214
+all rewards: [0, 0, 0, 0, 0]
+add if: put into queue and get cost 3 reward 0.0 for seed 0 for
+  WHILE(not (present_goal)) { IF(not (front_is_clear)) { WHILE(not (front_is_clear)) { C } ; C }  turn_right move} ; C ; END
+current time: 1245.7492923736572
+all rewards: [0, 0, 0, 0, 0]
+
+ special complete with reward 0.0 for
+  WHILE(not (present_goal)) { IF(front_is_clear) { turn_right}  move} ; C ; END
+case 3: put into queue and get cost 3 reward 0.0 for seed 0 for
+  WHILE(not (present_goal)) { IF(front_is_clear) { turn_right}  move} ; C ; END
+[ITER] 19
+searching base on  WHILE(not (present_goal)) { turn_left move} ; C ; END with cost 0.08
+current time: 1285.4516727924347
+all rewards: [0, 0, 0, 0, 0]
+add if: put into queue and get cost 4 reward 0.0 for seed 0 for
+  WHILE(not (present_goal)) { IF(not (front_is_clear)) { move WHILE(not (front_is_clear)) { C } ; C }  turn_left move} ; C ; END
+current time: 1291.6413345336914
+all rewards: [0, 0, 0, 0, 0]
+add if: put into queue and get cost 4 reward 0.0 for seed 0 for
+  WHILE(not (present_goal)) { IF(not (front_is_clear)) { turn_right WHILE(not (front_is_clear)) { C } ; C }  turn_left move} ; C ; END
+current time: 1297.7307860851288
+all rewards: [0, 0, 0, 0, 0]
+
+ no fuel with reward 0 under seed 0 for 
+  WHILE(not (present_goal)) { turn_left move} ; C ; END
+unable to put into queue and get cost 2 reward 0 for seed 0 for
+  WHILE(not (present_goal)) { turn_left move} ; C ; END
+current time: 1376.1454992294312
+all rewards: [0, 0, 0, 0, 0]
+add if: put into queue and get cost 3 reward 0.0 for seed 0 for
+  WHILE(not (present_goal)) { IF(not (front_is_clear)) { WHILE(not (front_is_clear)) { C } ; C }  turn_left move} ; C ; END
+current time: 1382.6490111351013
+all rewards: [0, 0, 0, 0, 0]
+
+ no fuel with reward 0 under seed 0 for 
+  WHILE(not (present_goal)) { IF(front_is_clear) { turn_left}  move} ; C ; END
+unable to put into queue and get cost 3 reward 0 for seed 0 for
+  WHILE(not (present_goal)) { IF(front_is_clear) { turn_left}  move} ; C ; END
+[ITER] 20
+searching base on  WHILE(not (present_goal)) { turn_right move} ; C ; END with cost 0.08
+current time: 1453.6085340976715
+all rewards: [0, 0, 0, 0, 0]
+
+ no fuel with reward 0 under seed 0 for 
+  WHILE(not (present_goal)) { turn_right move} ; C ; END
+unable to put into queue and get cost 2 reward 0 for seed 0 for
+  WHILE(not (present_goal)) { turn_right move} ; C ; END
+current time: 1525.8895282745361
+all rewards: [0, 0, 0, 0, 0]
+add if: put into queue and get cost 4 reward 0.0 for seed 0 for
+  WHILE(not (present_goal)) { turn_right IF(not (front_is_clear)) { turn_right WHILE(not (front_is_clear)) { C } ; C }  move} ; C ; END
+current time: 1531.197894334793
+all rewards: [0, 0, 0, 0, 0]
+add if: put into queue and get cost 4 reward 0.0 for seed 0 for
+  WHILE(not (present_goal)) { turn_right IF(not (front_is_clear)) { turn_left WHILE(not (front_is_clear)) { C } ; C }  move} ; C ; END
+current time: 1536.7081639766693
+all rewards: [0, 0, 0, 0, 0]
+add if: put into queue and get cost 3 reward 0.0 for seed 0 for
+  WHILE(not (present_goal)) { turn_right IF(not (front_is_clear)) { WHILE(not (front_is_clear)) { C } ; C }  move} ; C ; END
+[ITER] 21
+searching base on  WHILE(not (present_goal)) { IF(left_is_clear) { turn_right WHILE(left_is_clear) { C } ; C }  move} ; C ; END with cost 0.12
+current time: 1542.6400299072266
+all rewards: [0, 0, 0, 0, 0]
+expand: put into queue and get cost 4 reward 0.0 for seed 0 for
+  WHILE(not (present_goal)) { IF(left_is_clear) { turn_right WHILE(left_is_clear) { C } ; turn_right C }  move} ; C ; END
+current time: 1557.9806287288666
+all rewards: [0, 0, 0, 0, 0]
+expand: put into queue and get cost 4 reward 0.0 for seed 0 for
+  WHILE(not (present_goal)) { IF(left_is_clear) { turn_right WHILE(left_is_clear) { C } ; turn_left C }  move} ; C ; END
+current time: 1573.8692157268524
+all rewards: [0, 0, 0, 0, 0]
+expand: put into queue and get cost 4 reward 0.0 for seed 0 for
+  WHILE(not (present_goal)) { IF(left_is_clear) { turn_right WHILE(left_is_clear) { C } ; move C }  move} ; C ; END
+------ end current search -------
+
+[ITER] 22
+searching base on  WHILE(not (present_goal)) { IF(left_is_clear) { turn_left WHILE(left_is_clear) { C } ; C }  move} ; C ; END with cost 0.12
+current time: 1588.650405406952
+all rewards: [0, 0, 0, 0, 0]
+expand: put into queue and get cost 4 reward 0.0 for seed 0 for
+  WHILE(not (present_goal)) { IF(left_is_clear) { turn_left WHILE(left_is_clear) { turn_right C } ; C }  move} ; C ; END
+current time: 1603.8599174022675
+all rewards: [0, 0, 0, 0, 0]
+expand: put into queue and get cost 4 reward 0.0 for seed 0 for
+  WHILE(not (present_goal)) { IF(left_is_clear) { turn_left WHILE(left_is_clear) { turn_left C } ; C }  move} ; C ; END
+current time: 1619.3132643699646
+all rewards: [0, 0, 0, 0, 0]
+expand: put into queue and get cost 4 reward 0.0 for seed 0 for
+  WHILE(not (present_goal)) { IF(left_is_clear) { turn_left WHILE(left_is_clear) { move} ; C }  move} ; C ; END
+------ end current search -------
+
+[ITER] 23
+searching base on  WHILE(not (present_goal)) { IF(not (front_is_clear)) { turn_right WHILE(not (front_is_clear)) { C } ; C }  move} ; C ; END with cost 0.12
+current time: 1637.0460669994354
+all rewards: [0, 0, 0, 0, 0]
+case 2: put into queue and get cost 3 reward 0.0 for seed 0 for
+  WHILE(not (present_goal)) { IF(not (front_is_clear)) { turn_right WHILE(not (front_is_clear)) { C } ;}  move} ; C ; END
+current time: 1667.6276626586914
+all rewards: [0, 0, 0, 0, 0]
+expand: put into queue and get cost 4 reward 0.0 for seed 0 for
+  WHILE(not (present_goal)) { IF(not (front_is_clear)) { turn_right WHILE(not (front_is_clear)) { C } ; turn_right C }  move} ; C ; END
+current time: 1683.245688676834
+all rewards: [0, 0, 0, 0, 0]
+expand: put into queue and get cost 4 reward 0.0 for seed 0 for
+  WHILE(not (present_goal)) { IF(not (front_is_clear)) { turn_right WHILE(not (front_is_clear)) { C } ; turn_left C }  move} ; C ; END
+------ end current search -------
+
+[ITER] 24
+searching base on  WHILE(not (present_goal)) { IF(not (front_is_clear)) { turn_left WHILE(not (front_is_clear)) { C } ; C }  move} ; C ; END with cost 0.12
+current time: 1699.0630235671997
+all rewards: [0, 0, 0, 0, 0]
+expand: put into queue and get cost 4 reward 0.0 for seed 0 for
+  WHILE(not (present_goal)) { IF(not (front_is_clear)) { turn_left WHILE(not (front_is_clear)) { C } ; turn_left C }  move} ; C ; END
+current time: 1714.7648975849152
+all rewards: [0, 0, 0, 0, 0]
+expand: put into queue and get cost 4 reward 0.0 for seed 0 for
+  WHILE(not (present_goal)) { IF(not (front_is_clear)) { turn_left WHILE(not (front_is_clear)) { C } ; turn_right C }  move} ; C ; END
+current time: 1730.54017162323
+all rewards: [1, 1, 1, 1, 1]
+
+ success and store for  WHILE(not (present_goal)) { IF(not (front_is_clear)) { turn_left WHILE(not (front_is_clear)) { C } ;}  move} ; C ; END
+unable to put into queue and get cost 3 reward 1.0 for seed 0 for
+  WHILE(not (present_goal)) { IF(not (front_is_clear)) { turn_left WHILE(not (front_is_clear)) { C } ;}  move} ; C ; END
+------ end current search -------
+
+[ITER] 25
+time: 1760.9105002880096
+evaluate on AntU and get reward 998/1000
+evaluate on AntFb and fail
+evaluate on AntFg and fail
+evaluate on AntMaze and fail
