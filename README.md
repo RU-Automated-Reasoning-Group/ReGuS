@@ -73,9 +73,10 @@ Directory ```Highway_Script``` encapsulate artifact of ReGuS solving continuous 
 Directory ```Ant_Script``` covers ReGuS method handling Ant task with continuous state space environments, including U-shaped Maze, S-shaped maze, $\pi$-shaped maze and w-shaped maze (e.g. images of mazes are shown in right four of **Fig.21. in paper**). To evaluate ReGuS, we synthesize programs from Ant-U Maze and enhance success program from Ant-U Maze on Ant-S environment. All synthesized complete program will be evaluate on all the four maze puzzles and the result will be present on solved number-time step figure (e.g. **Fig. 22(d) of paper**). Log files showing synthesis footprints will also be stored as result.
 
 ### Fetch Environment
+Directory ```Fetch_Script` contains the Fetch-Pick&Place and Fetch-Hook environment. These two environments are used in Figure 22 (b)(c). The synthesized programs will be saved and the reward curves can be ploted using the provided script.
 
 ### MiniGrid Environment
-
+Directory ```Minigrid_Script``` contains the curriculum synthesis part of ReGuS. Programs synthesized for simple environments can be used as building block for complicated environment. The synthesized program and the environment steps used will be saved as results.
 
 ### Baselines
 
