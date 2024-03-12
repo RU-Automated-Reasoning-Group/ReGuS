@@ -23,6 +23,12 @@ To launch a shell n docker image:
 docker run --platform linux/x86_64 -it gfc669/pldi_new
 ```
 
+Enter root path of code:
+```
+cd ~/code/ReGuS
+```
+
+
 ### Basis Test
 
 To verify the tool operating successfully, entire directory ```Get_Start```.
