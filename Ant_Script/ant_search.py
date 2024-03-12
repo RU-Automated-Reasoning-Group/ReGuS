@@ -140,21 +140,21 @@ def eval_program(ant_program):
         # evaluation
         fail_num = 0
         total_reward = 0
-        for exp_index in tqdm(range(1000)):
+        for exp_index in tqdm(range(100)):
             ant_program_env.reset()
             ant_program.execute(ant_program_env)
             reward = ant_program_env.check_reward()
             if reward < 1:
                 fail_num += 1
             total_reward += reward
-            if fail_num > 50:
+            if fail_num > 5:
                 break
         
-        if fail_num > 50:
+        if fail_num > 5:
             log_and_print('evaluate on {} and fail'.format(task))
         else:
-            log_and_print('evaluate on {} and get reward {}/1000'.format(task, total_reward))
-        task_solve += total_reward >= 950
+            log_and_print('evaluate on {} and get reward {}/100'.format(task, total_reward))
+        task_solve += total_reward >= 95
     
     return task_solve
 
@@ -188,6 +188,7 @@ def do_search(args):
         print('currently random seed {}'.format(random_seed))
         reward_list.append([])
         step_list.append([])
+        last_reward = 0
 
         # set seed
         seed = random_seed
@@ -221,7 +222,10 @@ def do_search(args):
             example_program = node.candidates['success'][0][1]
             example_program.reset()
             example_reward = eval_program(copy.deepcopy(example_program))
-            reward_list[-1] += [example_reward for _ in timesteps]
+            reward_list[-1] += [last_reward for _ in timesteps]
+            reward_list[-1][-1] = example_reward
+            last_reward = example_reward
+
             step_list[-1] += (np.array(timesteps) + start_time_step).tolist()
             start_time_step += timesteps[-1]
 
@@ -230,9 +234,7 @@ def do_search(args):
             example_program.reset_c_touch()
 
     # plot
-    np.save('store/test_reward.npy', reward_list)
-    np.save('store/test_step.npy', step_list)
-    var_plot(reward_list, step_list, fig_path='{}/reward.pdf'.format(store_path))
+    var_plot(step_list, reward_list, fig_path='{}/reward.pdf'.format(store_path))
 
 if __name__ == "__main__":
     args = get_parse()
