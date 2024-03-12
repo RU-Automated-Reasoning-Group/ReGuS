@@ -160,7 +160,7 @@ def eval_program(ant_program):
 
 def build_config(args):
     # general
-    args.store_path = 'store/mcts_test/{}'.format(''.join(args.tasks.split(',')))
+    args.store_path = 'store/{}'.format(''.join(args.tasks.split(',')))
 
     # search
     args.search_seed_list = ','.join([str(1000 * exp_id) for exp_id in range(args.num_exps)])

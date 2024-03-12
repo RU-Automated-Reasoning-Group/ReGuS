@@ -1,0 +1,147 @@
+#####################
+for task fourCorners with search seed 1000
+#####################
+for level 0
+(' S ; END', 0, 0, -inf, 0, -inf)
+----------------------------
+Current Step: 0
+Current Sketch:  WHILE(not(right_is_clear)) { S } ; S ; END
+search limit iteration: 500
+[ITER] 0
+searching base on  WHILE(not(right_is_clear)) { C } ; C ; END with cost 0
+all rewards: [0, 0, 0, 0, 0]
+current time: 0.022964000701904297
+all rewards: [0, 0, 0, 0, 0]
+expand: put into queue and get cost 1 reward 0.0 for seed 1000 for
+  WHILE(not(right_is_clear)) { turn_left C } ; C ; END
+current time: 0.04103827476501465
+all rewards: [0, 0, 0, 0, 0]
+
+ special complete with reward 0.0 for
+  WHILE(not(right_is_clear)) { move} ; C ; END
+expand: put into queue and get cost 1 reward 0.0 for seed 1000 for
+  WHILE(not(right_is_clear)) { move} ; C ; END
+current time: 0.07587742805480957
+all rewards: [0, 0, 0, 0, 0]
+expand: put into queue and get cost 1 reward 0.0 for seed 1000 for
+  WHILE(not(right_is_clear)) { pick_marker C } ; C ; END
+current time: 0.09360599517822266
+all rewards: [0, 0, 0, 0, 0]
+expand: put into queue and get cost 1 reward 0.0 for seed 1000 for
+  WHILE(not(right_is_clear)) { turn_right C } ; C ; END
+current time: 0.1127614974975586
+all rewards: [0, 0, 0, 0, 0]
+expand: put into queue and get cost 1 reward 0.0 for seed 1000 for
+  WHILE(not(right_is_clear)) { put_marker C } ; C ; END
+------ end current search -------
+
+[ITER] 1
+searching base on  WHILE(not(right_is_clear)) { turn_left C } ; C ; END with cost 0.04
+current time: 0.1310274600982666
+all rewards: [0, 0, 0, 0, 0]
+expand: put into queue and get cost 2 reward 0.0 for seed 1000 for
+  WHILE(not(right_is_clear)) { turn_left pick_marker C } ; C ; END
+current time: 0.14889764785766602
+all rewards: [0, 0, 0, 0, 0]
+expand: put into queue and get cost 2 reward 0.0 for seed 1000 for
+  WHILE(not(right_is_clear)) { turn_left move C } ; C ; END
+current time: 0.1671135425567627
+all rewards: [0, 0, 0, 0, 0]
+expand: put into queue and get cost 2 reward 0.0 for seed 1000 for
+  WHILE(not(right_is_clear)) { turn_left put_marker C } ; C ; END
+current time: 0.1853477954864502
+all rewards: [0, 0, 0, 0, 0]
+expand: put into queue and get cost 2 reward 0.0 for seed 1000 for
+  WHILE(not(right_is_clear)) { turn_left turn_left C } ; C ; END
+------ end current search -------
+
+[ITER] 2
+searching base on  WHILE(not(right_is_clear)) { move} ; C ; END with cost 0.04
+current time: 0.20667815208435059
+all rewards: [0, 0, 0, 0, 0]
+
+ no fuel with reward 0 under seed 1000 for 
+  WHILE(not(right_is_clear)) { move} ; C ; END
+unable to put into queue and get cost 1 reward 0 for seed 1000 for
+  WHILE(not(right_is_clear)) { move} ; C ; END
+current time: 0.2434978485107422
+all rewards: [0, 0, 0, 0, 0]
+add if: put into queue and get cost 2 reward 0.0 for seed 1000 for
+  WHILE(not(right_is_clear)) { IF(not(front_is_clear)) { turn_right C }  move} ; C ; END
+current time: 0.2675490379333496
+all rewards: [0, 0, 0, 0, 0]
+add if: put into queue and get cost 2 reward 0.0 for seed 1000 for
+  WHILE(not(right_is_clear)) { IF(not(front_is_clear)) { turn_left C }  move} ; C ; END
+current time: 0.28823113441467285
+all rewards: [0, 0, 0, 0, 0]
+add if: put into queue and get cost 2 reward 0.0 for seed 1000 for
+  WHILE(not(right_is_clear)) { IF(not(front_is_clear)) { pick_marker C }  move} ; C ; END
+current time: 0.31270694732666016
+all rewards: [0.25, 0.25, 0.25, 0.25, 0.25]
+add if: put into queue and get cost 2 reward 0.25 for seed 1000 for
+  WHILE(not(right_is_clear)) { IF(not(front_is_clear)) { put_marker C }  move} ; C ; END
+[ITER] 3
+searching base on  WHILE(not(right_is_clear)) { IF(not(front_is_clear)) { put_marker C }  move} ; C ; END with cost -0.16999999999999998
+current time: 0.3346245288848877
+all rewards: [0.25, 0.25, 0.25, 0.25, 0.25]
+expand: put into queue and get cost 3 reward 0.25 for seed 1000 for
+  WHILE(not(right_is_clear)) { IF(not(front_is_clear)) { put_marker turn_left C }  move} ; C ; END
+current time: 0.3578660488128662
+all rewards: [0, 0, 0, 0, 0]
+expand: put into queue and get cost 3 reward 0.0 for seed 1000 for
+  WHILE(not(right_is_clear)) { IF(not(front_is_clear)) { put_marker put_marker C }  move} ; C ; END
+current time: 0.3786487579345703
+all rewards: [0.25, 0.25, 0.25, 0.25, 0.25]
+expand: put into queue and get cost 3 reward 0.25 for seed 1000 for
+  WHILE(not(right_is_clear)) { IF(not(front_is_clear)) { put_marker move C }  move} ; C ; END
+current time: 0.40390491485595703
+all rewards: [0.25, 0.25, 0.25, 0.25, 0.25]
+expand: put into queue and get cost 3 reward 0.25 for seed 1000 for
+  WHILE(not(right_is_clear)) { IF(not(front_is_clear)) { put_marker turn_right C }  move} ; C ; END
+------ end current search -------
+
+[ITER] 4
+searching base on  WHILE(not(right_is_clear)) { IF(not(front_is_clear)) { put_marker turn_left C }  move} ; C ; END with cost -0.13
+current time: 0.42777061462402344
+all rewards: [0, 0, 0, 0, 0]
+expand: put into queue and get cost 4 reward 0.0 for seed 1000 for
+  WHILE(not(right_is_clear)) { IF(not(front_is_clear)) { put_marker turn_left pick_marker C }  move} ; C ; END
+current time: 0.4499340057373047
+all rewards: [0.25, 0.25, 0.25, 0.25, 0.25]
+expand: put into queue and get cost 4 reward 0.25 for seed 1000 for
+  WHILE(not(right_is_clear)) { IF(not(front_is_clear)) { put_marker turn_left turn_left C }  move} ; C ; END
+current time: 0.47612619400024414
+all rewards: [0, 0, 0, 0, 0]
+expand: put into queue and get cost 4 reward 0.0 for seed 1000 for
+  WHILE(not(right_is_clear)) { IF(not(front_is_clear)) { put_marker turn_left put_marker C }  move} ; C ; END
+current time: 0.5004804134368896
+all rewards: [1.0, 1.0, 1.0, 1.0, 1.0]
+
+ success and store for  WHILE(not(right_is_clear)) { IF(not(front_is_clear)) { put_marker turn_left}  move} ; C ; END
+unable to put into queue and get cost 3 reward 1.0 for seed 1000 for
+  WHILE(not(right_is_clear)) { IF(not(front_is_clear)) { put_marker turn_left}  move} ; C ; END
+------ end current search -------
+
+[ITER] 5
+Total Time Used: 0.5678677558898926
+Current Reward: 1
+for level 0
+(' S ; END', 0, 0, 1.0, 1, 1)
+----------------------------
+for level 1
+(' WHILE( B ) { S } ; S ; END', 1, 0, 0.8, 1, 1)
+----------------------------
+for level 2
+(' WHILE(front_is_clear) { S } ; S ; END', 2, 0, -inf, 0, -inf)
+(' WHILE(left_is_clear) { S } ; S ; END', 2, 0, -inf, 0, -inf)
+(' WHILE(right_is_clear) { S } ; S ; END', 2, 0, -inf, 0, -inf)
+(' WHILE(markers_present) { S } ; S ; END', 2, 0, -inf, 0, -inf)
+(' WHILE(not(front_is_clear)) { S } ; S ; END', 2, 0, -inf, 0, -inf)
+(' WHILE(not(left_is_clear)) { S } ; S ; END', 2, 0, -inf, 0, -inf)
+(' WHILE(not(right_is_clear)) { S } ; S ; END', 2, 0, 0.6, 1, 1)
+(' WHILE(not(markers_present)) { S } ; S ; END', 2, 0, -inf, 0, -inf)
+----------------------------
+Total Step Used: 1
+Total Time Used: 0.5687673091888428
+best reward: 1
+ WHILE(not(right_is_clear)) { IF(not(front_is_clear)) { put_marker turn_left}  move} ; C ; END

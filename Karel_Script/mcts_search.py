@@ -126,7 +126,7 @@ def test(search_steps, search_iter, task='topOff', seed=123, more_seeds=[], eval
         if reward == 1:
             break
 
-        if time.time() - start_time > 7200:
+        if cur_step > 1e8:
             break
 
     # decode rewards
