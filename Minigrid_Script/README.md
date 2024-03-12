@@ -20,18 +20,18 @@ python3 sequence.py --run_one
 python3 sequence.py --idx [IDX] --library checkpoints/library_ckpt_[IDX] --library_dict checkpoints/library_dict_ckpt_[IDX] --run_one
 ```
 
-Different index represents a different MiniGrid environment, show in the following table
+Different index represents a different MiniGrid environment, shown in the following table
 
-| Index      | Environment                            | Time    |
-| -----------| ---------------------------------------|---------|
-| 0          | MiniGrid-RandomCrossingS11N5-v0        | 30 mins |
-| 1          | MiniGrid-RandomLavaCrossingS11N5-v0    | 2 mins  |
-| 2          | MiniGrid-MultiRoomNoDoor-N6-v0         | 2 mins  |
-| 3          | MiniGrid-MultiRoom-N6-v0               | 2 mins  |
-| 4          | MiniGrid-LockedRoom-v0                 | 40 mins |
-| 5          | MiniGrid-DoorKey-8x8-v0                | 30 mins |
-| 6          | MiniGrid-PutNearTwoRoom-v0             | 20 mins |
-| 7          | MiniGrid-UnlockPickup-v0               | 15 mins |
+| Index      | Environment                            | Estimated Time    |
+| -----------| ---------------------------------------|-------------------|
+| 0          | MiniGrid-RandomCrossingS11N5-v0        | 30 mins           |
+| 1          | MiniGrid-RandomLavaCrossingS11N5-v0    | 2 mins            |
+| 2          | MiniGrid-MultiRoomNoDoor-N6-v0         | 2 mins            |
+| 3          | MiniGrid-MultiRoom-N6-v0               | 2 mins            |
+| 4          | MiniGrid-LockedRoom-v0                 | 40 mins           |
+| 5          | MiniGrid-DoorKey-8x8-v0                | 30 mins           |
+| 6          | MiniGrid-PutNearTwoRoom-v0             | 20 mins           |
+| 7          | MiniGrid-UnlockPickup-v0               | 15 mins           |
 
 Once the synthesis terminates for the selected in, a text file that has the same name as the environment will be generated in the `results` folder. This text file contains the synthesized program. The output of this program is a detailed log describing the synthesis procedure. However, the output can be very long so output should be discard to `/dev/null` or splited into multiple files such as 
 
