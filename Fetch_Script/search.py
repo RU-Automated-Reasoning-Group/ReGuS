@@ -273,6 +273,7 @@ class Node:
         return exist
 
     def test_program(self, prog):
+        dsl.stop_count()
         success_count = 0
         if self.logic_expr:
             for e in self.eval_seeds:
@@ -303,6 +304,7 @@ class Node:
             log_and_print("\nsuccess and store for \n {}".format(prog))
             self.candidates["success"].append((1, prog))
             return self.SUCCESS_TYPE
+
         for e in self.eval_seeds:
             # force evaluate
             force_eval_robot = self.get_robot(e)
@@ -328,6 +330,7 @@ class Node:
             #     self.candidates["success_search"].append((1, prog))
             #     return self.FAIL_TYPE
         # fail
+        dsl.start_count()
         success_rate = success_count / len(self.eval_seeds)
         print(f"success rate is {success_rate}")
         if success_rate < 0.85:
