@@ -47,7 +47,7 @@ def gt_structure():
 
 
 def direct_debug():
-    random_seed = 0
+    random_seed = 4000
     random.seed(random_seed)
     np.random.seed(random_seed)
 
@@ -56,11 +56,13 @@ def direct_debug():
     # task = 'AntMaze'
     load_path = None
     # load_path = 'store_fea/AntU_3000_prog_new_r_count_if.pkl'
+    # load_path = 'store_fea/AntU_{}_prog_new_r_count_if_newenv_cont_debug.pkl'.format(random_seed)
     # load_path = 'store_fea/AntU_0_prog_new_r_count_if.pkl'
     # load_path = 'store_fea/AntU_prog_new.pkl'
+    # load_path = 'store_fea/AntFb_0_prog_new_r_count_if_newenv.pkl'
 
     seed = random_seed
-    init_logging('store/', 'log_{}_{}_while_new_r_count_if_spec.txt'.format(task, seed))
+    init_logging('store/', 'log_{}_{}_while_new_r_count_if_newenv_cont_debug.txt'.format(task, seed))
     print('log_{}_{}.txt'.format(task, seed))
 
     if load_path is None:
@@ -95,15 +97,98 @@ def direct_debug():
     # pdb.set_trace()
     # exit()
 
-    with open('store_fea/{}_{}_prog_new_r_count_if_spec.pkl'.format(task, random_seed), 'wb') as f:
+    with open('store_fea/{}_{}_prog_new_r_count_if_newenv_cont_debug.pkl'.format(task, random_seed), 'wb') as f:
         pickle.dump(node.candidates['success'], f)
 
     # plot
-    np.save('store/{}_{}_rewards.npy'.format(task, random_seed), all_rewards)
-    plt.figure()
-    plt.plot(np.arange(len(all_rewards)), all_rewards)
-    plt.savefig('store/figs/{}_rewards.pdf'.format(task))
+    # np.save('store/{}_{}_rewards.npy'.format(task, random_seed), all_rewards)
+    # plt.figure()
+    # plt.plot(np.arange(len(all_rewards)), all_rewards)
+    # plt.savefig('store/figs/{}_rewards.pdf'.format(task))
 
+def direct_eval():
+    random_seed = 0
+    random.seed(random_seed)
+    np.random.seed(random_seed)
+
+    # task = 'AntU'
+    # task = 'AntFb'
+    task = 'AntMaze'
+    # load_path = None
+    # load_path = 'store_fea/AntU_3000_prog_new_r_count_if.pkl'
+    load_path = 'store_fea/AntU_0_prog_new_r_count_if_spec.pkl'
+    # load_path = 'store_fea/AntU_0_prog_new_r_count_if.pkl'
+    # load_path = 'store_fea/AntU_prog_new.pkl'
+
+    seed = random_seed
+    init_logging('store/', 'log_{}_{}_while_new_r_count_if_spec.txt'.format(task, seed))
+    print('log_{}_{}.txt'.format(task, seed))
+
+    if load_path is None:
+        example_program = gt_structure()
+    else:
+        with open(load_path, 'rb') as f:
+            example_program = pickle.load(f)
+        example_program = example_program[0][1]
+
+    print(example_program)
+    pdb.set_trace()
+
+    # harvester
+    more_seeds = [0, 1000, 2000, 3000, 4000]
+    # eval_seeds = [10000 + 1000 * i for i in range(10)]
+    eval_seeds = []
+    if random_seed in more_seeds:
+        more_seeds.pop(more_seeds.index(random_seed))
+
+    # np.random.shuffle(more_seeds)
+    # seed = 0 # 1 can get reward=1 at once
+    node = Node(sketch=example_program, task=task, 
+                seed=seed, more_seeds=more_seeds, eval_seeds=eval_seeds, 
+                max_search_iter=10000, max_structural_cost=20, shuffle_actions=True, found_one=True, prob_mode=False,
+                sub_goals=[1.0])
+
+    # debug program
+    inner_while = WHILE()
+    inner_while.cond = [COND_DICT['right_is_clear']]
+    inner_while.stmts = [ACTION(ant_action('move'))]
+    if_1 = IF()
+    if_1.cond = [COND_DICT['right_is_clear']]
+    if_1.stmts = [ACTION(ant_action('turn_right')), inner_while]
+
+    inner_while = WHILE()
+    inner_while.cond = [COND_DICT['not(front_is_clear)']]
+    inner_while.stmts = [ACTION(ant_action('move'))]
+    if_2 = IF()
+    if_2.cond = [COND_DICT['not(front_is_clear)']]
+    if_2.stmts = [ACTION(ant_action('turn_left')), inner_while]
+
+    while_loop = WHILE()
+    while_loop.cond = [COND_DICT['not(present_goal)']]
+    while_loop.stmts = [
+        if_1,
+        if_2,
+        ACTION(ant_action('move')),
+    ]
+    
+    ant_program = Program()
+    ant_program.stmts = [
+        while_loop,
+        END(),
+    ]
+
+    print(ant_program)
+    pdb.set_trace()
+
+    for e in [0, 1000, 2000, 3000, 4000]:
+        node.robot_store[e].force_execution = True
+        ant_program.execute(node.robot_store[e])
+        reward = node.robot_store[e].check_reward()
+        node.robot_store[e].plot_trajectory('AntMaze', e)
+        print(reward)
+
+    pdb.set_trace()
+    print('o?')
 
 def multi_debug():
 
@@ -180,4 +265,5 @@ def multi_debug():
 
 if __name__ == "__main__":
     direct_debug()
+    # direct_eval()
     # multi_debug()

@@ -84,7 +84,31 @@ def gt_structure():
 
     return program
 
+# helper function for clean while
+def clean_while(stmts):
+    drop_ids = []
+    for idx, code in enumerate(stmts):
+        if isinstance(code, (C, S)):
+            drop_ids.append(idx)
+        elif isinstance(code, WHILE):
+            if len(code.stmts) == 1 and isinstance(code.stmts[0], (C, S)):
+                drop_ids.append(idx)
+            else:
+                clean_while(code.stmts)
+        elif isinstance(code, IF):
+            clean_while(code.stmts)
+        elif isinstance(code, IFELSE):
+            clean_while(code.stmts)
+            clean_while(code.else_stmts)
+        
+    # do drop
+    for drop_id in drop_ids[::-1]:
+        stmts.pop(drop_id)
+
 def eval_program(ant_program):
+    # clean program first
+    clean_while(ant_program.stmts)
+
     task_solve = 0
     tasks = ['AntU', 'AntFb', 'AntFg', 'AntMaze']
     for task in tasks:
@@ -101,6 +125,8 @@ def eval_program(ant_program):
         # evaluate environment
         config_dict = get_configs(task)
         config_dict['distance_threshold']['front'] = 1.2
+        if task == 'AntMaze':
+            config_dict['max_episode_length'] = 1000
         ant_program_env = AntProgramEnv(
             env=env,
             models=ANT_LOW_TORQUE_MODELS,
@@ -132,12 +158,19 @@ def eval_program(ant_program):
     
     return task_solve
 
+def build_config(args):
+    # general
+    args.store_path = 'store/mcts_test/{}'.format(''.join(args.tasks.split(',')))
+
+    # search
+    args.search_seed_list = ','.join([str(1000 * exp_id) for exp_id in range(args.num_exps)])
+    if args.num_exps > 5:
+        args.support_seed_list = args.search_seed_list
 
 def do_search(args):
     # initialize task
     task_list = args.tasks.split(',')
     assert len(task_list) > 0
-    search_iter = [int(iter_num) for iter_num in args.search_iter.split(',')]
     store_path = args.store_path
     if not os.path.exists(store_path):
         os.makedirs(store_path)
@@ -176,7 +209,7 @@ def do_search(args):
 
             node = Node(sketch=example_program, task=task, 
                 seed=seed, more_seeds=cur_more_seeds, eval_seeds=eval_seeds, 
-                max_search_iter=10000, max_structural_cost=20, shuffle_actions=True, found_one=True, prob_mode=False,
+                max_search_iter=500, max_structural_cost=20, shuffle_actions=True, found_one=True, prob_mode=False,
                 sub_goals=[1.0])
 
             start_time = time.time()
@@ -187,17 +220,22 @@ def do_search(args):
             # new program
             example_program = node.candidates['success'][0][1]
             example_program.reset()
-            example_reward = eval_program(example_program)
+            example_reward = eval_program(copy.deepcopy(example_program))
             reward_list[-1] += [example_reward for _ in timesteps]
             step_list[-1] += (np.array(timesteps) + start_time_step).tolist()
             start_time_step += timesteps[-1]
 
+            # reset program after evaluation
+            example_program.reset()
+            example_program.reset_c_touch()
+
     # plot
     np.save('store/test_reward.npy', reward_list)
     np.save('store/test_step.npy', step_list)
-    var_plot(reward_list, step_list)
+    var_plot(reward_list, step_list, fig_path='{}/reward.pdf'.format(store_path))
 
 if __name__ == "__main__":
     args = get_parse()
+    build_config(args)
 
     do_search(args)

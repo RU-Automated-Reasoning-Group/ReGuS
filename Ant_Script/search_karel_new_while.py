@@ -102,7 +102,8 @@ class Node:
             found_one=False,
             prob_mode=False,
             sub_goals=[1.0],
-            multi_eval=True):
+            multi_eval=True,
+            more_tasks=[]):
         
         self.sketch = sketch
         self.task = task
@@ -116,7 +117,11 @@ class Node:
         self.multi_eval = multi_eval
 
         # store all required robot
-
+        config_data = get_configs(self.task)
+        if task == 'AntMaze':
+            config_dict['max_episode_length'] = 1000
+        config_data['distance_threshold']['front'] = 1.2
+        self.config_data = config_data
 
         # store all required robot
         new_robot = AntProgramEnv(
@@ -125,18 +130,23 @@ class Node:
                         goal_threshold=0.5,
                         goal_detection_threshold=4.0,
                         seed=seed,
-                        **get_configs(self.task))
+                        **config_data)
         new_robot.reset()
         self.robot_store = {self.seed: new_robot}
 
         for e_id, e in enumerate(more_seeds):
+            if len(more_tasks) >= len(more_seeds):
+                cur_task = more_tasks[e_id]
+            else:
+                cur_task = self.task
+
             new_robot = AntProgramEnv(
                             env=self.get_env(self.task),
                             models=ANT_LOW_TORQUE_MODELS,
                             goal_threshold=0.5,
                             goal_detection_threshold=4.0,
                             seed=e,
-                            **get_configs(self.task))
+                            **config_data)
             new_robot.reset()
             self.robot_store[e] = new_robot
         for e in eval_seeds:
@@ -146,9 +156,16 @@ class Node:
                             goal_threshold=0.5,
                             goal_detection_threshold=4.0,
                             seed=e,
-                            **get_configs(self.task))
+                            **config_data)
             new_robot.reset()
             self.robot_store[e] = new_robot
+
+        # init sub goals
+        self.reject_all = False
+        self.sub_goals = sub_goals
+        self.cur_goal_idx = 0
+        for seed in self.robot_store:
+            self.robot_store[seed].cur_goal = self.sub_goals[self.cur_goal_idx]
 
         self.q = PriorityQueue()
         self.q.put((
@@ -176,13 +193,6 @@ class Node:
         # multi process
         self.pool = mp.Pool(processes=len(self.more_seeds) + 1)
 
-        # init sub goals
-        self.reject_all = False
-        self.sub_goals = sub_goals
-        self.cur_goal_idx = 0
-        for seed in self.robot_store:
-            self.robot_store[seed].cur_goal = self.sub_goals[self.cur_goal_idx]
-
         # debug
         self.timesteps = [0]
         self.all_rewards = []
@@ -202,9 +212,17 @@ class Node:
     
     # get robot from store
     def get_robot(self, seed):
-        # robot = copy.deepcopy(self.robot_store[seed])
-        # robot.reset()
         robot = copy_robot(self.robot_store[seed])
+
+        # robot = AntProgramEnv(
+        #                 env=self.get_env(self.task),
+        #                 models=ANT_LOW_TORQUE_MODELS,
+        #                 goal_threshold=0.5,
+        #                 goal_detection_threshold=4.0,
+        #                 seed=seed,
+        #                 **self.config_data)
+        # robot.cur_goal = self.sub_goals[self.cur_goal_idx]
+        # robot.reset()
 
         return robot
 
@@ -215,7 +233,18 @@ class Node:
 
         # calculate reward before add
         if self.multi_eval:
-            eval_result, robot, reward, eval_reward = self.eval_program(self.seed, robot, candidate, check_multiple=True)
+            attempt_id = 0
+            while True:
+                eval_result, robot, reward, eval_reward = self.eval_program(self.seed, robot, candidate, check_multiple=True)
+                if eval_result != self.MORE_WORK_TYPE:
+                    break
+                elif robot.check_reward() < self.sub_goals[self.cur_goal_idx]:
+                    break
+                pdb.set_trace()
+                attempt_id += 1
+                if attempt_id >= 100:
+                    pdb.set_trace()
+    
         else:
             eval_result, robot, reward, eval_reward = self.single_eval_program(self.seed, robot, candidate, check_multiple=True)
         # reward = robot.check_reward()
@@ -383,6 +412,9 @@ class Node:
         for e in all_seeds:
             results.append(execute_for_reward(self.get_robot(e), candidate, False, True))
 
+        # if 'WHILE(not (present_goal)) { IF(not (front_is_clear)) { turn_left WHILE(not (front_is_clear)) { move C } ;}  move} ; C ; END' in str(candidate):
+        #     pdb.set_trace()
+
         for robot_no_fuel, reward, complete, timesteps in results:
             # C or breakpoint
             all_rewards.append(reward)
@@ -473,6 +505,9 @@ class Node:
             candidate.reset()
             eval_robot = self.get_robot(new_seed)
             candidate.execute(eval_robot)
+
+            # if 'WHILE(not (present_goal)) { IF(not (front_is_clear)) { turn_left WHILE(not (front_is_clear)) { move C } ;}  move} ; C ; END' in str(candidate):
+            #     pdb.set_trace()
 
             log_and_print('switch to robot seed {}'.format(new_seed))
 
@@ -707,7 +742,7 @@ class Node:
             # try every end index
             for end_idx in range(start_idx + 1, len_bp_stmts):
                 tmp_end_action = bp_stmts[end_idx]
-                if not isinstance(tmp_end_action, ACTION):
+                if not isinstance(tmp_end_action, ACTION) or tmp_end_action.post_abs_state is None:
                     continue
 
                 # attempt to execution a single action
@@ -831,6 +866,8 @@ class Node:
             if cand_idx == bp_idx:
                 # update abstract state
                 bp.abs_state = merge_abs_state(bp.abs_state, tmp_abs_state)
+                bp.abs_state.dnc_cond(str(c_cond.cond))
+                
                 # add hidden action
                 hidden_action = HIDE_ACTION(bp)
                 c_stmts.append(hidden_action)
@@ -841,6 +878,7 @@ class Node:
                 cand_action = bp_stmts[cand_idx]
                 if not isinstance(cand_action, HIDE_ACTION):
                     cand_action.abs_state = merge_abs_state(cand_action.abs_state, tmp_abs_state)
+                    cand_action.abs_state.dnc_cond(str(c_cond.cond))
 
                     # add else branch
                     new_if_else_branch = IFELSE(c_cond)
@@ -926,10 +964,21 @@ class Node:
 
                 # Execute Program
                 if state is None:
-                    if self.multi_eval:
-                        eval_result, eval_robot, eval_reward, test_reward = self.eval_program(self.seed, robot, p, check_multiple=False)
-                    else:
-                        eval_result, eval_robot, eval_reward, test_reward = self.single_eval_program(self.seed, robot, p, check_multiple=False)
+                    attempt_id = 0
+                    while True:
+                        if self.multi_eval:
+                            eval_result, eval_robot, eval_reward, test_reward = self.eval_program(self.seed, robot, p, check_multiple=False)
+                        else:
+                            eval_result, eval_robot, eval_reward, test_reward = self.single_eval_program(self.seed, robot, p, check_multiple=False)
+                        if eval_result != self.MORE_WORK_TYPE:
+                            break
+                        elif eval_robot.check_reward() < self.sub_goals[self.cur_goal_idx]:
+                            break
+                        pdb.set_trace()
+                        attempt_id += 1
+                        if attempt_id >= 100:
+                            pdb.set_trace()
+
                 else:
                     eval_result, eval_reward, test_reward = state
                     eval_robot = robot
@@ -1057,7 +1106,7 @@ class Node:
 
                     # end if or add else
                     if cand_idx is not None:
-                        # pdb.set_trace()
+                        pdb.set_trace()
                         # drop
                         # next work on here
                         new_cand_idx = self.case_two_drop(p, cur_action, prev_abs_state, cur_abs_state, bp_idx, bp_stmts, c_idx, c_cond, c_stmts,\
@@ -1170,18 +1219,4 @@ class Node:
         # np.save('debug_store/debug.npy', debug_store)
 
         return self.all_rewards, self.eval_rewards, self.timesteps
-
-# TODO: 1) set structural cost limit [done]
-#       2-1) case 1 [done] 
-#       2-2) case 2 [done]
-#       2-3) case 3 [done]
-#       2) N = 3 test cases for success program [done]
-#       3) multiple C in a sketch [done]
-#       4) check chain of rules [done]
-#       5) candidate.execute(eval_robot), stop when reward is 1 or -1 [done]
-#       6) shuffle WRAPPED_ACTION_LIST / COND_LIST [done]
-#       7) topOff [done*]
-#       8) stairClimber [done*]
-#       9) fourCorner [done*]
-#      10) randomMaze ----> generator is not fixed?
 

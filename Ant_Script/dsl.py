@@ -100,6 +100,9 @@ class ABS_STATE:
         # description: T / F / DNC
         self.state[str(cond)] = description
 
+    def dnc_cond(self, cond):
+        self.state[str(cond)] = 'DNC'
+
 def get_abs_state(robot):
     abs_state = ABS_STATE()
     for cond in COND_LIST[:4]:
@@ -306,6 +309,7 @@ class C:
     #def execute(self, robot):
     #    raise NotImplementedError('Invalid code')
     def execute(self, robot, stop):
+        # ignore when force execution
         if not self.resume_point:
             assert robot.active
             robot.active = False
