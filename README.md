@@ -25,7 +25,36 @@ docker run --platform linux/x86_64 -it gfc669/pldi_ubuntu_latest
 
 ### Basis Test
 
-To verify the tool operating successfully, run [TODO]
+To verify the tool operating successfully, entire directory ```Get_Start```.
+```
+cd Get_Start
+```
+
+Enter anaconda environment ```ReGus```:
+```
+conda activate regus
+```
+
+And then run the simple test script
+```
+python simple_test.py
+```
+
+The scipt will test several programs in related environment. A success test will output several warnings that could be ignored on the terminal and more importantly three "test success" word as follow:
+
+```
+Simple Test Ant Case: Success
+Simple Test Karel Case: Success
+Simple Test Highway Case: Success
+```
+
+A failure test will output at least one line of ```Test Fail```.  A success test indicates that the system is ready to evaluate artifact.
+
+After the test, please quit the anaconda virtual environment by:
+```
+conda deactivate
+```
+
 
 ## Step-by-step Instructions
 
@@ -46,3 +75,12 @@ Directory ```Ant_Script``` covers ReGuS method handling Ant task with continuous
 ### Fetch Environment
 
 ### MiniGrid Environment
+
+
+### Baselines
+
+Directory ```DRL``` contains evaluation code for baseline method DRL on Karel, Highway and Ant environments. We mainly applied PPO method with Stable-Baseline 3 framework as DRL and evaluate with same setting as ReGuS. 
+
+Directory ```r2l``` contains evaluation artifacts for baseline method DRL-abs on Karel, Highway and Ant environments. The baseline is modified based on [R2L framework](https://github.com/siekmanj/r2l).
+
+Besides, we also provides a visualization tool to combine result data of baselines and ReGuS and create figures of Karel, Highway and Ant environment (e.g. **Fig.18, 22 in the paper**) in directory ```Visualization```.
