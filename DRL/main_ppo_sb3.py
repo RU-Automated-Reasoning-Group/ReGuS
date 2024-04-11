@@ -16,7 +16,9 @@ import math
 
 from highway_general_self.highway_gym import HighwayEnv
 from karel.karel_env import KarelEnv
-
+from ant.configs import get_configs
+from ant.ant_program_env import AntProgramEnv
+from multiworld.envs.mujoco import register_custom_envs as register_mujoco_envs
 
 from custom_net import CustomCNN
 

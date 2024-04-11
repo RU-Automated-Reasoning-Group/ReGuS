@@ -28,6 +28,12 @@ import os
 
 import pdb
 
+# all primitive policies
+ANT_LOW_TORQUE_MODELS = []
+for direction in ['up', 'down', 'left', 'right']:
+    filename = os.getcwd() + '/primitives/ant_low_torque/' + direction + '.pt'
+    ANT_LOW_TORQUE_MODELS.append(torch.load(filename))
+
 def get_highway_rew(args, env):
     seed = args.seed
 

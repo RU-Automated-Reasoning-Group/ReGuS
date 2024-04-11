@@ -161,13 +161,16 @@ def env_factory(path, verbose=False, **kwargs):
       import gym
       if 'AntU' in path:
         env = gym.make('AntULongTestEnv-v0', disable_env_checker=True)
+        config_dict = get_configs('AntU')
       elif 'AntFb' in path:
         env = gym.make('AntFbMedTestEnv-v1', disable_env_checker=True)
+        config_dict = get_configs('AntFb')
       elif 'AntMaze' in path:
         env = gym.make('AntMazeMedTestEnv-v1', disable_env_checker=True)
+        config_dict = get_configs('AntMaze')
       elif 'AntFg' in path:
         env = gym.make('AntFgMedTestEnv-v1', disable_env_checker=True)
-      config_dict = get_configs(path)
+        config_dict = get_configs('AntFg')
       config_dict['distance_threshold']['front'] = 1.2
 
       ANT_LOW_TORQUE_MODELS = []

@@ -1,96 +1,82 @@
-----
+# Deep Reinforment Learning with Abstract State (DRL-Abs) Baseline
 
-# Recurrent Reinforcement Learning
+In this directory, we provide an artifact to test the DRL-abs baseline in Ant, Highway, and Karel environments. In our paper and this artifact, we leverage [recurrent reinforcement learning (r2l)](https://github.com/siekmanj/r2l) as the baseline to train an agent with an abstract state of the related environments.
 
-## Purpose
+## Step-by-step Instruction
 
-This repo contains recurrent implementations of state-of-the-art RL algorithms. Its purpose is to be clean, legible, and easy to understand. Many RL algorithms treat recurrence as an afterthought - it is my opinion that recurrence has important theoretical and practical benefits to many RL problems, especially partially observable ones in the real world.
+We will first introduce how to evaluate the artifact and then summarize the code structure.
 
-In addition to recurrent reinforcement learning, it also provides algorithms for extracting interesting information out of recurrent policy networks. Implemented are system-ID decoding networks for use with policy networks trained with dynamics randomization (described [here](https://arxiv.org/abs/2006.02402)) and also for Quantized-Bottleneck Network insertion (described [here](https://arxiv.org/abs/1811.12530)).
+### Train DRL-abs
 
-## First-time setup
-This repo assumes that you have [OpenAI Gym](https://gym.openai.com/) and [MuJoCo 2.0](http://www.mujoco.org/) installed, and that you are using Ubuntu 18.04, as this is my development environment (similar distros may also work). If you would like to do experiments with the simulated Cassie environment, you will also need my [Cassie](https://github.com/siekmanj/cassie) repository.
-
-You will need to install several packages:
-```bash
-pip3 install --user torch numpy ray gym tensorboard
-sudo apt-get install -y curl git libgl1-mesa-dev libgl1-mesa-glx libglew-dev libosmesa6-dev net-tools unzip vim wget xpra xserver-xorg-dev patchelf
+Before training, activate the conda virtual environment as follows:
+```
+conda activate regus
 ```
 
-
-If you haven't already, clone my repo:
-
-```bash
-git clone https://github.com/siekmanj/r2l
+If you are under the root path of ReGuS (```ReGus```), enter the r2l directory first by:
+```
 cd r2l
 ```
 
-Optionally, you can clone the Cassie directory to do experiments with the Cassie simulator.
-```bash
-git clone https://github.com/siekmanj/cassie
+For a specific environment, users can test r2l with the following command:
+```
+python r2l.py train --env [environment name] --num_exps 1
 ```
 
-Now, you will need to install MuJoCo. You will also need to obtain a license key `mjkey.txt` from the [official website](https://www.roboti.us/license.html). You can get a free 30-day trial if necessary.
-```bash
-wget https://www.roboti.us/download/mujoco200_linux.zip
-unzip mujoco200_linux.zip
-mkdir ~/.mujoco
-mv mujoco200_linux ~/.mujoco/mujoco200
-cp [YOUR KEY FILE] ~/.mujoco/mjkey.txt
+The argument ```--num_exps``` indicates the number of training experiments DRL will run. By default, the training log will be stored under the directory ```logs/ppo/[environment-seed]```, and the model will be stored under the directory ```store```.
+
+We provide example commands in ```train_r2l.sh``` for Karel, Highway, and Ant environments.
+
+For Karel environments, example commands include:
+```
+# Karel
+python r2l.py train --env 'seeder' --num_exps 1
+python r2l.py train --env 'doorkey' --num_exps 1
+python r2l.py train --env 'harvester' --num_exps 1
+python r2l.py train --env 'cleanHouse' --num_exps 1
+python r2l.py train --env 'randomMaze' --num_exps 1
+python r2l.py train --env 'stairClimber' --num_exps 1
+python r2l.py train --env 'topOff' --num_exps 1
+python r2l.py train --env 'fourCorners' --num_exps 1
 ```
 
-You will need to create an environment variable `LD_LIBRARY_PATH` to allow mujoco-py to find your mujoco directory. You can add it to your `~/.bashrc` or just enter it into the terminal every time you wish to use mujoco.
-```bash
-export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:~/.mujoco/mujoco200/bin
+For the Highway environment, example commands include:
+```
+# highway
+python r2l.py train --env 'highway' --num_exps 1
 ```
 
-Now that the prerequisites are installed, you can install `mujoco-py`.
-```bash
-pip3 install --user mujoco-py
+For Ant environments, example commands include:
+```
+# ant
+python r2l.py train --env 'AntU' --num_exps 1
+python r2l.py train --env 'AntFb' --num_exps 1
+python r2l.py train --env 'AntFg' --num_exps 1
+python r2l.py train --env 'AntMaze' --num_exps 1
 ```
 
-## Running experiments
+To check the results of DRL training, users can access the log file with TensorBoard as follows:
+```
+cd logs/ppo
 
-### Basics
-Any algorithm can be run from the r2l.py entry point.
+# For example: logdir=highway-v0-0
+python -m tensorboard.main --logdir=[environment-seed]
+```
+The default log results will be shown at ```http://localhost:6006```. The logs and models run by us can be accessed from ```logs_demo``` and ```store_demo```. **The figure results should be close to Fig.18 and Fig.22 of the paper.** (The figures in the paper show the average result of 5 repeated experiments).
 
-To train a GRU agent on the HalfCheetah-v2 environment and save the resulting policy to some directory, simply run:
 
-```bash
-python3 r2l.py ppo --env 'HalfCheetah-v2' --arch gru --save_actor cheetah.pt --layers 64 --batch_size 6 --num_steps 10000 --prenormalize_steps 100
+
+### Evaluate DRL-abs
+
+After training, users can load the stored model to evaluate its performance in environments. Example commands are provided in ```eval_r2l.sh``` as:
+```
+python r2l.py eval --env [environment name] --policy [policy path]
 ```
 
-Then, to do QBN insertion on this policy, simply run
-
-```bash
-python3 r2l.py qbn --policy cheetah.pt
-```
-
-### Logging details / Monitoring live training progress
-Tensorboard logging is enabled by default for all algorithms. By default, logs are stored in ```logs/[algo]/[env]/[experiment hash]```.
-
-After initiating an experiment, your directory structure would look like this:
-
-```
-logs/
-├── [algo]
-│     └── <env name> 
-│             └── [New Experiment Logdir]
-└── ddpg
-```
-
-To see live training progress, run ```$ tensorboard --logdir=logs``` then navigate to ```http://localhost:6006/``` in your browser
-
-## Features:
-* Parallelism with [Ray](https://github.com/ray-project/ray)
-* [DDPG](https://arxiv.org/abs/1509.02971)
-* [RDPG](https://arxiv.org/abs/1512.04455)
-* [ARS](https://arxiv.org/abs/1803.07055)
-* [PPO](https://arxiv.org/abs/1707.06347)
-* [TD3](https://arxiv.org/abs/1802.09477)
-* [SAC](https://arxiv.org/abs/1801.01290)
-* [QBN Insertion](https://arxiv.org/abs/1811.12530)
-
-## Acknowledgements
-
-This repo was originally based on the Oregon State University DRL's Apex library: https://github.com/osudrl/apex (authored by my fellow researchers Yesh Godse and Pedro Morais), which was in turn inspired by @ikostrikov's implementations of RL algorithms. Thanks to @sfujim for the clean implementations of TD3 and DDPG in PyTorch. Thanks @modestyachts for the easy to understand ARS implementation.
+## Code Structure
+- ```highway_general```: Highway environment based on Gymnasium.
+- ```karel```: Karel environment based on Gymnasium.
+- ```ant```: Ant environment based on Gymnasium and MuJoCo.
+- ```policies```: Model architecture of actor-critic framework.
+- ```spinup```: Detail strategy of the reinforcement learning method.
+- ```r2l.py```: Script with the main function to train and evaluate the r2l method.

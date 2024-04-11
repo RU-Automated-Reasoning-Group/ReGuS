@@ -36,6 +36,16 @@ def create_args(args):
   # highway
   elif args.env == 'highway':
     args.env = 'highway-v0-{}'.format(args.seed)
+  # ant
+  elif args.env == 'AntU':
+    args.env = 'AntU-{}'.format(args.seed)
+  elif args.env == 'AntFb':
+    args.env = 'AntFb-{}'.format(args.seed)
+  elif args.env == 'AntFg':
+    args.env = 'AntFg-{}'.format(args.seed)
+  elif args.env == 'AntMaze':
+    args.env = 'AntMaze-{}'.format(args.seed)
+
 
   args.save_actor = 'store/{}.pt'.format(args.env)
 
