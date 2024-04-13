@@ -1,21 +1,25 @@
-import pdb
-import copy
-import random
-import numpy as np
-import gc
-import pickle
 import argparse
+import copy
+import gc
+import pdb
+import pickle
+import random
 
-import search
-import minigrid_base_dsl
-import mcts_search
-import minigrid_implement.dsl
+import matplotlib.pyplot as plt
 import minigrid
+import numpy as np
+
+import mcts_search
+import minigrid_base_dsl
+import minigrid_implement.dsl
+import search
+
 minigrid.register_minigrid_envs()
 
 def start_sequence(
     seeds, args, envs, starting_idx=None, library_check_point=None, library_dict_check_point=None, run_one=False
 ):
+    steps = [0]
     if starting_idx is not None:
         # resume mode
         pass
@@ -204,6 +208,10 @@ def start_sequence(
 
         with open(f"results/{env}.txt", "w") as f:
             f.write(str(success_prog))
+    
+        if idx != 2:
+            steps.append(minigrid_implement.dsl.search_counter)
+
         if idx == 2:
             success_prog.stmts = success_prog.stmts[:2]
             success_prog.stmts.extend(copy.deepcopy(library_dict["RC_get"].stmts))
@@ -211,6 +219,12 @@ def start_sequence(
             # pdb.set_trace()
 
         # change the global variable for the next environment
+        print(f"finish environment {envs[idx]}")
+        if idx == 7:
+            if len(steps) == 8:
+                plot_figure(steps)
+            print("Successfully finish all environments")
+            exit()
         print("setting DSL for next environment")
         next_env = envs[idx + 1]
         minigrid_base_dsl.set_env(next_env)
@@ -277,6 +291,15 @@ def start_sequence(
         print("============ Moving to next env ================")
         if run_one:
             exit()
+
+def plot_figure(steps):
+    for i in range(1, len(steps)):
+        plt.plot([steps[i - 1], steps[i]], [i - 1, i - 1], color="blue")
+        plt.plot([steps[i], steps[i]], [i-1, i], color="blue")
+
+    plt.xlabel("number of environment interactions")
+    plt.ylabel("solved environments")
+    plt.savefig("figure.png")
 
 
 if __name__ == "__main__":
