@@ -277,7 +277,7 @@ python3 sequence.py | split -d -b 50m - log.
 
 This is equivalent to running each of the seperated environments in one run. The program will take about 2.5 hours to finish and will produce a synthesized program for each environment. 
 
-The steps used to synthesize the programs can be found in the logs files at the end of searching for each environment. Searching "Moving to next env" to check the number of steps used. The number of steps will be used to generate Figure 20 in the paper.
+The steps used to synthesize the programs can be found in the logs files at the end of searching for each environment. Searching "Moving to next env" to check the number of steps used. An figure called `minigrid.png` will be generated to show the number of environments steps needed to solve the environments.
 
 
 ### Code Structure

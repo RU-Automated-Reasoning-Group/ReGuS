@@ -299,7 +299,7 @@ def plot_figure(steps):
 
     plt.xlabel("number of environment interactions")
     plt.ylabel("solved environments")
-    plt.savefig("figure.png")
+    plt.savefig("minigrid.png")
 
 
 if __name__ == "__main__":
