@@ -5,7 +5,7 @@ def get_parse():
 
     # general
     parser.add_argument('--task', type=str ,default='cleanHouse', \
-                        choices=['cleanHouse', 'stairClimber', 'topOff', 'randomMaze', 'harvester', 'fourCorners', 'seeder', 'doorkey'], \
+                        choices=['cleanHouse', 'stairClimber', 'topOff', 'randomMaze', 'harvester', 'fourCorners', 'seeder', 'doorkey', 'upDown'], \
                         help='task name for karel')
     parser.add_argument('--search_iter', type=str, default='500', \
                         help='search iteration for each sketch')

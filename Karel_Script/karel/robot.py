@@ -76,6 +76,8 @@ class KarelRobot:
             gen_function = gen_function_base + "seeder"
         elif task == 'doorkey':
             gen_function = gen_function_base + 'doorkey'
+        elif task == 'upDown':
+            gen_function = gen_function_base + 'up_down_stair_climber'
         else:
             print('Please check the task')
             exit()
@@ -101,10 +103,6 @@ class KarelRobot:
             checker = FourCornerRandomChecker(self.init_state)
         elif task == "stairClimber":
             checker = SparseStairClimberChecker(self.init_state)
-            # checker = StairClimberChecker(self.init_state)
-            # checker = AccStairClimberChecker(self.init_state)
-            # checker = LeapsStairClimberChecker_2(self.init_state)
-            # checker = LeapsStairClimberChecker_Sparse(self.init_state)
         elif task == "topOff":
             checker = TopOffChecker(self.init_state)
         elif task == 'topOffPick':
@@ -113,6 +111,8 @@ class KarelRobot:
             checker = SeederChecker(self.init_state)
         elif task == 'doorkey':
             checker = DoorKeyChecker(self.init_state)
+        elif task == 'upDown':
+            checker = SparseStairClimberChecker(self.init_state)
 
         return checker
 

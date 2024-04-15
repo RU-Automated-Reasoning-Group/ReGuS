@@ -6,3 +6,4 @@ python mcts_search.py --task 'randomMaze' --num_exps 1
 python mcts_search.py --task 'harvester' --num_exps 1
 python mcts_search.py --task 'seeder' --num_exps 1
 python mcts_search.py --task 'doorkey' --num_exps 1
+# python mcts_search.py --task 'upDown' --num_exps 1

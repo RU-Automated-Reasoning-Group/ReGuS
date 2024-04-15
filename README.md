@@ -99,7 +99,7 @@ Besides, we also provide a visualization tool to combine the result data of base
 
 ## Step-by-step Instruction for Custom Environment
 
-In this section, we introduce two examples to demonstrate how to apply ReGuS to a new environment developed by user. In the first example, we assume the Highway environment to be the new environment and take the Karel environment as an existing template. We will modify modules from the Karel script step-by-step to adapt ReGuS to the Highway environment. In the second example, we introduce a new Karel task, [Karel-OneStroke](https://github.com/NTURobotLearningLab/hprl), and show how to reuse code from the Karel script to run ReGuS in this task.
+In this section, we introduce two examples to demonstrate how to apply ReGuS to a new environment developed by user. In the first example, we assume the Highway environment to be the new environment and take the Karel environment as an existing template. We will modify modules from the Karel script step-by-step to adapt ReGuS to the Highway environment. In the second example, we introduce a new Karel task, Karel UpDown-StairClimber, and show how to reuse code from the Karel script to run ReGuS in this task.
 
 ### Highway Environment
 
@@ -322,9 +322,9 @@ python mcts_search.py --num_exps 1
 ```
 ReGuS would be able to run on Highway environment.
 
-### Karel Snack
+### Karel UpDown-StairClimber
 
-Similar to the Highway Environment adaptation, we again use the Karel script as the existing template and reuse the code for the Karel OneStroke task.
+Similar to the Highway Environment adaptation, we again use the Karel script as the existing template and reuse the code for the Karel UpDown-StairClimber task.
 ```
 Karel Script
 |    dsl_karel.py
@@ -350,55 +350,43 @@ Karel Script
 
 #### Environment Definition
 
-Since Karel OneStroke and existing Karel tasks share the same environment definition, users only need to add task generation in ```karel/generator.py```, define rewards in ```karel/checker.py```, and modify ```karel/robot.py``` to import the new task generation and reward functions. The modifications can be implemented as follows:
+While in Karel StairClimber task the agent is only required to go upstair, in Karel UpDown-StairClimber the agent is required to go upstair first and then go downstair. However, Karel UpDown-StairClimber and Karel StairClimber share the same low-level karel environment definition and reward function. Users only need to add task generation in ```karel/generator.py``` and modify ```karel/robot.py``` to import the new task generation. The modifications can be implemented as follows:
 ```
 # karel/generator.py
-class KarelStateGenerator(object):
-    ...
-
-    def generate_single_state_oneStroke(self, h=8, w=8):
-        np.random.seed(self.seed)
-        s = np.zeros([h, w, len(state_table)]) > 0
-
+    def generate_single_state_up_down_stair_climber(self, h=12, w=12, wall_prob=0.1, env_task_metadata={}):
+        s = np.zeros([h, w, 16]) > 0
         # Wall
         s[0, :, 4] = True
         s[h-1, :, 4] = True
         s[:, 0, 4] = True
         s[:, w-1, 4] = True
 
-        # initial karel position: karel facing east at the last row in environment
-        #agent_pos = (h-2, 1)
-        agent_pos = np.random.randint(1, h-1, size=[2])
-        agent_dir = 1
-        s[agent_pos[0], agent_pos[1], agent_dir] = True
+        random.seed(self.seed)
 
-        metadata = {}
-        return s, agent_pos[0], agent_pos[1], np.sum(s[:, :, 4]), metadata
-
-# karel/checker.py
-class OneStrokeChecker(Checker):
-    def __init__(self, init_state):
-        self.init_state= init_state
-        self.w, self.h = init_state.shape
-
-    def __call__(self, state):
+        world_map = [
+            ['-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-'],
+            ['-',   0,   0,   0,   0,   0,   0,   0,   0,   0,   0, '-'],
+            ['-',   0,   0,   0,   0,   0,   0,   0,   0,   0,   0, '-'],
+            ['-',   0,   0,   0,   0,   0,   0,   0,   0,   0,   0, '-'],
+            ['-',   0,   0,   0,   0,   0,   0,   0,   0,   0,   0, '-'],
+            ['-',   0,   0,   0,   0,   0,   0,   0,   0,   0,   0, '-'],
+            ['-',   0,   0,   0,   0,   0,   0,   0,   0,   0,   0, '-'],
+            ['-',   0,   0,   0,   0,   0, '-',   0,   0,   0,   0, '-'],
+            ['-',   0,   0,   0,   0, '-', '-', '-',   0,   0,   0, '-'],
+            ['-',   0,   0,   0, '-', '-',   0, '-', '-',   0,   0, '-'],
+            ['-',   0,   0, '-', '-',   0,   0,   0, '-', '-',   0, '-'],
+            ['-',   0, '-', '-',   0,   0,   0,   0,   0, '-', '-', '-'],
+            ['-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-'],
+        ]
         ...
-        return reward, done
 
 # karel/robot.py
 class KarelRobot:
     def state_init(self, gen, task):
         ...
-        elif task == 'oneStroke':
-            gen_function = gen_function_base + 'oneStroke'
+        elif task == 'upDown':
+            gen_function = gen_function_base + 'up_down_stair_climber'
         ...
-    
-    def checker_init(self, task):
-        ...
-        elif task == 'oneStroke':
-            checker = OneStrokeChecker(Checker)
-        
-        return checker
 ```
 
 Besides the environment definition, users can reuse all other parts of the ReGuS code. The resulting file structure is as follows:
@@ -423,4 +411,9 @@ Karel Script
 |    |
 |____utils
 |    |    [files for utils]
+```
+
+We provide the example of Karel UpDown-StairClimber in ```Karel_Script/karel```. Users could uncomment related codes in ```Karel_Script/karel/generator.py``` and ```Karel_Script/karel/robot.py``` and run the experiment as:
+```
+python mcts_search.py --task 'upDown' --num_exps 1
 ```
