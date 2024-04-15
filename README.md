@@ -146,9 +146,9 @@ ReGus Script
 |    |    [files for utils]
 ```
 
-We download the environment directory from [Highway GitHub](https://github.com/Farama-Foundation/HighwayEnv) and rename it as ```highway```, which includes code for transition details. In order to run ReGuS, we need to define perceptions and actions accessible by the generated program. We define perceptions to track vehicles in the current lane, left lane, and right lane as *front_is_clear*, *left_is_clear* and *right_is_clear*, respectively. Based on "time to crash" observations in the highway environment, we implement perception labels as class *h_cond_without_not* in ```highway/dsl.py```.
+We download the environment directory from [Highway GitHub](https://github.com/Farama-Foundation/HighwayEnv) and rename it as ```highway```, which includes code for transition details. In order to run ReGuS, we need to define perceptions and actions accessible by the generated program. We define perceptions to track vehicles in the current lane, left lane, and right lane as *front_is_clear*, *left_is_clear* and *right_is_clear*, respectively. Based on "time to crash" observations in the highway environment, we implement perception labels as class *h_cond_without_not* in ```highway/dsl.py```. Additionally, we create a class *h_cond* to handle the **not** logical operation on perception.
 
-Additionally, we create a class *h_cond* to handle the **not** logical operation on perception. For actions, we implement *faster* and *slower* to increase and decrease the velocity of the ego vehicle, respectively, and *idle* to maintain the current velocity. We also implement *Lane_left* and *Lane_right* to control the ego vehicle to navigate into the left and right lanes, respectively. These actions are included in class *h_action* in ```highway/dsl.py```.
+For actions, we implement *faster* and *slower* to increase and decrease the velocity of the ego vehicle, respectively, and *idle* to maintain the current velocity. We also implement *Lane_left* and *Lane_right* to control the ego vehicle to navigate into the left and right lanes, respectively. These actions are included in class *h_action* in ```highway/dsl.py```.
 
 
 As a conclusion, the code file ```highway/dsl.py``` contains:
