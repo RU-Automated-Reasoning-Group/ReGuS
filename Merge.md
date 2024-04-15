@@ -284,9 +284,10 @@ The steps used to synthesize the programs can be found in the logs files at the 
 - `checkpoints` contains the provided library checkpoint for each environment
 - `Minigrid` contains the MiniGrid environment
 - `mcts` folder and `mcts_search.py`contain the implementation of the Monte Carlo Tree Search (MCTS) used by ReGus
-- `minigrid_implement` folder contains the actual implementation of the low level actions and predicates (what is underhood of actions or predicates from the ReGuS program) that directly interact with the environment
 - `results` folder contains the generated program
-- `minigrid_base_dsl.py` specify the action and predicate sets used for each of the environments. This file also implements the Domain Specific Language (DSL) used by ReGuS. This file should be considered as the interface of ReGuS that users will most probabily change for new environents or test new actions.
+- `minigrid_base_dsl.py` specify the action and predicate sets used for each of the environments. This file also implements the Domain Specific Language (DSL) used by ReGuS. This file should be considered as the interface of ReGuS that users will most probabily change for new environents or test new actions. The actually implementation of actions and predicates are defined in the two following locations.
+- `Minigrid/minigrid/minigrid_env.py`: This file is contains the base class for all minigrid environments and also contains the implementation of all predicates. For example, the `front_is_clear` predicate is defined in the class method also called `front_is_clear`
+- `minigrid_implement` folder contains the actual implementation of the low level actions (what is underhood of actions from a ReGuS program) that directly interact with the environment
 - `search.py` and `search2.py` contains the partial program executor for ReGuS DSL and implement the main logic of ReGuS, such as generate new actions within a program or synthesize if/ifelse when necessary. `search2.py` always use multiple seeds to evaluate the performance of a program
 - `sequence.py` contains the curriculum synthesis procedure that synthesize program for a new environments using existing programs from previous environments. In this file, we also set hyperparameters for ReGuS for different environment. We also uses some heuristics that the synthesized programs must satisfy to make them more likely to generalize in later environments. ReGuS will possibly generate multiple programs that works for the current environments, however these programs are not equally generalizable for more complex environments.
  
@@ -396,6 +397,23 @@ The output are two PDF files which are similar curves for ReGus as in Fig 22 (b)
 
     However, the definition above is only the high level interface used by the ReGuS synthesis algorithm. The set of all states that satisfy `block_at_goal` is actually provided by the `Fetch-Pic&Place` environment. The `block_at_gaol` function definition is located at line 554 - 557 at file `reskill/rl/envs/fetch_pick_and_place.py` in this folder. User can define new predicate by providing such a function that determines the set of states that the predicate is true or false.
 
+## 6. Configuring Actions Used for Synthesis
+
+1. ReGuS action interface
+
+    The actions used for syntehsis for environment can be configured by adjusting the `ACTION_DICT` dictionary defined at line 19 - 26 of `robot.dsl` in the `Fetch_Script` folder. For example, the `move_to_block` action is defined as in the following code block. Users can comment these lines to disable this action. New actions can be defined similarly.
+
+    ```
+    ACTION_DICT = {
+        ...
+        "move_to_block": k_action("move_to_block"),
+        ...
+    }
+    ```
+
+2. Action implementation
+
+    Given a ReGuS action such as `move_to_block`, what effect it will have on the enironment is defined in the `programskill/dsl.py` file. For example, line 96 - 110 is the implementation of `move_to_block`. This ReGuS action will find the position of the block and generate a low level action to move the gripper towards this location. New actions can be defined similarly by accessing the `k.env.obs` as the state from the environement.
 
 ## Step-by-step Instruction for Custom Environment
 
