@@ -330,6 +330,7 @@ class HighwayRobot:
         ...
 
     # reward function on top of highway
+    # as opposed to the Karel environment, the reward of the highway environment is directly defined here
     def custom_reward(self):
         ...
 ```
