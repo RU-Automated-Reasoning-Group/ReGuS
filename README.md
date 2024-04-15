@@ -191,9 +191,32 @@ class KarelRobot:
         ...
 ```
 
+In addition, users also need to define reward function for a new Karel task in `karel/checker.py` and update `karel/robot.py` to output reward of the task for each transition step. The example implementation is shown as below:
+```
+# karel/checker.py
+def newChecker(Checker):
+    ...
 
+# karel/robot.py
+class KarelRobot:
+    def checker_init(self, task):
+        ...
+        elif task == 'newTask':
+            checker = newChecker(self.init_state)
+        return checker
+```
+For the Karel UpDown-StairClimber task, we reuse the reward function of Karel StairClimber task rather than defining a new one. Thus, we only need to update `karel/robot.py` to call related function as:
+```
+# karel/robot.py
+class KarelRobot:
+    def checker_init(self, task):
+        ...
+        elif task == 'upDown':
+            checker = SparseStairClimberChecker(self.init_state)
+        return checker
+```
 
-Besides the environment definition, users can reuse all other parts of the ReGuS code. The resulting file structure is as follows:
+Besides above definition, users can reuse all other parts of the ReGuS code. The resulting file structure is as follows:
 ```
 Karel Script
 |    dsl_karel.py
@@ -212,12 +235,12 @@ Karel Script
 |____mcts
 |    |    MCTS_search_tree.py
 |    |    search_alg.py
-|    |
+|
 |____utils
 |    |    [files for utils]
 ```
 
-We provide the example of Karel UpDown-StairClimber in ```Karel_Script/karel```. Users could uncomment related codes in ```Karel_Script/karel/generator.py``` and ```Karel_Script/karel/robot.py``` and run the experiment as:
+We provide the example of Karel UpDown-StairClimber in ```Karel_Script/karel```. Users could run the experiment as:
 ```
 python mcts_search.py --task 'upDown' --num_exps 1
 ```
@@ -238,7 +261,7 @@ ReGus Script
 |____mcts
 |    |    MCTS_search_tree.py
 |    |    search_alg.py
-|    |
+|
 |____utils
 |    |    [files for utils]
 ```
@@ -262,7 +285,7 @@ ReGus Script
 |____mcts
 |    |    MCTS_search_tree.py
 |    |    search_alg.py
-|    |
+|
 |____utils
 |    |    [files for utils]
 ```
@@ -329,7 +352,7 @@ ReGus Script
 |____mcts
 |    |    MCTS_search_tree.py
 |    |    search_alg.py
-|    |
+|
 |____utils
 |    |    [files for utils]
 ```
@@ -392,7 +415,7 @@ ReGuS Script
 |____mcts (updated)
 |    |    MCTS_search_tree.py
 |    |    search_alg.py
-|    |
+|
 |____utils
 |    |    [files for utils]
 ```
