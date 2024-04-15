@@ -152,7 +152,7 @@ Karel Script
 <hr><br>
 </figure>
 
-In the Karel StairClimber task, the agent is tasked with ascending stairs, while in the new Karel UpDown-StairClimber task, the agent must ascend stairs first and then descend. To incorporate the Karel UpDown-StairClimber task, users simply need to integrate task generation in `karel/generator.py` and update `karel/robot.py` to define the environment layout such as the locations of the stairs. These modifications can be implemented as follows:
+In the Karel StairClimber task, the agent is tasked with ascending stairs, while in the new Karel UpDown-StairClimber task, the agent must ascend stairs first and then descend. To incorporate the Karel UpDown-StairClimber task, users simply need to integrate task generation in `karel/generator.py` and update `karel/robot.py` to define the environment layout such as the locations of the stairs. The modification can be implemented as follows:
 ```
 # karel/generator.py
     def generate_single_state_up_down_stair_climber(self, h=12, w=12, wall_prob=0.1, env_task_metadata={}):
@@ -191,7 +191,7 @@ class KarelRobot:
         ...
 ```
 
-In addition, users also need to define reward function for a new Karel task in `karel/checker.py` and update `karel/robot.py` to output reward of the task for each transition step. The example implementation is shown as below:
+Additionally, users need to define a reward function for this new task in ```karel/checker.py```. This function checks a robot trajectory and assigns a reward based on criteria such as whether a goal state is reached. Users should update ```karel/robot.py``` to import this function for reward assignment. These modifications can be implemented as shown below:
 ```
 # karel/checker.py
 def newChecker(Checker):
@@ -205,7 +205,7 @@ class KarelRobot:
             checker = newChecker(self.init_state)
         return checker
 ```
-For the Karel UpDown-StairClimber task, we reuse the reward function of Karel StairClimber task rather than defining a new one. Thus, we only need to update `karel/robot.py` to call related function as:
+For the Karel UpDown-StairClimber task, we opted to reuse the reward function from the Karel StairClimber task instead of creating a new one:
 ```
 # karel/robot.py
 class KarelRobot:
@@ -216,7 +216,7 @@ class KarelRobot:
         return checker
 ```
 
-Besides above definition, users can reuse all other parts of the ReGuS code. The resulting file structure is as follows:
+Besides the above modifications, users can reuse all other parts of the ReGuS code for a new Karel task. The resulting file structure is as follows:
 ```
 Karel Script
 |    dsl_karel.py
@@ -240,7 +240,7 @@ Karel Script
 |    |    [files for utils]
 ```
 
-We provide the example of Karel UpDown-StairClimber in ```Karel_Script/karel```. Users could run the experiment as:
+We have already provided an example implementation for Karel UpDown-StairClimber. Users can run the experiment by:
 ```
 python mcts_search.py --task 'upDown' --num_exps 1
 ```
