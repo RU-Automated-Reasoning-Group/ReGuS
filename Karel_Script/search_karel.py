@@ -8,7 +8,7 @@ import multiprocessing as mp
 
 import numpy as np
 
-from dsl_karel_new import *
+from dsl_karel import *
 from karel.robot import KarelRobot
 
 from utils.logging import log_and_print

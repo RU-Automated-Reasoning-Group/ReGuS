@@ -65,6 +65,10 @@ conda deactivate
 
 In this section, we provide a general introduction to evaluate our artifacts. Detailed instructions are included in each related directory. For the proposed ReGuS, we provide the evaluation in 5 popular RL tasks, including Karel, Highway, Ant, Fetch, and MiniGrid environments. For each environment, we provide a separate directory to cover all related evaluation cases which will be introduced in the following paragraphs. In addition, we also provide artifacts to reproduce baseline results in our paper, including DRL and DRL-abs. Similarly, evaluations of baselines are gathered in respective directories.
 
+### Conda Virtual Environment
+
+Generally, we have two conda environments in the docker, ```regus``` and ```regus2```. To run ReGuS for Karel, Highway and Ant environments, please activate ```regus```; to run ReGus for Fetch and MiniGrid environments, please activate ```regus2```.
+
 ### Karel Environment
 
 The directory ```Karel_Script``` contains the code of the ReGuS method solving Karel tasks (e.g., **Fig.17. of paper**), including cleanHouse, fourCorners, stairClimber, topOff, randomMaze, harvester, seeder, and doorkey puzzles. For each puzzle, users can expect visualization results with reward-timestep figures (e.g., refer to **Fig.18. of paper**) showing the performance of ReGuS and a log file showing searched and successful programs synthesized by ReGuS.
@@ -95,43 +99,328 @@ Besides, we also provide a visualization tool to combine the result data of base
 
 ## Step-by-step Instruction for Custom Environment
 
-In this section, we take the Karel environment as an example to illustrate how to apply ReGuS to a new environment and domain-specific language (Suppose the Karel environment is the custom environment).
+In this section, we introduce two examples to demonstrate how to apply ReGuS to a new environment developed by user. In the first example, we assume the Highway environment to be the new environment and take the Karel environment as an existing template. We will modify modules from the Karel script step-by-step to adapt ReGuS to the Highway environment. In the second example, we introduce a new Karel task, [Karel-OneStroke](https://github.com/NTURobotLearningLab/hprl), and show how to reuse code from the Karel script to run ReGuS in this task.
 
-### Environment (nonreuseable)
+### Highway Environment
 
-To apply ReGuS for Karel, the first thing a user needs to do is to add the definition of the environment. For example, inside ```Karel_Script```, the directory  ```karel``` contains the abstract environment defining the environment map, actions the robot could take, states the environment will return, and the transaction of the environment based on action.
-
-Because different environments might have totally different action and state spaces, environment definition code could not be reused for a custom environment. For example, the  **Karel** directory is totally different compared to the  **Highway** directory.
-
-### Domain Specific Language (DSL)
-
-Based on an environment, we need to define the DSL for program structure as well as actions and perceptions that could be accessed by the program.
-
-#### DSL for Program Structure (reuseable)
-
-For the Karel environment, a user might want to define statements including:
-- *loop* with **WHILE** statement to control repeated actions
-- *branch* with **If-Then-Else** statement for the robot to select different actions related to different perceptions. 
-
-In ```dsl_karel_new.py``` of the ```Karel_Script``` directory, we define general statements as *S* class, while loop and branch are defined in *WHILE*, *IF* and *IFELSE* classes.
-
-Additionally, a user would need:
-- *Action* to control robot.
-- *Condition* for loop and branch to differentiate different states.
-
-In ```dsl_karel_new.py```, classes *C* and *B* are general definitions for action and condition respectively.
-
-Based on the above DSL, a user also needs to implement the program expansion as class *Program*. In most cases, the DSL for program structure could be reused, and related code of classes inside ```dsl_karel_new.py``` could be directly applied to a custom environment.
-
-#### Action & Perception (nonreuseable)
-
-Besides the DSL for program structure, a user also needs to define detailed high-level actions and perception conditions (e.g., *ACTION_DICT*, *COND_DICT*, class *ABS_STATE* in ```dsl_karel_new.py```). These implementations are directly related to the environment and cannot be reused for a custom environment.
-
-### ReGuS Framework (reuseable)
-
-The ReGuS framework mainly contains high-level sketch search and low-level program search. We apply MCTS search for sketch generation as in the ```MCTS``` directory, and the program generation details are included in ```search_karel_new.py```. Both these codes could be safely reused with a change of DSL importing. For example, for the Karel environment, we add:
+Using the Karel script as an existing template, we aim to adapt the code for the Highway environment. We start by copying the Karel script and renaming the new script as ```ReGuS Script```:
 ```
-from dsl_karel_new import *
-from karel.robot import KarelRobot
+ReGus Script
+|    dsl_karel.py
+|    search_karel.py
+|    mcts_search.py
+|    do_search.sh
+|
+|____karel
+|    |    [files for Karel environment]
+|
+|____mcts
+|    |    MCTS_search_tree.py
+|    |    search_alg.py
+|    |
+|____utils
+|    |    [files for utils]
 ```
-to ```search_karel_new.py```.
+
+#### Environment Definition
+
+In the above ```ReGuS Script```, the ```karel``` directory defines the environment and tasks. Since the Highway environment has a completely different definition, this module needs rewriting:
+
+```
+ReGus Script
+|    dsl_karel.py
+|    search_karel.py
+|    mcts_search.py
+|    do_search.sh
+|
+|____highway (updated)
+|    |    [files from Highway GitHub]
+|    |    dsl.py
+|    |    robot.py
+|
+|____mcts
+|    |    MCTS_search_tree.py
+|    |    search_alg.py
+|    |
+|____utils
+|    |    [files for utils]
+```
+
+We download the environment directory from [Highway GitHub](https://github.com/Farama-Foundation/HighwayEnv) and rename it as ```highway```, which includes code for transition details. In order to run ReGuS, we need to define perceptions and actions accessible by the generated program. We define perceptions to track vehicles in the current lane, left lane, and right lane as *front_is_clear*, *left_is_clear* and *right_is_clear*, respectively. Based on "time to crash" observations in the highway environment, we implement perception labels as class *h_cond_without_not* in ```highway/dsl.py```.
+
+Additionally, we create a class *h_cond* to handle the **not** logical operation on perception. For actions, we implement *faster* and *slower* to increase and decrease the velocity of the ego vehicle, respectively, and *idle* to maintain the current velocity. We also implement *Lane_left* and *Lane_right* to control the ego vehicle to navigate into the left and right lanes, respectively. These actions are included in class *h_action* in ```highway/dsl.py```.
+
+
+As a conclusion, the code file ```highway/dsl.py``` contains:
+```
+# highway dsl
+
+# perceptions: front_is_clear, left_is_clear, right_is_clear
+class h_cond_without_not:
+    ...
+
+# handle not logic
+class h_cond:
+    ...
+
+# actions: faster, slower, idle, lane_left, lane_right
+class h_action:
+    ...
+```
+
+Then in  ```highway/robot.py```, we rewrite environment initialization (reset), transition (execute_single_action, execute_single_cond), and reward definition (custom_reward) on top of the highway implementation to make program perceptions and actions compatible. A summary of this file is shown below:
+```
+# highway robot
+
+class HighwayRobot:
+    def __init__(self, task, seed):
+        self.env = gym.make(task, render_mode='rgb_array')
+        ...
+
+    # initialization
+    def reset(self):
+        ...
+    
+    # transition given action
+    def execute_single_action(self, action):
+        ...
+
+    # results for a perception
+    def execute_single_cond(self, cond):
+        ...
+
+    # reward function on top of highway
+    def custom_reward(self):
+        ...
+```
+
+For detailed implementation of the highway environment, please refer to  ```Highway_script/highway_general/dsl.py``` and ```Highway_script/highway_general/robot.py```.
+
+#### Domain Specific Language (DSL)
+
+As noted in the paper, we need to define DSL for program structure. Most parts of DSL are general and not directly related to the environment, thus we reuse ```dsl_karel.py``` with minor modifications and rename it as ```dsl_highway.py```. The updated file structure is displayed below:
+```
+ReGus Script
+|    dsl_highway.py (updated)
+|    search_karel.py
+|    mcts_search.py
+|    do_search.sh
+|
+|____highway (updated)
+|    |    [files from Highway GitHub]
+|    |    dsl.py
+|    |    robot.py
+|
+|____mcts
+|    |    MCTS_search_tree.py
+|    |    search_alg.py
+|    |
+|____utils
+|    |    [files for utils]
+```
+
+Candidate action statements and perception conditions for program generation are specific to the environment and need to be rewritten. Specifically, we revise the ```ACTION_DICT``` in ```dsl_highway.py``` to include new action statements as follows:
+```
+from highway_general.dsl import h_action
+ACTION_DICT = {
+    'lane_left'   : h_action(0),
+    'idle'        : h_action(1),
+    'lane_right'  : h_action(2),
+    'faster'      : h_action(3),
+    'slower'      : h_action(4)
+}
+```
+
+Moreover, we rewrite ```COND_DICT``` and ```ABS_STATE``` in ```dsl_highway.py``` for new perception labels as:
+```
+from highway_general.dsl import h_cond, h_cond_without_not
+# perception conditions
+COND_DICT = {
+    'front_is_clear_3'    : h_cond(negation=False, cond=h_cond_without_not('front_is_clear_3')),
+    'left_is_clear_3'     : h_cond(negation=False, cond=h_cond_without_not('left_is_clear_3')),
+    'right_is_clear_3'    : h_cond(negation=False, cond=h_cond_without_not('right_is_clear_3')),
+    'all_true'          : h_cond(negation=False, cond=h_cond_without_not('all_true')),
+    'not(front_is_clear_3)'    : h_cond(negation=True, cond=h_cond_without_not('front_is_clear_3')),
+    'not(left_is_clear_3)'     : h_cond(negation=True, cond=h_cond_without_not('left_is_clear_3')),
+    'not(right_is_clear_3)'    : h_cond(negation=True, cond=h_cond_without_not('right_is_clear_3')),
+}
+
+# abstract state
+class ABS_STATE:
+    def __init__(self):
+        self.state = {
+            'front_is_clear_3'    : None,
+            'left_is_clear_3'     : None,
+            'right_is_clear_3'    : None,
+        }
+```
+
+**DSL for Program Generation** Other code of ```dsl_highway.py``` can be reused by replacing all ```k_cond``` from ```dsl_karel.py``` into ```h_cond```. 
+
+#### ReGuS algorithm
+
+The other files, including ```search_karel.py```, ```mcts_search.py``` and directory ```MCTS```, implement the core components of the ReGuS framework. Only minor modifications are required to adapt these codes for use in new environments. We will detail these necessary adjustments in the rest of this section.
+
+```
+ReGuS Script
+|    dsl_highway.py (updated)
+|    search_highway.py (updated)
+|    mcts_search.py (updated)
+|    do_search.sh
+|
+|____highway (updated)
+|    |    [files from Highway GitHub]
+|    |    dsl.py
+|    |    robot.py
+|
+|____mcts (updated)
+|    |    MCTS_search_tree.py
+|    |    search_alg.py
+|    |
+|____utils
+|    |    [files for utils]
+```
+
+First, we rename  ```search_karel.py``` into ```search_highway.py```. To adapt this file for the Highway environment, users will need to modify lines 11 and 12 to import the environment definitions specific to the Highway setup. Additionally, lines 81-86 should be adjusted to initialize the Highway environment appropriately. The rest of the code in ```search_high.py``` can be reused without further changes. (For more details, refer to ```Highway_script/search_highway_new.py```).
+```
+# search_highway.py
+
+# line 11-12
+from dsl_highway_all import *
+from highway_general.robot import HighwayRobot
+
+# line 81
+self.robot_store = {self.seed: HighwayRobot(self.task, seed=self.seed, view=view_mode, config_set=config_set)}
+
+# line 84
+self.robot_store[e] = HighwayRobot(self.task, seed=e, view=view_mode, config_set=config_set)
+
+# line 86
+self.eval_robot_store[e] = HighwayRobot(self.task, seed=e, view=view_mode, config_set=config_set)
+```
+
+For ```mcts_search.py```, user needs to modify line 4 to import DSL of Highway environment as
+```
+# mcts_search.py
+
+# line 4
+from dsl_highway imoprt *
+```
+
+Similarly, for ```mcts/MCTS_search_tree.py```, user needs to modify line 3 to import DSL of Highway environment. And for ```mcts/search_alg.py```, user needs to modify line 12 to import program synthesis code as below (More details in ```Highway_script/mcts```)
+```
+# line 3 of mcts/MCTS_search_tree.py
+from dsl_highway imoprt *
+
+# line 12 of mcts/search_alg.py
+from search_highway_new import Node
+```
+
+With the following command:
+```
+python mcts_search.py --num_exps 1
+```
+ReGuS would be able to run on Highway environment.
+
+### Karel Snack
+
+Similar to the Highway Environment adaptation, we again use the Karel script as the existing template and reuse the code for the Karel OneStroke task.
+```
+Karel Script
+|    dsl_karel.py
+|    search_karel.py
+|    mcts_search.py
+|    do_search.sh
+|
+|____karel
+|    |    checker.py
+|    |    dsl.py
+|    |    generator.py
+|    |    karel.py
+|    |    robot.py
+|    |    [other files for karel environment]
+|
+|____mcts
+|    |    MCTS_search_tree.py
+|    |    search_alg.py
+|    |
+|____utils
+|    |    [files for utils]
+```
+
+#### Environment Definition
+
+Since Karel OneStroke and existing Karel tasks share the same environment definition, users only need to add task generation in ```karel/generator.py```, define rewards in ```karel/checker.py```, and modify ```karel/robot.py``` to import the new task generation and reward functions. The modifications can be implemented as follows:
+```
+# karel/generator.py
+class KarelStateGenerator(object):
+    ...
+
+    def generate_single_state_oneStroke(self, h=8, w=8):
+        np.random.seed(self.seed)
+        s = np.zeros([h, w, len(state_table)]) > 0
+
+        # Wall
+        s[0, :, 4] = True
+        s[h-1, :, 4] = True
+        s[:, 0, 4] = True
+        s[:, w-1, 4] = True
+
+        # initial karel position: karel facing east at the last row in environment
+        #agent_pos = (h-2, 1)
+        agent_pos = np.random.randint(1, h-1, size=[2])
+        agent_dir = 1
+        s[agent_pos[0], agent_pos[1], agent_dir] = True
+
+        metadata = {}
+        return s, agent_pos[0], agent_pos[1], np.sum(s[:, :, 4]), metadata
+
+# karel/checker.py
+class OneStrokeChecker(Checker):
+    def __init__(self, init_state):
+        self.init_state= init_state
+        self.w, self.h = init_state.shape
+
+    def __call__(self, state):
+        ...
+        return reward, done
+
+# karel/robot.py
+class KarelRobot:
+    def state_init(self, gen, task):
+        ...
+        elif task == 'oneStroke':
+            gen_function = gen_function_base + 'oneStroke'
+        ...
+    
+    def checker_init(self, task):
+        ...
+        elif task == 'oneStroke':
+            checker = OneStrokeChecker(Checker)
+        
+        return checker
+```
+
+Besides the environment definition, users can reuse all other parts of the ReGuS code. The resulting file structure is as follows:
+```
+Karel Script
+|    dsl_karel.py
+|    search_karel.py
+|    mcts_search.py
+|    do_search.sh
+|
+|____karel
+|    |    checker.py (updated)
+|    |    dsl.py
+|    |    generator.py (updated)
+|    |    karel.py
+|    |    robot.py (updated)
+|    |    [other files for karel environment]
+|
+|____mcts
+|    |    MCTS_search_tree.py
+|    |    search_alg.py
+|    |
+|____utils
+|    |    [files for utils]
+```

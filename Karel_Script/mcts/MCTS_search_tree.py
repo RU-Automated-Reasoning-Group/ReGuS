@@ -1,6 +1,6 @@
 # Tree structure to store search trace
 from utils.logging import log_and_print
-from dsl_karel_new import *
+from dsl_karel import *
 
 import re
 import copy

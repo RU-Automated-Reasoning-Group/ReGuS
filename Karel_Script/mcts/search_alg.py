@@ -4,12 +4,12 @@
 import numpy as np
 
 # from dsl import *
-from dsl_karel_new import *
-from karel.robot import KarelRobot
+# from dsl_karel import *
+# from karel.robot import KarelRobot
 from utils.logging import log_and_print
 
 # from search import Node
-from search_karel_new import Node
+from search_karel import Node
 
 
 class SearchAlg:

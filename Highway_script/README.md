@@ -13,7 +13,7 @@ Before evaluation, please activate the conda virtual environment by:
 conda activate regus
 ```
 
-If you are under the root path of ReGuS, enter the ```Highway_script``` directory first by:
+If you are under the root path of ReGuS (```[YourPath]/ReGuS```), enter the ```Highway_script``` directory first by:
 ```
 cd Highway_script
 ```

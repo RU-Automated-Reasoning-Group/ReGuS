@@ -1,12 +1,13 @@
 from mcts.MCTS_search_tree import SearchTree, SearchNode
 from mcts.search_alg import SearchAlg
 # from dsl import *
-from dsl_karel_new import *
+from dsl_karel import *
 from utils.logging import init_logging, log_and_print
 from utils.parse_lib import get_parse
 
 import os
 import time
+import copy
 import random
 import numpy as np
 import torch

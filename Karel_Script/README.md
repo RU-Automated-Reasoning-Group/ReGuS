@@ -13,7 +13,7 @@ Before evaluation, please activate the conda virtual environment by:
 conda activate regus
 ```
 
-If you are under the root path of ReGuS, enter the ```Karel_Script``` directory first by:
+If you are under the root path of ReGuS (```[YourPath]/ReGuS```), enter the ```Karel_Script``` directory first by:
 ```
 cd Karel_Script
 ```
