@@ -107,7 +107,7 @@ Besides, we also provide a visualization tool to combine the result data of base
 
 In this section, we present three examples illustrating how to utilize ReGuS for a new user-developed environment.
 
-1. **Example 1: Applying ReGuS to a New Karel Task (UpDown-StairClimber):**
+1. **Example 1: Applying ReGuS to a New Karel Environment (UpDown-StairClimber):**
    Here, we introduce a fresh Karel task, namely Karel UpDown-StairClimber, and outline the process of reusing code from the Karel script to execute ReGuS for this particular task.
 
 2. **Example 2: Adapting ReGuS to a New User-defined Environment:**
@@ -116,7 +116,7 @@ In this section, we present three examples illustrating how to utilize ReGuS for
 3. **Example 3: Applying ReGuS to Variants of Existing Environments**
    We illustrate the steps involved in modifying the existing robot environments available in the repository and evaluating ReGuS's performance on these customized variants.
 
-### Applying ReGuS to a New Karel Task (UpDown-StairClimber)
+### Example 1: Applying ReGuS to a New Karel Environment (UpDown-StairClimber)
 
 We outline the process of reusing code from the Karel script to execute ReGuS for a new UpDown-StairClimber task. The following is the structure of ```Karel Script```:
 
@@ -245,7 +245,7 @@ We have already provided an example implementation for Karel UpDown-StairClimber
 python mcts_search.py --task 'upDown' --num_exps 1
 ```
 
-### Adapting ReGuS to a New User-defined Environment (Highway Environment)
+### Example 2: Adapting ReGuS to a New User-defined Environment (Highway Environment)
 
 Using the Karel script as an existing template, we can adapt it to support a new robot environment. Here we show how to modify the modules from the Karel script to derive the Highway environment. We start by copying the Karel script and renaming the new script as ```ReGuS Script```:
 ```
@@ -462,7 +462,7 @@ python mcts_search.py --num_exps 1
 will then enable ReGuS to operate within the new Highway environment.
 
 
-### Applying ReGuS to Variants of Existing Environments
+### Example 3: Applying ReGuS to Variants of Existing Environments
 
 We illustrate the steps involved in modifying the existing robot environments available in the repository and evaluating ReGuS's performance on these customized variants. We use the Fetch Pick&Place environment as an example.
 
