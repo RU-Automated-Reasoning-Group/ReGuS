@@ -99,7 +99,14 @@ Besides, we also provide a visualization tool to combine the result data of base
 
 ## Step-by-step Instruction for Custom Environment
 
-In this section, we introduce two examples to demonstrate how to apply ReGuS to a new environment developed by user. In the first example, we assume the Highway environment to be the new environment and take the Karel environment as an existing template. We will modify modules from the Karel script step-by-step to adapt ReGuS to the Highway environment. In the second example, we introduce a new Karel task, Karel UpDown-StairClimber, and show how to reuse code from the Karel script to run ReGuS in this task.
+In this section, we introduce two examples to demonstrate how to apply ReGuS to a new environment developed by user. In the first example, we assume the Highway environment to be the new environment and take the Karel environment as an existing template. We will modify modules from the Karel script step-by-step to adapt ReGuS to the Highway environment. In the second example, we introduce a new Karel task, Karel UpDown-StairClimber (shown in below figure), and show how to reuse code from the Karel script to run ReGuS in this task.
+
+<figure>
+<p align='center'>
+<img src='./karel/figs/upDown.jpg'  height=200 width=200>
+<center>
+<hr><br>
+</figure>
 
 ### Highway Environment
 
