@@ -398,7 +398,7 @@ Karel Script
 |    do_search.sh
 |
 |____karel
-|    |    checker.py (updated)
+|    |    checker.py
 |    |    dsl.py
 |    |    generator.py (updated)
 |    |    karel.py

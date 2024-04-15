@@ -664,9 +664,6 @@ class KarelStateGenerator(object):
 
     # generate an initial env for up down stairClimer problem
     def generate_single_state_up_down_stair_climber(self, h=12, w=12, wall_prob=0.1, env_task_metadata={}):
-        # h = 100
-        # w = 100
-
         s = np.zeros([h, w, 16]) > 0
         # Wall
         s[0, :, 4] = True
