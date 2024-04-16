@@ -467,9 +467,9 @@ will then enable ReGuS to operate within the new Highway environment.
 
 We illustrate the steps involved in modifying the existing robot environments available in the repository and evaluating ReGuS's performance on these customized variants. We use the Fetch Pick&Place environment as an example.
 
-Similar to what is discussed above on defining the Highway environment, the perception predicates for Fetch Pick&Place can be configured by adjusting the `COND_DICT` dictionary defined at line 39 - 80 in ```Fetch_Script/robot_dsl.py```.
+Similar to what is discussed above on defining the Highway environment, the perception predicates for Fetch Pick&Place can be configured by adjusting the `COND_DICT` dictionary defined at line 39 - 80 and the `ABS_STATE` diectionary defined at line 88 - 96 in ```Fetch_Script/robot_dsl.py```. The constant number (originally 6) at line 108 should also be updated correctly to reflect the number of predicates being used.
 
-    ```
+```
     COND_DICT = {
         "block_at_goal": k_cond(
             negation=False, cond=k_cond_without_not("block_at_goal")
@@ -479,5 +479,24 @@ Similar to what is discussed above on defining the Highway environment, the perc
             negation=True, cond=k_cond_without_not("block_at_goal")
         ),
     }
-    ```
-The definition of the perception predicates can be located in ```Fetch_Script/reskill/rl/envs/fetch_pick_and_place.py```. For instance, the ```block_at_goal``` predicate is defined between lines 554 and 557 of this file. Users can define a new predicate by providing a function that determines the set of states where the predicate holds true there, and then include it in the ```COND_DICT``` dictionary (see above). Additionally, users can comment out predicates referenced in ```COND_DICT``` to disable specific predicates within the DSL. It is anticipated that by removing exactly one predicate among `block_is_grasped`, `block_inside_gripper`, and `gripper_open` from ```COND_DICT```, ReGuS can still generate successful programs for the Fetch Pick&Place environment.
+
+    ...
+
+    class ABS_STATE:
+        def __init__(self):
+            self.state = {
+                ...
+                "block_above_goal": None,
+                ...
+        }
+
+    ...
+
+    def get_abs_state(robot):
+        abs_state = ABS_STATE()
+        for cond in COND_LIST[:6]:
+    
+    ...
+```
+
+The definition of the perception predicates can be located in ```Fetch_Script/reskill/rl/envs/fetch_pick_and_place.py```. For instance, the ```block_at_goal``` predicate is defined between lines 554 and 557 of this file. Users can define a new predicate by providing a function that determines the set of states where the predicate holds true there, and then include it in the ```COND_DICT``` dictionary (see above). Additionally, users can comment out predicates referenced in ```COND_DICT``` to disable specific predicates within the DSL. It is anticipated that by removing exactly one predicate among `block_is_grasped`, `block_inside_gripper`, and `gripper_open` from ```COND_DICT``` and `ABS_STATE`, ReGuS can still generate successful programs for the Fetch Pick&Place environment but with slightly lower success rate.

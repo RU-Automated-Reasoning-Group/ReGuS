@@ -397,6 +397,26 @@ The output are two PDF files which are similar curves for ReGus as in Fig 22 (b)
 
     However, the definition above is only the high level interface used by the ReGuS synthesis algorithm. The set of all states that satisfy `block_at_goal` is actually provided by the `Fetch-Pic&Place` environment. The `block_at_gaol` function definition is located at line 554 - 557 at file `reskill/rl/envs/fetch_pick_and_place.py` in this folder. User can define new predicate by providing such a function that determines the set of states that the predicate is true or false.
 
+3. ReGuS Abstract State
+
+    The abstract state tracked by ReGuS is defined at line 86 of `robot_dsl.py`. It should contain all predicates used by ReGuS but without negated ones. The constant number (orginally 6) on line 108 should be the number of predicates used by ReGuS and should be updated correctly.
+
+    ```
+    class ABS_STATE:
+        def __init__(self):
+            self.state = {
+                ...
+                "block_at_goal": None,
+                ...
+            }
+    
+    ... 
+
+    def get_abs_state(robot):
+        abs_state = ABS_STATE()
+        for cond in COND_LIST[:6]:
+    ```
+
 ## 6. Configuring Actions Used for Synthesis
 
 1. ReGuS action interface
